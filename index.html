@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bicycles — Coming Soon</title>
+  <meta name="description" content="Our new website is under development. Check back soon.">
+  <meta name="robots" content="noindex">
+  <style>
+    :root {
+      --bg: #0f1115;
+      --fg: #f3f4f6;
+      --muted: #9ca3af;
+      --accent: #f59e0b;
+      --card: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(ellipse at top, #1c1f27 0%, var(--bg) 60%);
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      overflow-x: hidden;
+    }
+    main {
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+    }
+    .bike { width: 180px; max-width: 60%; margin: 0 auto 28px; display: block; }
+    .wheel { transform-origin: center; transform-box: fill-box; animation: spin 2s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .badge {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      padding: 6px 14px;
+      margin-bottom: 20px;
+    }
+    h1 { font-size: clamp(32px, 7vw, 52px); line-height: 1.1; margin-bottom: 16px; }
+    p { color: var(--muted); font-size: 17px; line-height: 1.6; }
+    .road {
+      height: 4px;
+      margin: 32px auto 0;
+      max-width: 320px;
+      border-radius: 4px;
+      background: repeating-linear-gradient(90deg, var(--border) 0 24px, transparent 24px 40px);
+      background-size: 40px 4px;
+      animation: road 0.8s linear infinite;
+    }
+    @keyframes road { to { background-position: -40px 0; } }
+    footer { margin-top: 40px; font-size: 13px; color: var(--muted); }
+    @media (prefers-reduced-motion: reduce) {
+      .wheel, .road { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <svg class="bike" viewBox="0 0 200 120" fill="none" stroke="#f3f4f6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <g class="wheel">
+        <circle cx="45" cy="80" r="32"/>
+        <line x1="45" y1="48" x2="45" y2="112" stroke-width="2"/>
+        <line x1="13" y1="80" x2="77" y2="80" stroke-width="2"/>
+      </g>
+      <g class="wheel">
+        <circle cx="155" cy="80" r="32"/>
+        <line x1="155" y1="48" x2="155" y2="112" stroke-width="2"/>
+        <line x1="123" y1="80" x2="187" y2="80" stroke-width="2"/>
+      </g>
+      <polyline points="45,80 85,80 120,40 70,40 85,80" stroke="#f59e0b"/>
+      <polyline points="120,40 155,80"/>
+      <line x1="70" y1="40" x2="64" y2="26"/>
+      <line x1="56" y1="26" x2="74" y2="26"/>
+      <polyline points="120,40 116,24 130,20"/>
+    </svg>
+
+    <span class="badge">Under development</span>
+    <h1>We're building something new</h1>
+    <p>Our website is currently under construction. We're working hard to get everything rolling — please check back soon.</p>
+    <div class="road"></div>
+
+    <footer>&copy; <span id="year">2026</span> Bicycles. All rights reserved.</footer>
+  </main>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
