@@ -1,5 +1,6 @@
 "use client";
 import { readProductGuide } from "../../shared/productGuide";
+import { specRows } from "../../shared/bicycles";
 import { SupplierSizeChart } from "./size-chart";
 import { PurchaseReassurance } from "./purchase-reassurance";
 import { brand } from "@/lib/brand";
@@ -48,6 +49,7 @@ export function ProductDetail({
       JSON.stringify(initial.size_chart) !== "{}" &&
       JSON.stringify(initial.size_chart) !== "[]");
   const chart = useRef<HTMLDialogElement>(null);
+  const specs = specRows(initial.specs);
   useEffect(() => {
     let controller: AbortController | undefined;
     let stopped = false;
@@ -431,6 +433,19 @@ export function ProductDetail({
                 <p className="whitespace-pre-line">{text}</p>
               </details>
             ))}
+          {specs.length > 0 && (
+            <details open className="product-description lv-specs">
+              <summary>At a glance</summary>
+              <dl>
+                {specs.map((row) => (
+                  <div key={row.key}>
+                    <dt>{row.label}</dt>
+                    <dd>{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </details>
+          )}
           <details open className="product-description">
             <summary>Description</summary>
             <div className="rich-content whitespace-pre-line">

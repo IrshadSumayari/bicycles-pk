@@ -1,6 +1,7 @@
 import { shopCategoryNames, sectionOfCategory, sectionById } from '../../../shared/bicycles';
 import { departmentCategories, type Department } from '../../lib/inventoryCategory';
 import { BikeVariantBuilder } from './BikeVariantBuilder';
+import { BikeSpecsPanel } from './BikeSpecsPanel';
 import { uniqueOptions, missingVariants, duplicateVariantError } from '../../lib/variantOptions';
 import { ComboInput } from '@/components/shared/ComboInput';
 import { applyVariantAmount } from '../../lib/variantPricing';
@@ -318,6 +319,7 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                 </div>
               </div>
 
+              {!isService && <BikeSpecsPanel category={style.category} value={style.specs ?? {}} onChange={specs => setStyle(prev => ({ ...prev, specs }))} />}
               {/* Matrix builder */}
               {!isService && (
                 <div className="bg-lightgray rounded-xl p-4 space-y-4">

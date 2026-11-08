@@ -1995,6 +1995,7 @@ export type Database = {
           image_url: string | null;
           kind: string;
           lingerie: NonNullable<Json>;
+          specs: NonNullable<Json>;
           material: string | null;
           name: string;
           product_guide: NonNullable<Json>;
@@ -2024,6 +2025,7 @@ export type Database = {
           image_url?: string | null;
           kind: string;
           lingerie?: NonNullable<Json>;
+          specs?: NonNullable<Json>;
           material?: string | null;
           name: string;
           product_guide?: NonNullable<Json>;
@@ -2052,6 +2054,7 @@ export type Database = {
           image_url?: string | null;
           kind?: string;
           lingerie?: NonNullable<Json>;
+          specs?: NonNullable<Json>;
           material?: string | null;
           name?: string;
           product_guide?: NonNullable<Json>;

@@ -1,3 +1,4 @@
+import { cleanSpecs, type BikeSpecs } from '../../shared/bicycles';
 import type { ProductGuide } from '../../shared/productGuide';
 import { platformStoreName, platformReceiptText, platformStoreEmail } from './branding';
 import type { OpeningBalance } from './goLiveImport'
@@ -318,6 +319,7 @@ export interface StyleVariantInput {
 }
 
 export interface StyleInput {
+  specs?: BikeSpecs
   styleId?: string
   kind: Product['kind']
   code: string
@@ -343,6 +345,7 @@ export interface SizeScheme {
 }
 
 type StyleRow = {
+  specs: unknown
   id: string
   code: string
   name: string
@@ -407,7 +410,7 @@ export const stylesService = {
         .from('product_styles')
         .select(`
           id, code, name, kind, brand, material, season, design_code, description, taxable, active,
-          track_inventory, image_url,
+          track_inventory, image_url, specs,
           category:categories ( name ),
           size_scheme:size_schemes ( code ),
           variants:product_variants ( id, sku, size, color, fit, price, min_stock, active,
@@ -420,6 +423,7 @@ export const stylesService = {
     const row = style.data as unknown as StyleRow
     const costs = await loadCosts(row.variants.map(v => v.id))
     return {
+      specs: cleanSpecs(row.specs),
       styleId: row.id,
       kind: row.kind as Product['kind'],
       code: row.code,
@@ -460,6 +464,7 @@ export const stylesService = {
   async save(input: StyleInput): Promise<string> {
     const { data, error } = await supabase.rpc('save_style', {
       p: {
+        ...(input.specs === undefined ? {} : { specs: cleanSpecs(input.specs) }),
         style_id: input.styleId ?? null,
         kind: input.kind,
         code: input.code,

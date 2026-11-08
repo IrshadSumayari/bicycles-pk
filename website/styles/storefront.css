@@ -1197,3 +1197,25 @@ body {
     padding: 36px 16px 24px;
   }
 }
+
+/* Product specifications ("At a glance"). */
+.lv-specs dl {
+  margin: 4px 0 8px;
+}
+.lv-specs dl > div {
+  display: grid;
+  grid-template-columns: minmax(120px, 40%) 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.lv-specs dl > div:last-child {
+  border-bottom: 0;
+}
+.lv-specs dt {
+  color: var(--store-muted);
+}
+.lv-specs dd {
+  margin: 0;
+  font-weight: 500;
+}

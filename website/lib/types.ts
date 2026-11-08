@@ -30,6 +30,7 @@ export type Related = {
   image_path: string | null;
 };
 export type Product = {
+  specs?: unknown;
   purchase_policy?: { cod_enabled?: boolean };
   product_guide?: ProductGuide;
   style_id: string;
