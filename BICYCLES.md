@@ -43,3 +43,15 @@ catalogue connected and no horizontal overflow. Database tests were not run (no 
 Nothing deployed or pushed.
 
 Next: Milestone 1 (bike spec fields), then the landing page, listing and product page designs.
+
+## Milestone 1: bike specifications (9 November 2026)
+
+- `specFields` in `shared/bicycles.ts`: frame, fork, wheel size, tyres, gears, drivetrain, brakes,
+  suspension, weight, max rider weight, rider height, age, motor, battery, range, folded size,
+  warranty. Free text, max 120 characters each; only filled values show.
+- Migration `20261109000000_bike_specs.sql` adds `product_styles.specs` (checked keys and lengths),
+  wraps `save_style` (an omitted `specs` keeps the stored value; blanks are removed) and returns
+  `specs` from `catalog_product`.
+- POS style editor: a Specifications panel shows the fields relevant to the category's section
+  first, with "More specifications" for the rest.
+- Website product page: an "At a glance" list above the description.

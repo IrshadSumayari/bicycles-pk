@@ -153,3 +153,65 @@ export function shopCategoryNames(): string[] {
 export function categoryHref(category: string): string {
   return "/search?category=" + encodeURIComponent(category);
 }
+
+// Product specifications shown as "At a glance" on the product page. Stored
+// on the style as free text (max 120 characters each); only filled keys show.
+export const specFields = [
+  { key: "frame", label: "Frame", hint: "e.g. Aluminium 6061" },
+  { key: "fork", label: "Fork", hint: "e.g. Suspension, 100 mm travel" },
+  { key: "wheel_size", label: "Wheel size", hint: 'e.g. 27.5", 700c' },
+  { key: "tyres", label: "Tyres", hint: 'e.g. 27.5 x 2.2"' },
+  { key: "gears", label: "Gears", hint: "e.g. 21-speed" },
+  { key: "drivetrain", label: "Drivetrain", hint: "e.g. Shimano Tourney" },
+  { key: "brakes", label: "Brakes", hint: "e.g. Mechanical disc" },
+  { key: "suspension", label: "Suspension", hint: "e.g. Front, Full, None" },
+  { key: "weight", label: "Weight", hint: "e.g. 14.5 kg" },
+  { key: "max_load", label: "Max rider weight", hint: "e.g. 120 kg" },
+  { key: "rider_height", label: "Rider height", hint: "e.g. 165–180 cm" },
+  { key: "age_range", label: "Age", hint: "e.g. 4–6 years" },
+  { key: "motor", label: "Motor", hint: "e.g. 250 W rear hub" },
+  { key: "battery", label: "Battery", hint: "e.g. 36 V 10.4 Ah" },
+  { key: "range", label: "Range", hint: "e.g. Up to 60 km" },
+  { key: "folded_size", label: "Folded size", hint: "e.g. 80 x 35 x 65 cm" },
+  { key: "warranty", label: "Warranty", hint: "e.g. 2 years frame" },
+] as const;
+
+export type SpecKey = (typeof specFields)[number]["key"];
+export type BikeSpecs = Partial<Record<SpecKey, string>>;
+export const SPEC_MAX_LENGTH = 120;
+
+// Which spec fields the POS shows first for a section; the rest stay
+// available under "More specifications".
+const sectionSpecs: Record<SectionId, readonly SpecKey[]> = {
+  bicycles: ["frame", "wheel_size", "gears", "brakes", "suspension", "weight", "rider_height", "warranty"],
+  kids: ["frame", "wheel_size", "age_range", "rider_height", "brakes", "weight", "max_load"],
+  sports: ["frame", "fork", "wheel_size", "tyres", "gears", "drivetrain", "brakes", "suspension", "weight", "warranty"],
+  ebikes: ["frame", "motor", "battery", "range", "wheel_size", "gears", "brakes", "weight", "max_load", "warranty"],
+  accessories: ["weight", "warranty"],
+  parts: ["wheel_size", "weight", "warranty"],
+};
+
+export function primarySpecKeys(category: string | undefined): readonly SpecKey[] {
+  const section = sectionOfCategory(category);
+  return section ? sectionSpecs[section.id] : sectionSpecs.bicycles;
+}
+
+// Trims values, drops empty and unknown keys, and caps length, so the
+// stored object always passes the database check.
+export function cleanSpecs(value: unknown): BikeSpecs {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const out: BikeSpecs = {};
+  for (const { key } of specFields) {
+    const raw = (value as Record<string, unknown>)[key];
+    if (typeof raw !== "string") continue;
+    const text = raw.trim().slice(0, SPEC_MAX_LENGTH);
+    if (text) out[key] = text;
+  }
+  return out;
+}
+
+// Filled specs in display order, for "At a glance".
+export function specRows(value: unknown): { key: SpecKey; label: string; value: string }[] {
+  const specs = cleanSpecs(value);
+  return specFields.flatMap((f) => (specs[f.key] ? [{ key: f.key, label: f.label, value: specs[f.key]! }] : []));
+}
