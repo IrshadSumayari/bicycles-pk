@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./theme/tokens.css";
+@import "./theme/default-colors.css";
+@import "./theme/dark.css";
+@import "./override/reboot.css";
+@import "./layouts/sidebar.css";
+@import "./layouts/header.css";
+@import "./layouts/container.css";
+@import "./pages/dashboards.css";
+@import "./pages/auth.css";
+@import "./app-utilities.css";
+@import "./print.css";
+@custom-variant dark (&:where(.dark, .dark *));

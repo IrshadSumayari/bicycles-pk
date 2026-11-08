@@ -1,0 +1,400 @@
+/* Bags & handbags: leather-warm accents on the LadyVogue ivory/plum theme. */
+.lv-bags-page,
+.lv-bags-feature {
+  --lv-bag-accent: #8a5a3c;
+  color: var(--lv-plum);
+}
+.dark .lv-bags-page,
+.dark .lv-bags-feature {
+  --lv-bag-accent: #d9a67f;
+}
+.lv-bags-page em,
+.lv-bags-feature em {
+  color: var(--lv-rose);
+  font-weight: 400;
+}
+.lv-bag-art {
+  width: 100%;
+  height: 100%;
+  color: var(--lv-bag-accent);
+}
+
+/* Hero */
+.lv-bags-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  background: var(--lv-soft);
+  min-height: 480px;
+}
+.lv-bags-hero > div:first-child {
+  padding: 70px 10%;
+  align-self: center;
+}
+.lv-bags-hero h1 {
+  font:
+    400 clamp(40px, 4.4vw, 66px)/1.12 Georgia,
+    serif;
+  letter-spacing: -2px;
+  margin-bottom: 25px;
+}
+.lv-bags-hero p:not(.lv-eyebrow) {
+  font-size: 13px;
+  line-height: 1.9;
+  margin-bottom: 28px;
+  max-width: 400px;
+  color: var(--store-muted);
+}
+.lv-bags-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.lv-bags-hero-art {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  align-items: end;
+  padding: 40px 8% 30px;
+  background: radial-gradient(ellipse at center, #c99a7426, transparent 70%);
+}
+.lv-bags-hero-art svg:last-child {
+  height: 70%;
+}
+.lv-bags-hero-photo,
+.lv-bags-feature-photo {
+  position: relative;
+  min-height: 360px;
+  background: #f5f5f5;
+}
+.lv-bags-hero-photo img,
+.lv-bags-feature-photo img,
+.lv-bags-photo {
+  object-fit: cover;
+}
+
+/* Shape strip, like a quick filter row */
+.lv-bags-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 22px 6%;
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+.lv-bags-strip a {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 92px;
+  font-size: 11px;
+  text-align: center;
+  color: var(--ink);
+}
+.lv-bags-strip a > span {
+  display: block;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 8px;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
+}
+.lv-bags-strip a:hover > span,
+.lv-bags-strip a:focus-visible > span {
+  border-color: var(--lv-bag-accent);
+  transform: translateY(-2px);
+}
+
+/* Category grid */
+.lv-bags-shapes {
+  padding: 65px 6%;
+  scroll-margin-top: 25px;
+}
+.lv-bags-shapes > h2,
+.lv-bags-sizes > h2 {
+  font:
+    400 38px/1.2 Georgia,
+    serif;
+  margin-bottom: 30px;
+  letter-spacing: -1px;
+}
+.lv-bags-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 34px 22px;
+  margin-bottom: 30px;
+}
+.lv-bags-category {
+  min-width: 0;
+}
+.lv-bags-category-art {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--lv-soft);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.lv-bags-category-art > svg:first-child {
+  width: 82%;
+  height: auto;
+}
+.lv-bags-category-art > svg:last-child {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+}
+.lv-bags-category .lv-bag-art,
+.lv-bags-category .lv-bags-photo {
+  transition: transform 0.25s;
+}
+.lv-bags-category:hover .lv-bags-photo,
+.lv-bags-category:hover .lv-bag-art {
+  transform: scale(1.04);
+}
+.lv-bags-category h3 {
+  font:
+    400 24px/1.3 Georgia,
+    serif;
+  margin: 16px 0 6px;
+}
+.lv-bags-category p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--store-muted);
+}
+
+/* Size guide */
+.lv-bags-sizes {
+  padding: 60px 6%;
+  background: var(--lv-soft);
+  scroll-margin-top: 25px;
+}
+.lv-bags-sizes > h2 {
+  margin-bottom: 12px;
+}
+.lv-bags-intro {
+  max-width: 620px;
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--store-muted);
+  margin-bottom: 34px;
+}
+.lv-bags-size-list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.lv-bags-size-list li {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 18px 18px 22px;
+}
+.lv-bags-size-art {
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-bottom: 1px dashed var(--line);
+  margin-bottom: 14px;
+}
+.lv-bags-size-art svg {
+  height: calc(120px * var(--bag-scale, 1));
+  width: auto;
+}
+.lv-bags-size-list h3 {
+  font:
+    400 22px/1.3 Georgia,
+    serif;
+}
+.lv-bags-size-list p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--store-muted);
+}
+.lv-bags-size-list .lv-bags-size-dim {
+  color: var(--lv-bag-accent);
+  font-weight: 500;
+  margin: 2px 0 6px;
+}
+
+/* Guidance */
+.lv-bags-care {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+  margin: 0 6%;
+  padding: 50px 0 60px;
+}
+.lv-bags-care svg {
+  color: var(--lv-bag-accent);
+  margin-bottom: 12px;
+}
+.lv-bags-care h2 {
+  font:
+    400 24px/1.25 Georgia,
+    serif;
+  margin-bottom: 10px;
+}
+.lv-bags-care p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--store-muted);
+}
+
+/* Homepage / collections feature */
+.lv-bags-feature {
+  margin: 50px 6%;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  background: var(--lv-soft);
+  border: 1px solid var(--line);
+}
+.lv-bags-feature > div:first-child {
+  padding: 45px 10%;
+  align-self: center;
+}
+.lv-bags-feature-art {
+  max-height: 360px;
+  padding: 25px;
+}
+.lv-bags-feature .lv-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lv-bags-feature h2 {
+  font:
+    400 40px/1.16 Georgia,
+    serif;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+.lv-bags-feature p:not(.lv-eyebrow) {
+  font-size: 12px;
+  line-height: 1.9;
+  margin-bottom: 24px;
+  color: var(--store-muted);
+}
+
+/* Product page details */
+.lv-bag-details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 18px;
+  font-size: 13px;
+  margin: 4px 0 8px;
+}
+.lv-bag-details dt {
+  color: var(--store-muted);
+}
+
+@media (max-width: 1000px) {
+  .lv-bags-size-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .lv-bags-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .lv-bags-hero {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .lv-bags-hero > div:first-child {
+    padding: 36px 20px 10px;
+  }
+  .lv-bags-hero h1 {
+    font-size: 40px;
+    letter-spacing: -1.5px;
+  }
+  .lv-bags-hero-art {
+    height: 230px;
+    padding: 15px 40px;
+  }
+  .lv-bags-actions .lv-button {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+  .lv-bags-strip {
+    padding: 18px 16px;
+  }
+  .lv-bags-shapes,
+  .lv-bags-sizes {
+    padding: 40px 16px;
+  }
+  .lv-bags-shapes > h2,
+  .lv-bags-sizes > h2 {
+    font-size: 30px;
+  }
+  .lv-bags-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 26px 12px;
+  }
+  .lv-bags-category h3 {
+    font-size: 21px;
+  }
+  .lv-bags-category-art > svg:last-child {
+    right: 10px;
+    bottom: 10px;
+    width: 17px;
+  }
+  .lv-bags-size-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .lv-bags-size-list li {
+    padding: 14px;
+  }
+  .lv-bags-size-art {
+    height: 90px;
+  }
+  .lv-bags-size-art svg {
+    height: calc(90px * var(--bag-scale, 1));
+  }
+  .lv-bags-care {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    margin: 0 16px;
+    padding: 36px 0 44px;
+  }
+  .lv-bags-feature {
+    margin: 36px 16px;
+    grid-template-columns: 1fr;
+  }
+  .lv-bags-feature > div:first-child {
+    padding: 28px 22px 10px;
+  }
+  .lv-bags-feature-art {
+    height: 210px;
+    padding: 10px 50px 20px;
+  }
+  .lv-bags-hero-photo,
+  .lv-bags-feature-photo {
+    min-height: 300px;
+  }
+  .lv-bags-feature h2 {
+    font-size: 32px;
+  }
+  .lv-bags-feature .lv-button {
+    width: 100%;
+    gap: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lv-bags-category .lv-bag-art,
+  .lv-bags-category .lv-bags-photo,
+  .lv-bags-strip a > span {
+    transition: none;
+  }
+}

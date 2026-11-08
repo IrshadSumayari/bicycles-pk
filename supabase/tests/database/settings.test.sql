@@ -1,0 +1,42 @@
+BEGIN;
+SELECT plan(24);
+INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
+ ('00000000-0000-0000-0000-00000000fc01','admin@t.local','{"name":"Admin"}','{}'),
+ ('00000000-0000-0000-0000-00000000fc02','manager@t.local','{"name":"Manager"}','{"account_type":"staff"}'),
+ ('00000000-0000-0000-0000-00000000fc03','cashier@t.local','{"name":"Cashier"}','{"account_type":"staff"}');
+UPDATE users SET active=true;
+UPDATE users SET role='manager' WHERE id='00000000-0000-0000-0000-00000000fc02';
+INSERT INTO customers(id,name,phone) VALUES('00000000-0000-0000-0000-00000000fcc1','Customer','03006661234');
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fc01","role":"authenticated"}';
+SELECT is((update_settings('{"tax_rate":17,"return_window_days":14,"request_id":"00000000-0000-0000-0000-0000000fc001"}')->>'tax_rate')::numeric,17::numeric,'admin updates tax');
+SELECT is((SELECT return_window_days FROM app_settings),14,'return window saved');
+SELECT is((SELECT count(*)::int FROM settings_history),1,'one history row');
+SELECT is((SELECT (new->>'tax_rate')::numeric FROM settings_history),17::numeric,'history new settings');
+SELECT lives_ok($$ SELECT update_settings('{"tax_rate":150,"request_id":"00000000-0000-0000-0000-0000000fc001"}') $$,'retry returns original before validation');
+SELECT is((SELECT count(*)::int FROM settings_history),1,'retry does not duplicate history');
+SELECT throws_ok($$ SELECT update_settings('{"typo":1}') $$,'P0001','Unknown setting: typo','unknown key named');
+SELECT throws_ok($$ SELECT update_settings('{"tax_rate":150}') $$,'P0001',NULL,'tax range');
+SELECT throws_ok($$ SELECT update_settings('{"return_window_days":-1}') $$,'P0001',NULL,'window range');
+SELECT throws_ok($$ SELECT update_settings('{"max_cashier_discount_percent":101}') $$,'P0001',NULL,'discount range');
+SELECT throws_ok($$ SELECT update_settings('{"min_tailoring_deposit_percent":30}') $$,'P0001','Unknown setting: min_tailoring_deposit_percent','old deposit setting is gone');
+SELECT throws_ok($$ SELECT update_settings('{"cash_variance_alert":-1}') $$,'P0001',NULL,'variance range');
+SELECT throws_ok($$ SELECT update_settings('{"return_window_days":2.5}') $$,'P0001',NULL,'whole return days');
+SELECT throws_ok($$ SELECT update_settings(jsonb_build_object('receipt_header',repeat('x',501))) $$,'P0001',NULL,'receipt length');
+SELECT throws_ok($$ UPDATE app_settings SET tax_rate=0 $$,'42501',NULL,'admin direct update denied');
+SELECT is((SELECT count(*)::int FROM pg_policies WHERE schemaname='public' AND tablename='app_settings' AND cmd IN ('UPDATE','ALL')),0,'no direct update policy');
+SELECT lives_ok($$ SELECT update_settings('{"cash_variance_alert":0}') $$,'admin alert through RPC');
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fc02","role":"authenticated"}';
+SELECT lives_ok($$ SELECT update_settings('{"receipt_header":"Welcome","receipt_footer":"Thank you"}') $$,'manager receipt text');
+SELECT throws_ok($$ SELECT update_settings('{"tax_rate":1}') $$,'42501',NULL,'manager tax denied');
+SELECT throws_ok($$ SELECT update_settings('{"cash_variance_alert":1}') $$,'42501',NULL,'manager variance denied');
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fc03","role":"authenticated"}';
+SELECT throws_ok($$ SELECT update_settings('{"receipt_header":"No"}') $$,'42501',NULL,'cashier settings denied');
+SELECT is((SELECT count(*)::int FROM settings_history),0,'cashier history RLS');
+RESET ROLE;
+SET LOCAL "request.jwt.claims"='';
+SELECT throws_ok($$ UPDATE settings_history SET old='{}' $$,NULL,NULL,'history append only');
+SET LOCAL ROLE anon;
+SELECT throws_ok($$ SELECT update_settings('{}') $$,'42501',NULL,'anonymous settings denied');
+SELECT * FROM finish();
+ROLLBACK;

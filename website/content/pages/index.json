@@ -1,0 +1,56 @@
+[
+  {
+    "kind": "pages",
+    "handle": "about-us",
+    "title": "About us",
+    "html": "<p>LadyVogue brings together lingerie, nightwear and everyday essentials chosen for comfort, fit and confidence.</p><p>Browse the current collection online. Available items, prices and payment options are shown before you place an order.</p>"
+  },
+  {
+    "kind": "pages",
+    "handle": "contact",
+    "title": "Contact",
+    "html": "<p>Contact LadyVogue about an order, sizing or availability using the number below.</p><p>We are an online business based in Sector I-8/2, Islamabad, serving customers across Pakistan.</p>"
+  },
+  {
+    "kind": "pages",
+    "handle": "store-location",
+    "title": "Store location",
+    "html": "<p>LadyVogue is an online business with a physical presence in Sector I-8/2, Islamabad.</p><p>Please contact us before visiting to arrange a suitable time and confirm the exact location.</p>"
+  },
+  {
+    "kind": "pages",
+    "handle": "faq",
+    "title": "Frequently asked questions",
+    "html": "<h2>How do I find my size?</h2><p>Use the fit guide and the size chart on each product page. The bag checks current prices and availability.</p><h2>Can I collect an order?</h2><p>Choose pickup at checkout when available. Follow the status in your account and wait until the order is ready before visiting.</p><h2>Can I cancel?</h2><p>Use the cancellation button in your account while it is available. For an order already being prepared, please contact us.</p>"
+  },
+  {
+    "kind": "policies",
+    "handle": "privacy-policy",
+    "title": "Privacy policy",
+    "html": "<p>We use the contact, delivery and order details you provide to manage your account, and fulfil orders.</p><p>Payment card details are entered on the payment provider’s secure page and are not collected by our website. Necessary account and bag storage supports shopping. Optional analytics loads only if you consent; you can change that choice using Privacy choices.</p><p>Order information may be shared with payment and delivery providers as needed to complete your order. Contact us to ask about your information or request a correction.</p><p>Return-request messages and optional product photos are used to review your concern. Photos are stored privately for you and authorized staff, rather than in the public product gallery. Contact us if a submitted photo needs removal.</p>"
+  },
+  {
+    "kind": "policies",
+    "handle": "terms-of-service",
+    "title": "Terms of service",
+    "html": "<p>Please check the items, quantities, contact details and fulfilment choice before placing an order. Checkout shows the total and available payment methods. Availability is checked again when the order is created.</p><p>An unpaid online order holds stock only until the payment deadline shown in your account. Order progress and any tracking information are available in your account.</p><p>For help with an order or a concern about these terms, please contact us.</p>"
+  },
+  {
+    "kind": "policies",
+    "handle": "shipping-policy",
+    "title": "Pickup and delivery",
+    "html": "<p>We offer delivery across Pakistan, subject to courier service availability at your address. Enter your city and complete address at checkout. Delivery charges and any free-delivery threshold are shown in the checkout total.</p><p>Please provide a reachable phone number. Your account shows order progress and courier tracking when entered by the shop.</p><p>Delivery timing depends on preparation and courier service. If a parcel cannot be delivered or is returned by the courier, contact LadyVogue to resolve the order before arranging another shipment.</p>"
+  },
+  {
+    "kind": "policies",
+    "handle": "refund-policy",
+    "title": "Returns and exchanges",
+    "html": "<p>Every online return or exchange request is reviewed by LadyVogue staff. Submitting a request does not confirm eligibility, an exchange or a refund.</p><h2>Ask for a review</h2><p>After delivery, open the order in <a href=\"/account/orders\">your account</a> and select all affected items, quantities, the reason and your preferred resolution. One request is recorded per order. You can add information when staff ask for it.</p><p>You may attach up to three private product photos after submitting. Show the product and issue only; avoid faces, bodies, payment information and address labels.</p><h2>Wait for instructions</h2><p>Please do not send a parcel until staff have reviewed the request and provided instructions. Eligibility, item condition, any hygiene restrictions, postage arrangements and the proposed resolution are confirmed individually during review.</p><p>If a refund or exchange is agreed, staff will explain the method and next steps. A request status does not mean a refund has been paid.</p><h2>Other order concerns</h2><p>For an order not yet delivered, a courier-returned parcel, a further concern about a closed request or help accessing your account, <a href=\"/pages/contact\">contact LadyVogue</a> with your order number.</p>"
+  },
+  {
+    "kind": "policies",
+    "handle": "payment-methods",
+    "title": "Payment methods",
+    "html": "<p>Checkout shows the payment methods available for your order. Cash on delivery is offered only when enabled and within the store’s order limits.</p><p>When online payments are enabled, card and Easypaisa wallet payments continue on the provider’s secure payment page. Never enter card details in order notes.</p><p>A return to our website is not proof of payment. Your order status updates after the payment is confirmed by the provider.</p>"
+  }
+]

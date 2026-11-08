@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: [main/ladyvogue, dev]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  malware-guard:
+    name: Malware guard
+    runs-on: ubuntu-latest
+    # Runs before anything installs or executes project code, so injected
+    # loader files fail CI and the deploy workflows never start.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: bash .github/malware-guard.sh
+
+  website:
+    name: Website catalog
+    needs: malware-guard
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:1
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+      NEXT_PUBLIC_SITE_URL: https://catalog.example.com
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  web:
+    name: Lint, type-check, unit tests, build
+    needs: malware-guard
+    runs-on: ubuntu-latest
+    # Placeholders only: unit tests import modules that create the Supabase client.
+    env:
+      VITE_SUPABASE_URL: http://127.0.0.1:54321
+      VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx vitest run --config supabase/functions/_shared/payments/vitest.config.ts
+      - run: node --test scripts/deploy/deploy.test.mjs
+      - run: npm run build
+
+  database:
+    name: Database migrations and tests
+    needs: malware-guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start Postgres and apply migrations
+        run: npx supabase db start
+      - name: Run database tests
+        run: |
+          npx supabase test db
+          npx supabase test db
+
+  e2e:
+    name: End-to-end smoke tests
+    needs: malware-guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # This project uses default headless Chromium, with no branded channel.
+      # Install the shell it launches instead of also downloading full Chrome.
+      - name: Install smoke-test browser
+        timeout-minutes: 10
+        run: npx playwright install --with-deps --only-shell chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: test-results/
+          retention-days: 7

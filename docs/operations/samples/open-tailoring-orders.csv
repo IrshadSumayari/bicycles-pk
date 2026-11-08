@@ -1,0 +1,5 @@
+paper_ref,order_date,customer_name,phone,garment_type,promised_date,stitching_charge,deposit_paid,item_status,notes,length,chest,waist
+SAMPLE-P101,2026-10-01,Ahmed Paper Example,03001234101,WAISTCOAT,2026-10-25,3500.00,2000.00,stitching,Customer fabric paper slip,28,40,36
+SAMPLE-P101,2026-10-01,Ahmed Paper Example,03001234101,WAISTCOAT,2026-10-25,3500.00,2000.00,fitting,Customer fabric paper slip,26,38,34
+SAMPLE-P102,2026-10-02,Ayesha Paper Example,03001234102,WAISTCOAT,2026-10-26,3500.00,1000.00,ready,Customer fabric ready for collection,27,39,35
+SAMPLE-P103,2026-10-03,Omar Paper Example,03001234103,WAISTCOAT,2026-10-27,3500.00,0.00,awaiting,Customer fabric no prior deposit,29,42,38

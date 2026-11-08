@@ -1,0 +1,211 @@
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+
+  --color-chart-5: var(--error);
+  --color-chart-4: var(--warning);
+  --color-chart-3: var(--success);
+  --color-chart-2: var(--secondary);
+  --color-chart-1: var(--primary);
+
+  --color-ring: var(--lightprimary);
+  --color-input: var(--border);
+  --color-border: var(--border);
+  --color-darkborder: var(--darkborder);
+
+  --color-destructive: var(--error);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--white);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--white);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* custom color */
+  --color-success: var(--success);
+  --color-info: var(--info);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  --color-lightprimary: var(--lightprimary);
+  --color-lightsecondary: var(--lightsecondary);
+  --color-lightsuccess: var(--lightsuccess);
+  --color-lightinfo: var(--lightinfo);
+  --color-lightwarning: var(--lightwarning);
+  --color-lighterror: var(--lighterror);
+
+  --color-primaryemphasis: var(--primary-emphasis);
+  --color-secondaryemphasis: var(--secondary-emphasis);
+  --color-successemphasis: var(--success-emphasis);
+  --color-infoemphasis: var(--info-emphasis);
+  --color-warningemphasis: var(--warning-emphasis);
+  --color-erroremphasis: var(--error-emphasis);
+
+  --color-bordergray: var(--bordergray);
+  --color-lightgray: var(--lightgray);
+  --color-lighthover: var(--lighthover);
+
+  --color-bodytext: var(--bodytext);
+  --color-lightmuted: var(--lightmuted);
+  --color-grayemphasis: var(--gray-emphasis);
+  --color-lightemphasis: var(--light-emphasis);
+  --color-dark: var(--dark);
+  --color-link: var(--link);
+  --color-sky: var(--sky);
+
+  --color-darkgray: var(--darkgray);
+  --color-darkinfo: var(--darkinfo);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-darkmuted: var(--muted);
+  --color-darklink: var(--link);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-cyan-500: var(--primary);
+  --color-cyan-600: var(--primary);
+  --color-cyan-700: var(--primary);
+
+  /* custom color end */
+
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-dark-md: var(--shadow-dark-md);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-btn-shadow: var(--shadow-btn-shadow);
+
+  --text-40: var(--text-40);
+  --text-44: var(--text-44);
+  --text-56: var(--text-56);
+  --text-fs_21: var(--text-fs_21);
+  --text-fs_13: var(--text-fs_13);
+  --text-fs_28: var(--text-fs_28);
+
+  --leading-21: var(--leading-21);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-tw: var(--radius-tw);
+  --radius-bb: var(--radius-bb);
+}
+:root {
+  /* ShadCN Compnent */
+  --radius: 10px;
+  --background: #fff;
+  --foreground: var(--link);
+  --card: var(--color-white);
+  --card-foreground: var(--color-link);
+  --popover: var(--color-white);
+  --popover-foreground: var(--color-link);
+  --primary: #635bff;
+  --primary-foreground: var(--color-white);
+  --secondary: #16cdc7;
+  --secondary-foreground: var(--color-white);
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+  --accent: var(--color-lightprimary);
+  --accent-foreground: var(--color-primary);
+  --destructive: var(--color-error);
+  --border: #e5e5e5;
+  --darkborder: #333f55;
+  --input: var(--color-input);
+  --ring: var(--color-lightprimary);
+  --chart-1: var(--color-primary);
+  --chart-2: var(--color-secondary);
+  --chart-3: var(--color-success);
+  --chart-4: var(--color-warning);
+  --chart-5: var(--color-error);
+  --sidebar: var(--color-white);
+  --sidebar-foreground: var(--color-link);
+  --sidebar-primary: var(--color-primary);
+  --sidebar-primary-foreground: var(--color-white);
+  --sidebar-accent: var(--color-lightprimary);
+  --sidebar-accent-foreground: var(--color-primary);
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #a1a1a1;
+
+  /* ----------------------------------- custom color variable ----------------------------------- */
+  --info: #46caeb;
+  --success: #2ea95c;
+  --warning: #f8c20a;
+  --error: #ff6692;
+  --white: #fff;
+  --dark: #1f2a3d;
+  --darkinfo: #223662;
+  --lightgray: #f4f7fb;
+  --bgmuted: #eff4fa;
+  --darkgray: #1a2537;
+  --bodytext: #66788a;
+  --lightmuted: #98a4ae;
+  --link: #2a3547;
+  --sky: #0a2540;
+  --light-emphasis: #dfe5ef;
+  --lighthover: #f5f7fb;
+  --destructive-foreground: var(--color-white);
+
+  /* ----------- generate emphasis and lighter color of primary and secondary -------------- */
+
+  /* Lighter/opacity-like versions */
+  --lightprimary: color-mix(in oklab, var(--color-primary) 12%, transparent);
+  --lightsecondary: color-mix(
+    in oklab,
+    var(--color-secondary) 12%,
+    transparent
+  );
+  --lightsuccess: color-mix(in oklab, var(--color-success) 12%, transparent);
+  --lightinfo: color-mix(in oklab, var(--color-info) 12%, transparent);
+  --lightwarning: color-mix(in oklab, var(--color-warning) 12%, transparent);
+  --lighterror: color-mix(in oklab, var(--color-error) 12%, transparent);
+
+  /* Darker versions (emphasis) */
+  --primary-emphasis: color-mix(in oklab, var(--primary) 80%, black);
+  --secondary-emphasis: color-mix(in oklab, var(--secondary) 80%, black);
+  --success-emphasis: color-mix(in oklab, var(--success) 80%, black);
+  --info-emphasis: color-mix(in oklab, var(--info) 80%, black);
+  --warning-emphasis: color-mix(in oklab, var(--warning) 80%, black);
+  --error-emphasis: color-mix(in oklab, var(--error) 80%, black);
+
+  /* ----------------------------------- custom color variable end ----------------------------------- */
+
+  /* shadow */
+  --shadow-md: 0px 2px 4px -1px rgba(175, 182, 201, 0.2);
+  --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  --shadow-dark-md:
+    rgba(145, 158, 171, 0.3) 0px 0px 2px 0px,
+    rgba(145, 158, 171, 0.02) 0px 12px 24px -4px;
+  --shadow-sm: 0 6px 24.2px -10px rgba(41, 52, 61, 0.22);
+  --shadow-btn-shadow: rgba(0, 0, 0, 0.05) 0 9px 17.5px;
+  --shadow-btnshdw: 0 17px 20px -8px rgba(77, 91, 236, 0.231372549);
+
+  /* font-size */
+  --text-40: 40px;
+  --text-44: 44px;
+  --text-56: 56px;
+  --text-fs_21: 21px;
+  --text-fs_13: 13px;
+  --text-fs_28: 28px;
+
+  /* line-height */
+  --leading-21: 21px;
+
+  --radius-sm: 6px;
+  --radius-md: 9px;
+  --radius-lg: 24px;
+  --radius-tw: 12px;
+  --radius-bb: 20px;
+}

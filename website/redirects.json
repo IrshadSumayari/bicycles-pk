@@ -1,0 +1,7 @@
+[
+  {"source":"/collections/:collection/products/:handle","destination":"/products/:handle","permanent":true},
+  {"source":"/privacy","destination":"/policies/privacy-policy","permanent":true},
+  {"source":"/terms","destination":"/policies/terms-of-service","permanent":true},
+  {"source":"/returns","destination":"/policies/refund-policy","permanent":true},
+  {"source":"/shipping","destination":"/policies/shipping-policy","permanent":true}
+]

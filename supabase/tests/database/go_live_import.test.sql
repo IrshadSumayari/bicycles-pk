@@ -1,0 +1,42 @@
+BEGIN;
+SELECT plan(21);
+INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
+ ('00000000-0000-0000-0000-00000000f601','go-admin@t.local','{"name":"Admin"}','{}'),
+ ('00000000-0000-0000-0000-00000000f602','go-manager@t.local','{"name":"Manager"}','{"account_type":"staff"}'),
+ ('00000000-0000-0000-0000-00000000f603','go-cashier@t.local','{"name":"Cashier"}','{"account_type":"staff"}');
+UPDATE users SET active=true;
+UPDATE users SET role='manager' WHERE id='00000000-0000-0000-0000-00000000f602';
+INSERT INTO customers(name,phone) VALUES('Existing','+923001116602');
+INSERT INTO product_styles(id,code,name,kind,unit,track_inventory,taxable) VALUES('00000000-0000-0000-0000-0000000f6a01','GO-SERVICE','Test service','service','job',false,false);
+INSERT INTO product_variants(id,style_id,sku,price) VALUES('00000000-0000-0000-0000-0000000f6a02','00000000-0000-0000-0000-0000000f6a01','GO-SERVICE',10);
+CREATE TEMP TABLE fixture(name TEXT PRIMARY KEY,value JSONB);
+GRANT ALL ON fixture TO authenticated;
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000f601","role":"authenticated"}';
+INSERT INTO fixture VALUES('balances',import_opening_balances('{"request_id":"00000000-0000-0000-0000-0000000f6001","rows":[{"name":"New","phone":"03001116601","amount":125.50,"note":"Paper balance"},{"name":"Existing","phone":"03001116602","amount":700}]}'));
+SELECT is((SELECT (value->>'created_customers')::int FROM fixture WHERE name='balances'),1,'one new customer');
+SELECT is((SELECT (value->>'balances')::int FROM fixture WHERE name='balances'),2,'two ledger entries');
+SELECT is((SELECT (value->>'total_amount')::numeric FROM fixture WHERE name='balances'),825.5::numeric,'total imported');
+SELECT is((SELECT credit_used FROM customers WHERE phone='+923001116601'),125.5::numeric,'ledger updates balance');
+SELECT is((SELECT count(*)::int FROM customers WHERE phone='+923001116602'),1,'03xx matches existing customer');
+SELECT is((SELECT note FROM customer_ledger WHERE customer_id=(SELECT id FROM customers WHERE phone='+923001116601')),'Paper balance','note retained');
+SELECT is((import_opening_balances('{"request_id":"00000000-0000-0000-0000-0000000f6002","rows":[{"name":"Again","phone":"03001116601","amount":99}]}')->'skipped'->0->>'phone'),'+923001116601','existing opening skipped and identified');
+SELECT is((SELECT credit_used FROM customers WHERE phone='+923001116601'),125.5::numeric,'skip leaves balance unchanged');
+SELECT throws_ok($$ SELECT import_opening_balances('{"request_id":"00000000-0000-0000-0000-0000000f6003","rows":[{"name":"Rollback","phone":"03001116604","amount":30},{"name":"Bad","phone":"12","amount":20}]}') $$,'P0001','Row 2: phone number is not valid','invalid row identified');
+SELECT is((SELECT count(*)::int FROM customers WHERE phone='+923001116604'),0,'whole invalid batch rolled back');
+SELECT throws_ok($$ SELECT import_opening_balances('{"request_id":"00000000-0000-0000-0000-0000000f6003","rows":[{"name":"Bad","phone":"03001116604","amount":0.001}]}') $$,'P0001','Row 1: amount must be positive with at most 2 decimals','fractional paisa refused');
+SELECT lives_ok($$ SELECT import_opening_balances('{"request_id":"00000000-0000-0000-0000-0000000f6001","rows":[]}') $$,'retry returns first result before validation');
+SELECT is((SELECT count(*)::int FROM customer_ledger WHERE entry_type='opening'),2,'balance retry no duplicate');
+SELECT FROM open_cash_session(0);
+SELECT is((SELECT count(*)::int FROM payments WHERE method='opening' AND cash_session_id IS NOT NULL),0,'opening payment has no shift');
+SELECT is((current_cash_session()->>'cash_sales')::numeric,0::numeric,'shift cash unchanged');
+SELECT is((SELECT count(*)::int FROM report_tenders(current_date-1,current_date+1) WHERE method='opening'),0,'opening excluded from tenders');
+SELECT throws_ok($$ SELECT post_sale(jsonb_build_object('request_id',gen_random_uuid(),'lines','[{"variant_id":"00000000-0000-0000-0000-0000000f6a02","quantity":1}]'::jsonb,'payments','[{"method":"opening","amount":10}]'::jsonb)) $$,'P0001','Invalid payment method: opening','sale refuses opening');
+SELECT throws_ok($$ SELECT post_customer_payment(jsonb_build_object('request_id',gen_random_uuid(),'customer_id',(SELECT id FROM customers WHERE phone='+923001116601'),'payments','[{"method":"opening","amount":10}]'::jsonb)) $$,'P0001','Choose cash, card or digital for collecting payments','customer live payments refuse opening');
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000f602","role":"authenticated"}';
+SELECT throws_ok($$ SELECT import_opening_balances('{}') $$,'42501',NULL,'manager cannot import balances');
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000f603","role":"authenticated"}';
+SELECT throws_ok($$ SELECT import_opening_balances('{}') $$,'42501',NULL,'cashier cannot import balances');
+SELECT is((SELECT count(*)::int FROM stock_movements),0,'imports post no stock movement');
+SELECT * FROM finish();
+ROLLBACK;

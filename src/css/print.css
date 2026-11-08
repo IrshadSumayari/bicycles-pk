@@ -1,0 +1,51 @@
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #000;
+    background: white;
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}
+@media print {
+  :root,
+  html.dark {
+    color-scheme: light;
+    --background: #fff;
+    --card: #fff;
+    --foreground: #000;
+    --link: #000;
+    --dark: #000;
+    --lightgray: #fff;
+    --border: #ddd;
+    --bodytext: #444;
+    --darkgray: #fff;
+    --primary: #000;
+    --secondary: #000;
+    --success: #000;
+    --error: #000;
+    --warning: #000;
+    --lightprimary: #fff;
+    --lightsecondary: #fff;
+    --lightsuccess: #fff;
+    --lighterror: #fff;
+    --lightwarning: #fff;
+  }
+  .pos-sidebar,
+  .pos-header,
+  .page-header {
+    display: none !important;
+  }
+  .pos-main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

@@ -1,0 +1,123 @@
+.pos-main {
+  margin-left: 270px;
+  min-height: 100dvh;
+  transition: margin-left 150ms;
+}
+.pos-main.mini {
+  margin-left: 80px;
+}
+.page-content {
+  padding: 24px;
+}
+.page-header {
+  border-radius: 12px;
+  background: var(--lightprimary);
+  padding: 22px 26px;
+  margin-bottom: 24px;
+}
+.page-content > div {
+  padding: 0;
+  background: transparent;
+}
+.page-content .table {
+  background: var(--card);
+}
+@media (max-width: 1023px) {
+  .pos-main,
+  .pos-main.mini {
+    margin-left: 0;
+  }
+}
+@media (max-width: 640px) {
+  .page-content {
+    padding: 16px;
+  }
+  .page-header {
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+}
+
+.till-content {
+  height: calc(100dvh - 70px);
+  overflow: hidden;
+  padding: 16px;
+}
+.product-catalog-grid {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(180px, 100%), 1fr)
+  ) !important;
+}
+.touch-mode .product-catalog-grid {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(220px, 100%), 1fr)
+  ) !important;
+}
+.touch-mode button,
+.touch-mode input:not([type="checkbox"], [type="radio"]),
+.touch-mode select {
+  min-height: 48px;
+}
+.touch-mode input[type="checkbox"],
+.touch-mode input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.touch-mode .nav-link {
+  min-height: 48px;
+}
+.till-content *,
+.till-content *:before,
+.till-content *:after {
+  transition-duration: 150ms !important;
+  animation-duration: 150ms !important;
+}
+@media (max-width: 767px) {
+  .till-content {
+    height: auto;
+    min-height: calc(100dvh - 70px);
+    overflow: visible;
+    padding: 12px;
+  }
+  .till-workspace {
+    flex-direction: column !important;
+  }
+  .till-products-cart {
+    flex-direction: column !important;
+    overflow: visible !important;
+  }
+  .till-products-cart > div {
+    height: auto !important;
+    min-height: 360px;
+    width: 100% !important;
+  }
+  .till-products-cart > div:first-child {
+    max-height: 70dvh;
+  }
+  /* The stacked cart grows with its items; cap the list so the totals and
+     Checkout stay close below it instead of a long scroll away. */
+  .till-products-cart .cart-items {
+    flex: none;
+    max-height: 60dvh;
+  }
+}
+/* Side-by-side till on a short window (laptops, landscape tablets): give the
+   cart's item list the height. The header bar already shows the cart count,
+   so the cart title row goes, and subtotal and tax share one line. */
+@media (min-width: 768px) and (max-height: 760px) {
+  .till-products-cart .cart-title-row {
+    display: none;
+  }
+  .till-products-cart .cart-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+    font-size: 0.75rem;
+  }
+  .till-products-cart .cart-breakdown > * {
+    margin: 0;
+    gap: 0.25rem;
+  }
+}

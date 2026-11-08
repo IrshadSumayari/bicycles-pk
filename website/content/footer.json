@@ -1,0 +1,52 @@
+[
+  {
+    "title": "About the shop",
+    "links": [
+      {
+        "label": "About us",
+        "href": "/pages/about-us"
+      },
+      {
+        "label": "Visit the shop",
+        "href": "/pages/store-location"
+      },
+      {
+        "label": "Contact",
+        "href": "/pages/contact"
+      }
+    ]
+  },
+  {
+    "title": "Help with your order",
+    "links": [
+      {
+        "label": "FAQs",
+        "href": "/pages/faq"
+      },
+      {
+        "label": "Pickup and delivery",
+        "href": "/policies/shipping-policy"
+      },
+      {
+        "label": "Returns and exchanges",
+        "href": "/policies/refund-policy"
+      },
+      {
+        "label": "Payment methods",
+        "href": "/policies/payment-methods"
+      },
+      {
+        "label": "Privacy policy",
+        "href": "/policies/privacy-policy"
+      },
+      {
+        "label": "Terms of service",
+        "href": "/policies/terms-of-service"
+      },
+      {
+        "label": "My orders",
+        "href": "/account/orders"
+      }
+    ]
+  }
+]

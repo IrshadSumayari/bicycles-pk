@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "pos-dev", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "--port", "5173"], "port": 5173 },
+    { "name": "website-dev", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "website", "run", "dev"], "port": 3000 }
+  ]
+}

@@ -1,0 +1,75 @@
+@layer base {
+  * {
+    box-sizing: border-box;
+    border-color: var(--border);
+  }
+  body {
+    margin: 0;
+    font-family: "Manrope Variable", Manrope, sans-serif;
+    color: var(--foreground);
+    background: var(--lightgray);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  button:not(:disabled),
+  select {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  input,
+  textarea,
+  select {
+    color: var(--foreground);
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--primary);
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
+  svg.lucide {
+    stroke-width: 1.75;
+  }
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
+}
+.swal2-popup {
+  font-family: inherit !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+}
+.swal2-title,
+.swal2-html-container {
+  color: var(--foreground) !important;
+}
+.swal2-input {
+  border: 1px solid var(--border) !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  border-radius: 9px !important;
+}
+.swal2-container {
+  z-index: 1000 !important;
+}
+.swal2-actions {
+  gap: 12px;
+}
+.swal2-show {
+  animation-duration: 150ms !important;
+}

@@ -1,0 +1,16 @@
+{
+  "name": "clothing-pos-catalog-import",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "test": "node --test map.test.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0",
+    "sanitize-html": "2.18.1",
+    "he": "1.2.0"
+  }
+}

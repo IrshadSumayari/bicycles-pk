@@ -1,0 +1,15 @@
+{
+  "name": "LadyVogue",
+  "shortName": "LADYVOGUE",
+  "tagline": "Everyday comfort. Beautifully yours.",
+  "address": {
+    "line1": "Sector I-8/2",
+    "city": "Islamabad",
+    "country": "Pakistan"
+  },
+  "mapsUrl": "",
+  "email": null,
+  "phone": "+923398844517",
+  "whatsapp": null,
+  "social": {}
+}

@@ -1,0 +1,2 @@
+-- Local development seed data (applied by `supabase db reset`).
+-- Kept empty on purpose: the initial migration already inserts default settings and categories.

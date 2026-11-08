@@ -1,0 +1,71 @@
+/* Product-specific fit guidance; tables scroll inside their dialog on phones. */
+.lv-measurement-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.lv-measurement-art {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  margin: 0 auto 20px;
+  color: var(--ink);
+}
+.lv-size-dialog {
+  width: min(740px, calc(100vw - 32px));
+  margin: auto;
+  max-height: 85dvh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.lv-size-dialog > *,
+.lv-supplier-chart {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.lv-chart-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.lv-chart-scroll:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+.lv-chart-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.lv-chart-scroll caption {
+  text-align: left;
+  padding: 12px;
+}
+.lv-chart-scroll th,
+.lv-chart-scroll td {
+  padding: 12px;
+  text-align: left;
+  border-top: 1px solid var(--line);
+  white-space: nowrap;
+}
+.lv-chart-scroll thead,
+.lv-chart-scroll tbody th {
+  background: var(--lv-soft);
+}
+.lv-chart-missing {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.lv-chart-missing a,
+.lv-guide-note a {
+  text-decoration: underline;
+}
+@media (max-width: 600px) {
+  .lv-measurement-grid {
+    grid-template-columns: 1fr;
+  }
+  .lv-size-dialog {
+    padding: 18px;
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "LadyVogue POS",
+  "short_name": "LadyVogue",
+  "icons": [
+    {
+      "src": "/ladyvogue-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#4d243d",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
