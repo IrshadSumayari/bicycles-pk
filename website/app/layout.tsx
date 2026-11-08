@@ -11,14 +11,11 @@ import { catalog, safeCatalog } from "@/lib/catalog";
 import { buildNavigation } from "@/lib/navigation";
 import { siteUrl } from "@/lib/helpers";
 import "./globals.css";
-import "../styles/ladyvogue.css";
+import "../styles/storefront.css";
 import "../styles/shopping.css";
 import "../styles/mobile.css";
 import "../styles/account.css";
-import "../styles/jewellery.css";
-import "../styles/bags.css";
 import "../styles/fit-guidance.css";
-import "../styles/try-on.css";
 const poppins = localFont({
   src: [
     { path: "../public/brand/poppins-400.woff2", weight: "400" },
@@ -39,11 +36,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   metadataBase: new URL(siteUrl()),
   title: {
-    default: `${brand.name} | Lingerie, Nightwear, Jewellery & Bags in Pakistan`,
+    default: `${brand.name} | Bicycles, Kids Bikes, Sports Bikes & Accessories in Pakistan`,
     template: `%s | ${brand.name}`,
   },
-  description: `Shop bras, panties, nightwear, jewellery, handbags and everyday essentials at ${brand.name}, Pakistan.`,
-  icons: { icon: "/brand/ladyvogue-icon.svg" },
+  description: `Shop city bikes, kids bicycles, sports bikes, e-bikes, accessories and parts at ${brand.name}, Pakistan.`,
+  icons: { icon: "/brand/bicycles-icon.svg" },
   openGraph: {
     siteName: brand.name,
     title: brand.name,

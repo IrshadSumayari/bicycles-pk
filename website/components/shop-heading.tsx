@@ -1,7 +1,7 @@
 import Link from "next/link";
 export function ShopHeading({
   title,
-  eyebrow = "THE LADYVOGUE COLLECTION",
+  eyebrow = "THE BICYCLES.PK COLLECTION",
   description,
   children,
 }: {

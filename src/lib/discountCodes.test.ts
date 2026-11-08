@@ -27,13 +27,13 @@ describe('discount codes', () => {
   });
 
   it('writes an email draft and a mailto link that keeps line breaks', () => {
-    const email = codeEmail(code, 'Ayesha', 'LadyVogue', 'PKR');
-    expect(email.subject).toBe('Your LadyVogue discount code: LV-7KQ2XH');
+    const email = codeEmail(code, 'Ayesha', 'Bicycles.pk', 'PKR');
+    expect(email.subject).toBe('Your Bicycles.pk discount code: LV-7KQ2XH');
     expect(email.body).toContain('Dear Ayesha,');
     expect(email.body).toContain('\nLV-7KQ2XH\n');
     expect(email.body).toContain('It can be used once.');
     const link = mailtoLink('ayesha@example.test', email);
-    expect(link.startsWith('mailto:ayesha%40example.test?subject=Your%20LadyVogue')).toBe(true);
+    expect(link.startsWith('mailto:ayesha%40example.test?subject=Your%20Bicycles.pk')).toBe(true);
     expect(link).toContain('%0A');
   });
 

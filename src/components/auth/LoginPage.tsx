@@ -95,7 +95,7 @@ export function LoginPage() {
           />
         </div>
         <p className="text-primary font-semibold tracking-widest uppercase mb-4">
-          {state.settings.storeName || "LadyVogue POS"}
+          {state.settings.storeName || "Bicycles POS"}
         </p>
         <p className="text-4xl font-bold leading-tight max-w-md">
           Your shop. Your team.
@@ -116,7 +116,7 @@ export function LoginPage() {
                 className="h-11 w-11 object-contain"
               />
             </div>
-            <h1 className="text-2xl font-bold text-link mb-2">LadyVogue POS</h1>
+            <h1 className="text-2xl font-bold text-link mb-2">Bicycles POS</h1>
             <p className="text-bodytext">
               {confirming
                 ? "Confirm your email"

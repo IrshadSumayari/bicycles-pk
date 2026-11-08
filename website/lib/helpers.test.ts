@@ -119,7 +119,7 @@ describe("catalog helpers", () => {
     } as unknown as Product;
     const data = productJsonLd(product, "https://shop.example/products/blue");
     expect(data["@type"]).toBe("Product");
-    expect(data.brand.name).toBe("LadyVogue");
+    expect(data.brand.name).toBe("Bicycles.pk");
     expect(data.offers.map((offer) => offer.availability)).toEqual([
       "https://schema.org/InStock",
       "https://schema.org/OutOfStock",

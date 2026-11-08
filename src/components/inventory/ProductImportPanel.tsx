@@ -27,7 +27,7 @@ export function ProductImportPanel({ template = IMPORT_TEMPLATE }: { template?: 
     const url = URL.createObjectURL(new Blob([contents], { type: 'text/csv' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = examples ? 'product-import-examples.csv' : 'ladyvogue-products-blank.csv';
+    a.download = examples ? 'product-import-examples.csv' : 'bicycles-products-blank.csv';
     a.click();
     URL.revokeObjectURL(url);
   };

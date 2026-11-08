@@ -1,4 +1,4 @@
-# LadyVogue storefront
+# Bicycles.pk storefront
 
 The Next.js storefront shares the POS catalog and order APIs. It supports collections, products, bag, customer sign-in, checkout and order tracking. MatDash controls and light/dark/System appearance remain in place.
 

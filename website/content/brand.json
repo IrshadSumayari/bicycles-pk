@@ -1,15 +1,15 @@
 {
-  "name": "LadyVogue",
-  "shortName": "LADYVOGUE",
-  "tagline": "Everyday comfort. Beautifully yours.",
+  "name": "Bicycles.pk",
+  "shortName": "BICYCLES.PK",
+  "tagline": "Ride further. Ride better.",
   "address": {
-    "line1": "Sector I-8/2",
-    "city": "Islamabad",
+    "line1": "",
+    "city": "",
     "country": "Pakistan"
   },
   "mapsUrl": "",
   "email": null,
-  "phone": "+923398844517",
+  "phone": null,
   "whatsapp": null,
   "social": {}
 }

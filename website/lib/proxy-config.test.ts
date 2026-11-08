@@ -10,7 +10,7 @@ describe("unconfigured storefront authentication", () => {
   it("keeps sign-in available without exposing protected routes", async () => {
     unconfigure();
     const r = await proxy(
-      new NextRequest("https://ladyvogue.pk/account/sign-in"),
+      new NextRequest("https://bicycles.pk/account/sign-in"),
     );
     expect(r.status).toBe(200);
     expect(r.headers.get("Cache-Control")).toBe("private, no-store");
@@ -20,7 +20,7 @@ describe("unconfigured storefront authentication", () => {
     "redirects %s to sign-in with a return path",
     async (path) => {
       unconfigure();
-      const r = await proxy(new NextRequest("https://ladyvogue.pk" + path));
+      const r = await proxy(new NextRequest("https://bicycles.pk" + path));
       expect(r.status).toBe(307);
       const url = new URL(r.headers.get("location")!);
       expect(url.pathname).toBe("/account/sign-in");
@@ -30,7 +30,7 @@ describe("unconfigured storefront authentication", () => {
   );
   it("continues to serve the public catalog", async () => {
     unconfigure();
-    const r = await proxy(new NextRequest("https://ladyvogue.pk/collections"));
+    const r = await proxy(new NextRequest("https://bicycles.pk/collections"));
     expect(r.status).toBe(200);
     expect(r.headers.get("location")).toBeNull();
   });

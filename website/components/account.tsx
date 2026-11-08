@@ -2,7 +2,6 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { getErrorMessage } from "@/lib/errors";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -49,17 +48,11 @@ export function Account({ next }: { next: string }) {
   return (
     <div className="lv-signin">
       <div className="lv-signin-editorial">
-        <Image
-          src="/ladyvogue/nightwear.webp"
-          alt="Ivory satin nightwear in soft light"
-          fill
-          sizes="(max-width:760px) 100vw,45vw"
-        />
         <div>
-          <p className="lv-eyebrow">YOUR LITTLE CORNER OF LADYVOGUE</p>
+          <p className="lv-eyebrow">YOUR BICYCLES.PK ACCOUNT</p>
           <h2>
-            Welcome to <br />
-            <em>your everyday.</em>
+            Welcome <br />
+            <em>back.</em>
           </h2>
         </div>
       </div>

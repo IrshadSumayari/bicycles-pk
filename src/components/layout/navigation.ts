@@ -2,8 +2,12 @@ import {
   LayoutDashboard,
   ShoppingCart,
   Package,
-  Gem,
-  ShoppingBag,
+  Bike,
+  Baby,
+  Trophy,
+  Zap,
+  HardHat,
+  Wrench,
   Receipt,
   Users,
   BarChart3,
@@ -19,8 +23,12 @@ export type View =
   | "online"
   | "transactions"
   | "inventory"
-  | "jewellery"
-  | "bags"
+  | "bicycles"
+  | "kids"
+  | "sports"
+  | "ebikes"
+  | "accessories"
+  | "parts"
   | "customers"
   | "commissions"
   | "reports"
@@ -73,16 +81,44 @@ export const navigation: readonly Item[] = [
     roles: managers,
   },
   {
-    id: "jewellery",
-    label: "Jewellery",
-    icon: Gem,
+    id: "bicycles",
+    label: "Bicycles",
+    icon: Bike,
     section: "Catalogue",
     roles: managers,
   },
   {
-    id: "bags",
-    label: "Bags",
-    icon: ShoppingBag,
+    id: "kids",
+    label: "Kids",
+    icon: Baby,
+    section: "Catalogue",
+    roles: managers,
+  },
+  {
+    id: "sports",
+    label: "Sports",
+    icon: Trophy,
+    section: "Catalogue",
+    roles: managers,
+  },
+  {
+    id: "ebikes",
+    label: "E-bikes",
+    icon: Zap,
+    section: "Catalogue",
+    roles: managers,
+  },
+  {
+    id: "accessories",
+    label: "Accessories",
+    icon: HardHat,
+    section: "Catalogue",
+    roles: managers,
+  },
+  {
+    id: "parts",
+    label: "Parts",
+    icon: Wrench,
     section: "Catalogue",
     roles: managers,
   },

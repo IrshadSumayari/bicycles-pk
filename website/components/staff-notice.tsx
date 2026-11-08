@@ -28,7 +28,7 @@ export function StaffNotice({ className = "" }: { className?: string }) {
       <h1>This is a staff account</h1>
       <p className="muted">
         You are signed in with a staff email. Staff accounts are used in the
-        LadyVogue POS, not for shopping. To place orders, sign out and sign in with your customer email.
+        Bicycles POS, not for shopping. To place orders, sign out and sign in with your customer email.
       </p>
       <Button disabled={busy} onClick={() => void signOut()}>
         {busy ? "Signing out…" : "Sign out"}

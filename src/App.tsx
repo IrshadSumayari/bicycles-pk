@@ -22,8 +22,6 @@ const InventoryManager = lazy(() =>
     default: m.InventoryManager,
   })),
 );
-const JewelleryManager = lazy(() => import('./components/inventory/JewelleryManager').then(m => ({default:m.JewelleryManager})));
-const BagsManager = lazy(() => import('./components/inventory/BagsManager').then(m => ({default:m.BagsManager})));
 const CustomerManager = lazy(() =>
   import("./components/customers/CustomerManager").then((m) => ({
     default: m.CustomerManager,
@@ -150,8 +148,12 @@ function AppContent() {
     online: <OnlineOrders target={onlineTarget} />,
     transactions: <TransactionsManager />,
     inventory: <InventoryManager key="inventory" />,
-    jewellery: <JewelleryManager />,
-    bags: <BagsManager />,
+    bicycles: <InventoryManager key="bicycles" department="bicycles" />,
+    kids: <InventoryManager key="kids" department="kids" />,
+    sports: <InventoryManager key="sports" department="sports" />,
+    ebikes: <InventoryManager key="ebikes" department="ebikes" />,
+    accessories: <InventoryManager key="accessories" department="accessories" />,
+    parts: <InventoryManager key="parts" department="parts" />,
     customers: <CustomerManager />,
     reports: <ReportsManager />,
     commissions: <CommissionManager />,

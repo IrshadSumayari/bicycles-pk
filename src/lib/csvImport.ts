@@ -10,25 +10,11 @@ export const IMPORT_COLUMNS = [
 
 export const IMPORT_TEMPLATE = [
   IMPORT_COLUMNS.join(','),
-  'LV-BRA-001,Everyday Lace Bra,garment,Bras,LadyVogue,Lace,Everyday,LV-BRA-001-ROSE-34B,34B,Rose,,2500,1200,,4,1',
-  'LV-BRA-001,Everyday Lace Bra,garment,Bras,LadyVogue,Lace,Everyday,LV-BRA-001-ROSE-36B,36B,Rose,,2500,1200,,3,1',
-  'LV-PAN-001,Cotton Briefs,garment,Panties,LadyVogue,Cotton,Everyday,LV-PAN-001-IVOR-M,M,Ivory,,800,350,,10,2',
-  'LV-NGT-001,Satin Night Suit,garment,Nightwear,LadyVogue,Satin,Everyday,LV-NGT-001-ROSE-L,L,Rose,,4500,2200,,5,1',
-].join('\n') + '\n';
-
-export const JEWELLERY_IMPORT_TEMPLATE = [
-  IMPORT_COLUMNS.join(','),
-  'LV-EAR-001,Everyday Hoop Earrings,garment,Earrings,LadyVogue,Stainless steel,Everyday,LV-EAR-001-GOLD,One size,Gold tone,,1800,700,,5,1',
-  'LV-RNG-001,Stacking Ring,garment,Rings,LadyVogue,Alloy,Everyday,LV-RNG-001-SILV-US7,US 7,Silver tone,,1200,400,,3,1',
-  'LV-RNG-001,Stacking Ring,garment,Rings,LadyVogue,Alloy,Everyday,LV-RNG-001-SILV-US8,US 8,Silver tone,,1200,400,,2,1',
-].join('\n') + '\n';
-
-export const BAGS_IMPORT_TEMPLATE = [
-  IMPORT_COLUMNS.join(','),
-  'LV-TOT-001,Everyday Tote Bag,garment,Tote Bags,LadyVogue,Faux leather,Everyday,LV-TOT-001-BLAC-L,Large,Black,,6500,3000,,4,1',
-  'LV-TOT-001,Everyday Tote Bag,garment,Tote Bags,LadyVogue,Faux leather,Everyday,LV-TOT-001-TAN-L,Large,Tan,,6500,3000,,3,1',
-  'LV-CRS-001,Quilted Crossbody Bag,garment,Crossbody Bags,LadyVogue,Faux leather,Everyday,LV-CRS-001-IVOR-S,Small,Ivory,Chain strap,4800,2100,,5,1',
-  'LV-WAL-001,Zip-Around Wallet,garment,Wallets & Purses,LadyVogue,Faux leather,Everyday,LV-WAL-001-MARO-OS,One size,Maroon,,2200,900,,6,2',
+  'BK-CTY-001,Urban 7-Speed City Bike,garment,City & Commuter,Bicycles.pk,Aluminium,2027,BK-CTY-001-BLAC-M,M,Black,7-speed,65000,48000,,2,1',
+  'BK-CTY-001,Urban 7-Speed City Bike,garment,City & Commuter,Bicycles.pk,Aluminium,2027,BK-CTY-001-BLAC-L,L,Black,7-speed,65000,48000,,2,1',
+  'BK-KID-016,Junior 16 Inch Kids Bike,garment,Kids Bicycles,Bicycles.pk,Steel,2027,BK-KID-016-RED-16,"16""",Red,,22000,15000,,3,1',
+  'AC-HLM-001,Commuter Helmet,garment,Helmets,Bicycles.pk,EPS foam,2027,AC-HLM-001-WHIT-M,M,White,,6500,4000,,5,2',
+  'AC-LCK-001,U-Lock with Cable,garment,Locks,Bicycles.pk,Steel,2027,AC-LCK-001,One size,,,4500,2800,,8,2',
 ].join('\n') + '\n';
 
 const KINDS: ProductKind[] = ['garment', 'pack', 'service'];

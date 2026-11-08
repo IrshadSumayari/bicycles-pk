@@ -1,8 +1,8 @@
-# LadyVogue.pk
+# Bicycles.pk
 
-Independent LadyVogue POS and website. See [LADYVOGUE.md](LADYVOGUE.md) for setup and development milestones. The documentation below is inherited from the source platform and is being adapted.
+Bicycles.pk POS and website. See [BICYCLES.md](BICYCLES.md) for setup and milestones and [docs/BICYCLES_PLAN.md](docs/BICYCLES_PLAN.md) for the plan. The documentation below is inherited from the source platform and is being adapted.
 
-# LadyVogue Platform
+# Bicycles.pk Platform
 
 A modern, feature-rich Point of Sale (POS) system built with React, TypeScript, and Supabase. Designed for retail businesses of all sizes with comprehensive inventory management, sales tracking, customer management, and analytics.
 
@@ -60,7 +60,7 @@ A modern, feature-rich Point of Sale (POS) system built with React, TypeScript, 
 
 1. **Clone the repository**
    ```bash
-   # Open your LadyVogue checkout
+   # Open your Bicycles.pk checkout
    cd POS
    ```
 

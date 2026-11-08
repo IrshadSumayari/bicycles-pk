@@ -10,7 +10,7 @@ export function AccountNavigation() {
         { href: "/account", label: "My profile" },
         { href: "/account/orders", label: "My orders" },
         { href: "/account/track", label: "Track order" },
-        { href: "/fit-guide", label: "Fit guide" },
+        { href: "/fit-guide", label: "Size guide" },
       ].map((l) => (
         <Link
           key={l.href}

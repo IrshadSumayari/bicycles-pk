@@ -178,7 +178,7 @@ export function CustomerReturnRequest({ order }: { order: WebOrder }) {
             {request.events.map((e, i) => (
               <li key={i}>
                 <strong>
-                  {e.actor === "staff" ? "LadyVogue" : "You"} ·{" "}
+                  {e.actor === "staff" ? "Bicycles.pk" : "You"} ·{" "}
                   {returnStatuses[e.status]}
                 </strong>
                 <p className="whitespace-pre-line">{e.message}</p>

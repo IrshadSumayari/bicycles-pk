@@ -1,12 +1,7 @@
-import { jewelleryCategories, isJewelleryCategory } from '../../../shared/jewellery';
+import { shopCategoryNames, sectionOfCategory, sectionById } from '../../../shared/bicycles';
 import { departmentCategories, type Department } from '../../lib/inventoryCategory';
-import { JewelleryVariantBuilder } from './JewelleryVariantBuilder';
-import { bagCategories, isBagCategory } from '../../../shared/bags';
-import { BagVariantBuilder } from './BagVariantBuilder';
-import { braMetadataError } from '../../../shared/lingerie';
-import { LingerieAttributesPanel } from './LingerieAttributesPanel';
-import { LingerieSizeBuilder } from './LingerieSizeBuilder';
-import { LADYVOGUE_CATEGORIES, CATEGORY_HINTS, uniqueOptions, lingerieKind, missingVariants, duplicateVariantError } from '../../lib/lingerieCatalog';
+import { BikeVariantBuilder } from './BikeVariantBuilder';
+import { uniqueOptions, missingVariants, duplicateVariantError } from '../../lib/variantOptions';
 import { ComboInput } from '@/components/shared/ComboInput';
 import { applyVariantAmount } from '../../lib/variantPricing';
 import { useBusinessLookups } from '../../lib/lookups';
@@ -124,20 +119,14 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
 
   const catalogLookups = useBusinessLookups(isOpen);
   const categoryQuery = useProductCategories(isOpen);
-  const categories = uniqueOptions([...LADYVOGUE_CATEGORIES, ...jewelleryCategories.map(c => c.name), ...bagCategories.map(c => c.name), ...(categoryQuery.data ?? [])]);
-  const categoryOptions = categories.map(value => ({ value, hint: CATEGORY_HINTS[value.toLowerCase()] }));
+  const categories = uniqueOptions([...shopCategoryNames(), ...(categoryQuery.data ?? [])]);
+  const categoryOptions = categories.map(value => ({ value, hint: sectionOfCategory(value)?.label }));
 
   if (!isOpen) return null;
 
   const kind = KINDS.find(k => k.value === style.kind) ?? KINDS[0];
   const isGarment = style.kind === 'garment';
-  const jewellery = isJewelleryCategory(style.category);
-  const bag = !jewellery && isBagCategory(style.category);
-  const placeholder = (forJewellery: string, forBag: string, otherwise: string) => jewellery ? forJewellery : bag ? forBag : otherwise;
-  // Bra, set, panty or nightwear: decides which lingerie fields and size shortcuts show
-  const lingerie = isGarment && !jewellery && !bag ? lingerieKind(style.category, style.name) : null;
-  const hasLingerieDetails = Object.keys(style.lingerie ?? {}).length > 0;
-  const braLabels = lingerie === 'bra' || lingerie === 'set' || rows.some(r => r.braBand || r.braCup);
+  const section = sectionOfCategory(style.category);
   const isService = style.kind === 'service';
   const scheme = schemes.find(s => s.code === style.sizeScheme);
 
@@ -200,8 +189,6 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
     const duplicate = duplicateVariantError(variants);
     if (duplicate) return swalConfig.error(duplicate);
     for (const r of variants) {
-      const braError = braMetadataError(r.braBand, r.braCup, style.lingerie?.sizing_system);
-      if (braError) return swalConfig.error(braError);
       if (!r.sku.trim()) return swalConfig.error('Every row needs a SKU');
       if (!Number.isFinite(r.price) || r.price < 0) return swalConfig.error(`Enter a valid price for ${r.sku}`);
       if (r.cost !== undefined && (!Number.isFinite(r.cost) || r.cost < 0)) return swalConfig.error('Enter a valid cost for ' + r.sku);
@@ -270,33 +257,33 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                 </label>
                 <label className="block">
                   {label('Style code *')}
-                  <Input name="code" value={style.code} onChange={setField} className="input" required placeholder={placeholder('e.g. LV-JWL-001', 'e.g. LV-BAG-001', 'e.g. LV-BRA-001')} />
+                  <Input name="code" value={style.code} onChange={setField} className="input" required placeholder="e.g. BK-CTY-001" />
                 </label>
                 <div className="block">
                   {label('Category')}
                   <ComboInput aria-label="Category" name="category" value={style.category} onChange={setText('category')} className="input" options={categoryOptions} newLabel="category" />
                   {department && !departmentCategories(department).includes(style.category?.trim() ?? '') && (
                     <p role="status" className="text-xs text-warning mt-1">
-                      Only {department === 'bags' ? 'bag' : 'jewellery'} categories show in this section. Choose one from the list, or this item will appear only in Inventory.
+                      Only {sectionById(department).label.toLowerCase()} categories show in this section. Choose one from the list, or this item will appear only in Inventory.
                     </p>
                   )}
                 </div>
                 <label className="block md:col-span-2">
                   {label('Name *')}
                   <Input name="name" value={style.name} onChange={setField} className="input" required
-                         placeholder={placeholder('e.g. Everyday Hoop Earrings', 'e.g. Everyday Tote Bag', 'e.g. Everyday Lace Bra')} />
+                         placeholder="e.g. Urban 7-Speed City Bike" />
                 </label>
                 <div className="block">
                   {label('Brand')}
                   <ComboInput aria-label="Brand" name="brand" value={style.brand} onChange={setText('brand')} className="input" options={catalogLookups.data?.brand || []} />
                 </div>
                 <div className="block">
-                  {label(jewellery ? 'Metal / material' : 'Material')}
-                  <ComboInput aria-label={jewellery ? 'Metal / material' : 'Material'} name="material" value={style.material} onChange={setText('material')} className="input" options={catalogLookups.data?.material || []} placeholder={placeholder('e.g. Stainless steel, Alloy', 'e.g. Faux leather, Canvas, Suede', 'e.g. Cotton')} />
+                  {label('Frame / material')}
+                  <ComboInput aria-label="Frame / material" name="material" value={style.material} onChange={setText('material')} className="input" options={catalogLookups.data?.material || []} placeholder="e.g. Aluminium, Steel, Carbon" />
                 </div>
                 <div className="block">
                   {label('Season / collection')}
-                  <ComboInput aria-label="Season / collection" name="season" value={style.season} onChange={setText('season')} className="input" options={catalogLookups.data?.season || []} placeholder="e.g. Everyday Essentials" />
+                  <ComboInput aria-label="Season / collection" name="season" value={style.season} onChange={setText('season')} className="input" options={catalogLookups.data?.season || []} placeholder="e.g. 2027 range" />
                 </div>
                 <label className="block">
                   {label('Design code')}
@@ -331,16 +318,15 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                 </div>
               </div>
 
-              {isGarment && !jewellery && !bag && (lingerie || hasLingerieDetails) && <LingerieAttributesPanel kind={lingerie} value={style.lingerie ?? {}} onChange={details => setStyle(prev => ({...prev, lingerie: details}))} />}
               {/* Matrix builder */}
               {!isService && (
                 <div className="bg-lightgray rounded-xl p-4 space-y-4">
                   <h3 className="font-semibold text-link">
-                    {jewellery ? 'Sizes, finishes and designs' : bag ? 'Sizes, colours and styles' : isGarment ? 'Sizes and colors' : 'Colors / designs'}
+                    {isGarment ? 'Sizes and colours' : 'Colours / designs'}
                   </h3>
                   {isGarment && (
                     <div className="space-y-2">
-                      {jewellery ? <JewelleryVariantBuilder category={style.category ?? 'Jewellery'} onSizes={sizes => setSelectedSizes(prev => uniqueOptions([...prev, ...sizes]))} onFinishes={values => setColors(prev => uniqueOptions([...splitList(prev), ...values]).join(', '))}/> : bag ? <BagVariantBuilder category={style.category ?? 'Bags'} onSizes={sizes => setSelectedSizes(prev => uniqueOptions([...prev, ...sizes]))} onColours={values => setColors(prev => uniqueOptions([...splitList(prev), ...values]).join(', '))}/> : <LingerieSizeBuilder key={styleId || 'new'} kind={lingerie} onAdd={sizes => setSelectedSizes(prev => uniqueOptions([...prev, ...sizes]))} />}
+                      {section && <BikeVariantBuilder category={style.category ?? ''} onSizes={sizes => setSelectedSizes(prev => uniqueOptions([...prev, ...sizes]))} onColours={values => setColors(prev => uniqueOptions([...splitList(prev), ...values]).join(', '))}/>}
                       {selectedSizes.length > 0 && <div className="flex flex-wrap gap-2" aria-label="Selected sizes">{selectedSizes.map(size => <button type="button" key={size} className="btn btn-secondary btn-sm" aria-label={'Remove size ' + size} onClick={() => toggleSize(size)}>{size} ×</button>)}</div>}
                       <div className="flex flex-wrap items-center gap-2">
                         <select aria-label="Saved size preset" name="sizeScheme" value={style.sizeScheme} onChange={setField} className="select w-56">
@@ -357,17 +343,17 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                         ))}
                       </div>
                       <Input aria-label="Other sizes" value={extraSizes} onChange={e => setExtraSizes(e.target.value)} className="input"
-                             placeholder={placeholder('Other sizes / lengths (e.g. US 7, 18 cm, Adjustable)', 'Other sizes, comma separated (e.g. Small, Medium, One size)', lingerie === 'set' ? 'Other set sizes, comma separated (e.g. 34B / M, 36C / L)' : 'Other sizes, comma separated (e.g. 34B, 36DD, M, L)')} />
+                             placeholder='Other sizes, comma separated (e.g. M, 54 cm, 20")' />
                     </div>
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <ComboInput multiple aria-label={jewellery ? 'Finishes, comma separated' : 'Colors, comma separated'} value={colors} onChange={setColors} className="input"
+                    <ComboInput multiple aria-label="Colors, comma separated" value={colors} onChange={setColors} className="input"
                                 options={catalogLookups.data?.color || []}
-                                placeholder={jewellery ? 'Finishes (e.g. Gold tone, Silver tone)' : 'Colors, comma separated (e.g. Black, Ivory, Rose)'} />
+                                placeholder="Colours, comma separated (e.g. Black, Red, Blue)" />
                     {isGarment && (
-                      <ComboInput multiple aria-label={placeholder('Designs, comma separated', 'Styles, comma separated', 'Fits, comma separated')} value={fits} onChange={setFits} className="input"
+                      <ComboInput multiple aria-label="Variants, comma separated" value={fits} onChange={setFits} className="input"
                                   options={catalogLookups.data?.fit || []}
-                                  placeholder={placeholder('Designs, optional (e.g. Pearl, Floral)', 'Styles, optional (e.g. Chain strap, Quilted)', lingerie === 'bottom' ? 'Fits, optional (e.g. High waist, Lace back)' : lingerie === 'apparel' ? 'Fits, optional (e.g. Short sleeve, Long, Relaxed)' : 'Fits, optional (e.g. Full cup, Balconette)')} />
+                                  placeholder="Variants, optional (e.g. 21-speed, Disc brakes)" />
                     )}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_auto] items-end gap-3">
@@ -402,10 +388,9 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                 <DataTable className="table">
                   <thead className="table-header">
                     <tr>
-                      {isGarment && <th className="table-header-cell">{jewellery ? 'Size / length' : 'Size'}</th>}
-                      {braLabels && <><th className="table-header-cell">Supplier band</th><th className="table-header-cell">Supplier cup</th></>}
-                      {!isService && <th className="table-header-cell">{placeholder('Finish', 'Colour', 'Color')}</th>}
-                      {isGarment && <th className="table-header-cell">{placeholder('Design', 'Style', 'Fit')}</th>}
+                      {isGarment && <th className="table-header-cell">Size</th>}
+                      {!isService && <th className="table-header-cell">Colour</th>}
+                      {isGarment && <th className="table-header-cell">Variant</th>}
                       <th className="table-header-cell">SKU</th>
                       {!isService && <th className="table-header-cell">Barcode</th>}
                       <th className="table-header-cell">{kind.priceLabel}</th>
@@ -430,10 +415,6 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                             <Input value={r.size || ''} onChange={e => updateRow(r.key, { size: e.target.value })} className="input w-20" />
                           </td>
                         )}
-                        {braLabels && <>
-                          <td className="table-cell"><Input aria-label={"Supplier band for " + r.sku} className="input w-24" inputMode="numeric" maxLength={3} value={r.braBand ?? ''} onChange={e => updateRow(r.key, {braBand:e.target.value})} /></td>
-                          <td className="table-cell"><Input aria-label={"Supplier cup for " + r.sku} className="input w-24" maxLength={3} value={r.braCup ?? ''} onChange={e => updateRow(r.key, {braCup:e.target.value})} /></td>
-                        </>}
                         {!isService && (
                           <td className="table-cell">
                             <Input value={r.color || ''} onChange={e => updateRow(r.key, { color: e.target.value })} className="input w-28" />

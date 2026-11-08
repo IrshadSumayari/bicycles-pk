@@ -1,6 +1,4 @@
 import type { ProductGuide } from '../../shared/productGuide';
-import { tryOnLimits, type TryOn } from '../../shared/tryOn';
-import type { LingerieAttributes } from '../../shared/lingerie';
 import { platformStoreName, platformReceiptText, platformStoreEmail } from './branding';
 import type { OpeningBalance } from './goLiveImport'
 import type { OnlineOrder, OnlineOrderRow } from './onlineOrders'
@@ -304,8 +302,6 @@ export const productsService = {
 
 // Styles Service: a style with all its size / color / fit variants
 export interface StyleVariantInput {
-  braBand?: string
-  braCup?: string
   variantId?: string
   sku: string
   size?: string
@@ -322,7 +318,6 @@ export interface StyleVariantInput {
 }
 
 export interface StyleInput {
-  lingerie?: LingerieAttributes
   styleId?: string
   kind: Product['kind']
   code: string
@@ -348,7 +343,6 @@ export interface SizeScheme {
 }
 
 type StyleRow = {
-  lingerie: LingerieAttributes
   id: string
   code: string
   name: string
@@ -365,8 +359,6 @@ type StyleRow = {
   category: { name: string } | null
   size_scheme: { code: string } | null
   variants: {
-    bra_band: string | null
-    bra_cup: string | null
     id: string
     sku: string
     size: string | null
@@ -415,10 +407,10 @@ export const stylesService = {
         .from('product_styles')
         .select(`
           id, code, name, kind, brand, material, season, design_code, description, taxable, active,
-          track_inventory, image_url, lingerie,
+          track_inventory, image_url,
           category:categories ( name ),
           size_scheme:size_schemes ( code ),
-          variants:product_variants ( id, sku, size, color, fit, price, min_stock, active, bra_band, bra_cup,
+          variants:product_variants ( id, sku, size, color, fit, price, min_stock, active,
             barcodes ( code ), stock:stock_balances ( location_id, on_hand, reserved ) )
         `)
         .eq('id', styleId)
@@ -428,7 +420,6 @@ export const stylesService = {
     const row = style.data as unknown as StyleRow
     const costs = await loadCosts(row.variants.map(v => v.id))
     return {
-      lingerie: row.lingerie,
       styleId: row.id,
       kind: row.kind as Product['kind'],
       code: row.code,
@@ -448,8 +439,6 @@ export const stylesService = {
         .map(v => {
           const floor = v.stock.find(s => s.location_id === locationId)
           return {
-            braBand: v.bra_band ?? undefined,
-            braCup: v.bra_cup ?? undefined,
             variantId: v.id,
             sku: v.sku,
             size: v.size ?? undefined,
@@ -471,7 +460,6 @@ export const stylesService = {
   async save(input: StyleInput): Promise<string> {
     const { data, error } = await supabase.rpc('save_style', {
       p: {
-        ...(input.lingerie === undefined ? {} : { lingerie: input.lingerie }),
         style_id: input.styleId ?? null,
         kind: input.kind,
         code: input.code,
@@ -488,7 +476,6 @@ export const stylesService = {
         active: input.active,
         track_inventory: input.trackInventory,
         variants: input.variants.map(v => ({
-          ...(v.braBand === undefined && v.braCup === undefined ? {} : { bra_band: v.braBand ?? null, bra_cup: v.braCup ?? null }),
           variant_id: v.variantId ?? null,
           sku: v.sku,
           size: v.size ?? null,
@@ -1690,7 +1677,7 @@ export const goLiveService = {
 }
 
 export type ProductImage = Pick<Database['public']['Tables']['product_images']['Row'], 'storage_path' | 'alt' | 'variant_color' | 'sort_order'>
-export type WebDetails = { product_guide?: ProductGuide; try_on?: TryOn; slug?: string | null; web_title?: string | null; web_description?: string | null; variants?: { variant_id: string; published: boolean }[] }
+export type WebDetails = { product_guide?: ProductGuide; slug?: string | null; web_title?: string | null; web_description?: string | null; variants?: { variant_id: string; published: boolean }[] }
 export type WebCollection = Database['public']['Tables']['collections']['Row']
 function invalidateWebCatalog() {
   invalidateProducts()
@@ -1712,7 +1699,7 @@ export async function uploadAvatar(blob: Blob): Promise<string> {
 }
 export const webCatalogService = {
   async details(styleId: string) {
-    const { data, error } = await supabase.from('product_styles').select('id,name,kind,unit,slug,category:categories(name),web_title,web_description,product_guide,try_on,published,active,track_inventory,variants:product_variants(id,sku,size,color,price,published,active,min_stock,stock:stock_balances(on_hand,reserved,location:locations(active,kind)))').eq('id', styleId).single()
+    const { data, error } = await supabase.from('product_styles').select('id,name,kind,unit,slug,category:categories(name),web_title,web_description,product_guide,published,active,track_inventory,variants:product_variants(id,sku,size,color,price,published,active,min_stock,stock:stock_balances(on_hand,reserved,location:locations(active,kind)))').eq('id', styleId).single()
     if (error) throw error
     return data
   },
@@ -1724,19 +1711,6 @@ export const webCatalogService = {
   },
   uploadImage: (styleId: string, blob: Blob) => uploadWebImage('styles/' + styleId, blob),
   uploadSpinFrame: (styleId: string, blob: Blob) => uploadWebImage('styles/' + styleId + '/spin', blob),
-  // 3D try-on models have their own bucket, as they are larger than photos.
-  async uploadTryOnModel(styleId: string, file: File) {
-    if (!file.name.toLowerCase().endsWith('.glb')) throw new Error('Choose a .glb 3D model file')
-    if (file.size > tryOnLimits.modelBytes) throw new Error('Choose a 3D model of 25 MB or less')
-    const path = 'styles/' + styleId + '/' + crypto.randomUUID() + '.glb'
-    const { error } = await supabase.storage.from('try-on-models').upload(path, file, { contentType: 'model/gltf-binary', upsert: false })
-    if (error) throw error
-    return path
-  },
-  async deleteTryOnModel(path: string) {
-    const { error } = await supabase.storage.from('try-on-models').remove([path])
-    if (error) throw error
-  },
   publicUrl: (path: string) => supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl,
   async listImages(styleId: string): Promise<ProductImage[]> {
     const { data, error } = await supabase.from('product_images').select('storage_path,alt,variant_color,sort_order').eq('style_id', styleId).order('sort_order').order('id')

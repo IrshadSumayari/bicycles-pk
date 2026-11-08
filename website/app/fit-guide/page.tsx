@@ -1,97 +1,93 @@
 import Link from "next/link";
-import { ArrowRight, Ruler } from "lucide-react";
-import { MeasurementIllustration } from "@/components/measurement-illustration";
-import type { MeasurementKey } from "../../../shared/productGuide";
-export const metadata = { title: "Find your fit" };
-const steps: { kind: MeasurementKey; title: string; text: string }[] = [
-  {
-    kind: "underbust",
-    title: "01 / Underbust",
-    text: "Wrap a soft tape around your ribcage directly below your bust. Keep it level and comfortably snug. Record the measurement and unit; this is not automatically your bra band size.",
-  },
-  {
-    kind: "bust",
-    title: "02 / Bust",
-    text: "Measure around the fullest part of your bust. Keep the tape level across your back without pressing into your body. Compare bust and underbust with the supplier chart for your chosen bra.",
-  },
-  {
-    kind: "waist",
-    title: "03 / Waist",
-    text: "Measure around your natural waist, usually the narrowest part of your torso. Stand relaxed and breathe normally. Keep the tape close without pulling it tight.",
-  },
-  {
-    kind: "hips",
-    title: "04 / Hips",
-    text: "With your feet together, measure around the fullest part of your hips and seat. Keep the tape parallel to the floor. Use waist and hip measurements for panties and nightwear.",
-  },
+import { ArrowRight } from "lucide-react";
+export const metadata = {
+  title: "Bike size guide",
+  description: "Choose a bicycle frame or wheel size by rider height and age.",
+};
+// General guidance only; each product lists its own sizes and rider ranges.
+const adult = [
+  ["XS", "148–158 cm", '13–14"', "47–49 cm"],
+  ["S", "158–168 cm", '15–16"', "50–52 cm"],
+  ["M", "168–178 cm", '17–18"', "53–55 cm"],
+  ["L", "178–188 cm", '19–20"', "56–58 cm"],
+  ["XL", "188–198 cm", '21–22"', "59–61 cm"],
 ];
-export default function FitGuide() {
+const kids = [
+  ['10–12"', "2–4 years", "85–100 cm"],
+  ['14"', "3–5 years", "95–110 cm"],
+  ['16"', "4–6 years", "105–120 cm"],
+  ['20"', "6–9 years", "115–135 cm"],
+  ['24"', "8–12 years", "130–150 cm"],
+];
+export default function SizeGuide() {
   return (
     <article className="lv-guide">
-      <p className="lv-eyebrow">THE LADYVOGUE FIT GUIDE</p>
-      <Ruler size={36} strokeWidth={1} aria-hidden="true" />
+      <p className="lv-eyebrow">BICYCLES.PK SIZE GUIDE</p>
       <h1>
-        Good fit.
+        Find your
         <br />
-        <em>Beautiful confidence.</em>
+        <em>frame size.</em>
       </h1>
       <p className="lv-lead">
-        A few careful measurements. A more considered choice.
+        Use your height as a starting point. Between two sizes? Choose the
+        smaller frame for easier handling or the larger one for a stretched-out
+        position, and check the sizes listed on each product.
       </p>
-      <section className="lv-guide-note">
-        <h2>Before you begin</h2>
-        <p>
-          Use a soft measuring tape and a mirror to check that it stays level.
-          Measure over light clothing or a comfortable, unpadded bra where
-          appropriate. Record your measurements in centimetres (cm) or inches
-          (in), using the same unit as the product chart.
-        </p>
-        <p>
-          You can keep your measurements privately. This guide does not ask you
-          to submit or save them.
-        </p>
+      <section className="lv-guide-note" aria-labelledby="adult-sizes">
+        <h2 id="adult-sizes">Adult bikes</h2>
+        <div className="overflow-x-auto">
+          <table className="lv-size-table">
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>Rider height</th>
+                <th>Mountain / hybrid frame</th>
+                <th>Road / gravel frame</th>
+              </tr>
+            </thead>
+            <tbody>
+              {adult.map(([size, height, mtb, road]) => (
+                <tr key={size}>
+                  <th scope="row">{size}</th>
+                  <td>{height}</td>
+                  <td>{mtb}</td>
+                  <td>{road}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
-      <div className="lv-guide-grid lv-measurement-grid">
-        {steps.map((s) => (
-          <section key={s.kind}>
-            <MeasurementIllustration kind={s.kind} />
-            <h2>{s.title}</h2>
-            <p>{s.text}</p>
-          </section>
-        ))}
-      </div>
-      <section className="lv-guide-note">
-        <h2>Read the chart for your product.</h2>
-        <p>
-          Check the supplier, unit and whether the chart describes body or
-          garment measurements. Body measurements compare with your own; garment
-          measurements compare with a similar garment that fits you. A garment
-          chart is not a body-size recommendation.
-        </p>
-        <p>
-          Band and cup labels vary between suppliers. UK, EU and US systems can
-          differ, and DD and E are not automatically interchangeable. Follow the
-          named supplier chart. We do not provide a universal size conversion or
-          a fit guarantee.
-        </p>
-        <p>
-          If no chart or a needed measurement is supplied, please{" "}
-          <Link href="/pages/contact">contact us</Link> with the product name
-          before choosing a size. Do not guess missing measurements.
-        </p>
+      <section className="lv-guide-note" aria-labelledby="kids-sizes">
+        <h2 id="kids-sizes">Kids bikes</h2>
+        <p>Kids bikes are sized by wheel. Your child should reach the ground with the balls of both feet while seated.</p>
+        <div className="overflow-x-auto">
+          <table className="lv-size-table">
+            <thead>
+              <tr>
+                <th>Wheel</th>
+                <th>Typical age</th>
+                <th>Child height</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kids.map(([wheel, age, height]) => (
+                <tr key={wheel}>
+                  <th scope="row">{wheel}</th>
+                  <td>{age}</td>
+                  <td>{height}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
-      <section className="lv-guide-note">
-        <h2>Check how it feels.</h2>
-        <p>
-          A comfortable bra band sits level, cups contain the bust without
-          gaping or digging in, and straps feel supportive without pulling. For
-          panties and nightwear, check comfort at the waist and hips and allow
-          for how you like to move. Check the product’s fit notes, included
-          pieces and care instructions when supplied.
-        </p>
-      </section>
-      <Link className="lv-button" href="/search?category=Bras">
-        Explore bras <ArrowRight size={17} />
+      <p className="muted">
+        Not sure? <Link href="/pages/contact">Contact us</Link> with the
+        rider’s height and inside-leg measurement and we’ll help you choose.
+      </p>
+      <Link className="lv-button" href="/bicycles">
+        Shop bicycles <ArrowRight size={17} />
       </Link>
     </article>
   );

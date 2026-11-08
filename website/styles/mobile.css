@@ -1,4 +1,4 @@
-/* Mobile storefront refinements; desktop composition stays in ladyvogue.css. */
+/* Mobile storefront refinements; desktop composition stays in storefront.css. */
 .lv-mobile-categories {
   display: none;
 }
@@ -88,7 +88,7 @@
     display: flex;
     min-height: 570px;
     min-height: clamp(520px, 74svh, 660px);
-    background: #422536;
+    background: #1c1f27;
   }
   .lv-hero-photo {
     position: absolute;
@@ -122,37 +122,37 @@
     padding: 150px 24px 25px;
   }
   .lv-hero h1 {
-    color: #fff8ef;
+    color: #ffffff;
     font-size: clamp(38px, 10.8vw, 48px);
     letter-spacing: -1.8px;
     margin-bottom: 16px;
   }
   .lv-hero h1 em {
-    color: #f2cbd4;
+    color: #f2f2f2;
   }
   .lv-hero .lv-eyebrow {
-    color: #fff0e9;
+    color: #ffffff;
     font-size: 10px;
     margin-bottom: 14px;
   }
   .lv-hero .lv-lead {
-    color: #f5e9ec;
+    color: #f2f2f2;
     font-size: 12px;
     line-height: 1.75;
     margin-bottom: 20px;
     max-width: 340px;
   }
   .lv-hero .lv-button {
-    background: #fff8ef;
-    color: #482437;
-    border-color: #fff8ef;
+    background: #ffffff;
+    color: #1c1f27;
+    border-color: #ffffff;
     width: 100%;
     min-height: 50px;
     font-size: 12px;
     justify-content: space-between;
   }
   .lv-hero .lv-quiet-link {
-    color: #fff8ef;
+    color: #ffffff;
     border: 0;
     min-height: 44px;
     margin-top: 6px;

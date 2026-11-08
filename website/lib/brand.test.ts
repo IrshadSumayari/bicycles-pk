@@ -6,11 +6,11 @@ describe("store identity", () => {
     expect(data.name).toBe(brand.name);
     expect(data.address.streetAddress).toBe(brand.address.line1);
     expect(storeAddress).toContain(brand.address.city);
-    expect(data.image).toBe("https://shop.example/brand/ladyvogue-icon.svg");
+    expect(data.image).toBe("https://shop.example/brand/bicycles-icon.svg");
   });
   it("does not publish empty contact or social fields", () => {
     const data = storeJsonLd("https://shop.example/");
-    expect(data.telephone).toBe(brand.phone);
+    expect(data).not.toHaveProperty("telephone");
     expect(data).not.toHaveProperty("email");
     expect(data).not.toHaveProperty("sameAs");
     expect(brand.whatsapp).toBeNull();

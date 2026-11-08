@@ -9,7 +9,7 @@ const MAX_AGE = 60 * 60 * 24;
 export async function accessToken(key: string) {
   const bytes = await crypto.subtle.digest(
     "SHA-256",
-    new TextEncoder().encode("ladyvogue-access:" + key),
+    new TextEncoder().encode("bicycles-access:" + key),
   );
   return Buffer.from(bytes).toString("hex");
 }
@@ -36,7 +36,7 @@ form{width:100%;max-width:340px;display:grid;gap:12px}h1{font-size:20px;margin:0
 input,button{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid #d6cdc6}button{background:#1f1a17;color:#fff;border:0;cursor:pointer}
 .e{color:#b3261e}
 @media (prefers-color-scheme:dark){body{background:#171412;color:#f3eee9}p{color:#a89f98}input{background:#221e1b;color:inherit;border-color:#3a332e}button{background:#f3eee9;color:#171412}.e{color:#f2b8b5}}
-</style></head><body><form method="post" action="${ACCESS_PATH}"><h1>LadyVogue</h1><p>This site is private. Enter the access key to continue.</p>${wrong ? '<p class="e" role="alert">That key is not correct.</p>' : ""}<input type="hidden" name="next" value="${escape(next)}"><input name="key" type="password" autocomplete="current-password" aria-label="Access key" placeholder="Access key" required autofocus><button type="submit">Enter</button></form></body></html>`;
+</style></head><body><form method="post" action="${ACCESS_PATH}"><h1>Bicycles.pk</h1><p>This site is private. Enter the access key to continue.</p>${wrong ? '<p class="e" role="alert">That key is not correct.</p>' : ""}<input type="hidden" name="next" value="${escape(next)}"><input name="key" type="password" autocomplete="current-password" aria-label="Access key" placeholder="Access key" required autofocus><button type="submit">Enter</button></form></body></html>`;
   return new NextResponse(html, {
     status: 401,
     headers: {

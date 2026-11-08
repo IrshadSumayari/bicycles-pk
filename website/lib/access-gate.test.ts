@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { proxy } from "../proxy";
 import { ACCESS_COOKIE, accessToken } from "./access-gate";
 afterEach(() => vi.unstubAllEnvs());
-const site = "https://ladyvogue.pk";
+const site = "https://bicycles.pk";
 const post = (body: Record<string, string>) =>
   new NextRequest(site + "/_access", {
     method: "POST",

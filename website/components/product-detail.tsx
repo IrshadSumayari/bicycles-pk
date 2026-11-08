@@ -1,18 +1,6 @@
 "use client";
 import { readProductGuide } from "../../shared/productGuide";
 import { SupplierSizeChart } from "./size-chart";
-import {
-  lingerieFilterLabels,
-  lingerieValueLabel,
-} from "../../shared/lingerie";
-import { isJewelleryCategory } from "../../shared/jewellery";
-import {
-  bagDimensions,
-  isBagCategory,
-  parseBagDetails,
-} from "../../shared/bags";
-import { hasModelPhotos, readTryOn } from "../../shared/tryOn";
-import { TryOnViewer } from "./try-on-viewer";
 import { PurchaseReassurance } from "./purchase-reassurance";
 import { brand } from "@/lib/brand";
 import Image from "next/image";
@@ -42,7 +30,6 @@ export function ProductDetail({
   pageUrl: string;
 }) {
   const bag = useStore();
-  const jewellery = isJewelleryCategory(initial.category ?? undefined);
   const [product, setProduct] = useState<Product | null>(initial);
   const [selectedId, setSelectedId] = useState(
     firstChoice(initial.variants)?.variant_id ?? "",
@@ -50,29 +37,11 @@ export function ProductDetail({
   const [refreshing, setRefreshing] = useState(true);
   const [error, setError] = useState("");
   const [imageIndex, setImageIndex] = useState(0);
-  const [view, setView] = useState<"photos" | "model">("photos");
   const [quantity, setQuantity] = useState("1");
   const [refreshKey, setRefreshKey] = useState(0);
   const guide = readProductGuide(initial.product_guide ?? {});
-  const bagItem = !jewellery && isBagCategory(initial.category);
-  const bagInfo = bagItem ? parseBagDetails(guide.fit) : null;
-  const bagRows: [string, string][] = bagInfo
-    ? (
-        [
-          ["Dimensions", bagDimensions(bagInfo.details)],
-          ["Strap drop", bagInfo.details.strap_drop],
-          ["Closure", bagInfo.details.closure],
-          ["Compartments", bagInfo.details.compartments],
-          ["What fits", bagInfo.details.fits],
-        ] as [string, string | null | undefined][]
-      ).filter((row): row is [string, string] => !!row[1])
-    : [];
   const optionLabel = (dimension: "size" | "color" | "fit") =>
-    jewellery
-      ? { color: "Finish", fit: "Design", size: "Size / length" }[dimension]
-      : bagItem
-        ? { color: "Colour", fit: "Style", size: "Size" }[dimension]
-        : dimension;
+    ({ color: "Colour", fit: "Variant", size: "Size" })[dimension];
   const hasChart =
     !!guide.size_chart ||
     (initial.size_chart != null &&
@@ -174,9 +143,6 @@ export function ProductDetail({
     }
   }
   const images = (product ?? initial).images;
-  const tryOn = readTryOn((product ?? initial).try_on, initial.style_id);
-  // 360° appears only with real angle photos or a 3D model for this style.
-  const hasTryOn = !!tryOn.model_path || hasModelPhotos(tryOn);
   const image = images[imageIndex] ?? images[0];
   const url = imageUrl(image?.storage_path);
   const orderLink = selected
@@ -216,43 +182,6 @@ export function ProductDetail({
       </div>
       <section className="product-detail">
         <div className="product-gallery">
-          {hasTryOn && (
-            <div
-              className="lv-gallery-views"
-              role="group"
-              aria-label="Product view"
-            >
-              {(["photos", "model"] as const).map((v) => (
-                <Button
-                  key={v}
-                  variant="outline"
-                  className={view === v ? "selected" : ""}
-                  aria-pressed={view === v}
-                  onClick={() => setView(v)}
-                >
-                  {v === "photos" ? "Photos" : "360° model"}
-                </Button>
-              ))}
-            </div>
-          )}
-          {view === "model" && hasTryOn ? (
-            <TryOnViewer
-              title={initial.title}
-              tryOn={tryOn}
-              swatches={variantOptions(
-                (product ?? initial).variants,
-                "color",
-                {},
-              )}
-              color={selection.color}
-              disabled={!product || refreshing}
-              onColor={(value) => {
-                choose("color", value);
-                setQuantity("1");
-              }}
-            />
-          ) : (
-            <>
               {images.length > 1 && (
                 <div className="gallery-thumbnails">
                   {images.map((item, i) => {
@@ -286,7 +215,7 @@ export function ProductDetail({
                   />
                 ) : (
                   <span className="photo-fallback" aria-hidden="true">
-                    LV
+                    BK
                   </span>
                 )}
                 {images.length > 1 && (
@@ -322,11 +251,9 @@ export function ProductDetail({
                   </div>
                 )}
               </div>
-            </>
-          )}
         </div>
         <div className="product-information">
-          <p className="lv-eyebrow">LADYVOGUE · EVERYDAY, BEAUTIFULLY.</p>
+          <p className="lv-eyebrow">BICYCLES.PK · BUILT TO RIDE</p>
           <h1>{initial.title}</h1>
           <div className="detail-price">
             {formatPrice(selected?.price ?? initial.min_price)}
@@ -406,22 +333,8 @@ export function ProductDetail({
               Size chart
             </Button>
           )}
-          <Link
-            className="lv-product-fit-link"
-            href={
-              jewellery
-                ? "/jewellery#choosing"
-                : bagItem
-                  ? "/bags#size-guide"
-                  : "/fit-guide"
-            }
-          >
-            <Ruler size={16} />{" "}
-            {jewellery
-              ? "Size and material guidance"
-              : bagItem
-                ? "What fits? See the bag size guide"
-              : "Need a little help with sizing?"}
+          <Link className="lv-product-fit-link" href="/fit-guide">
+            <Ruler size={16} /> Which size do I need?
           </Link>
           <div className="purchase-row">
             <div className="quantity">
@@ -482,47 +395,19 @@ export function ProductDetail({
             Refresh availability
           </Button>
           <PurchaseReassurance policy={initial.purchase_policy} />
-          <Link
-            href={bagItem ? "/bags#size-guide" : "/fit-guide"}
-            className="flex gap-2 items-center underline"
-          >
-            <Ruler size={18} />
-            {bagItem ? "Bag size guide" : "Find your fit"}
-          </Link>
           <dl className="product-meta">
             <div>
               <dt>Category:</dt>
               <dd>{initial.category}</dd>
             </div>
-            {Object.entries(initial.lingerie ?? {})
-              .filter(([, value]) => value)
-              .map(([key, value]) => (
-                <div key={key}>
-                  <dt>
-                    {key === "composition"
-                      ? "Material composition"
-                      : (lingerieFilterLabels[
-                          key as keyof typeof lingerieFilterLabels
-                        ] ?? key)}
-                    :
-                  </dt>
-                  <dd>{lingerieValueLabel(key, value!)}</dd>
-                </div>
-              ))}
             {initial.material && (
               <div>
                 <dt>Material:</dt>
                 <dd>{initial.material}</dd>
               </div>
             )}
-            {bagRows.map(([label, value]) => (
-              <div key={label}>
-                <dt>{label}:</dt>
-                <dd>{value}</dd>
-              </div>
-            ))}
           </dl>
-          {!hasChart && !bagItem && (
+          {!hasChart && (
             <p className="lv-chart-missing">
               A size chart has not been supplied for this product.{" "}
               <Link href="/pages/contact">Ask us about sizing</Link> before
@@ -530,15 +415,15 @@ export function ProductDetail({
             </p>
           )}
           {(["included", "fit", "care"] as const)
-            .map((k) => [k, k === "fit" && bagInfo ? bagInfo.notes : guide[k]] as const)
+            .map((k) => [k, guide[k]] as const)
             .filter(([, text]) => text?.trim())
             .map(([k, text]) => (
               <details className="product-description" key={k}>
                 <summary>
                   {
                     {
-                      included: bagItem ? "What’s included" : "Included pieces",
-                      fit: bagItem ? "Notes" : "Fit notes",
+                      included: "What’s included",
+                      fit: "Fit notes",
                       care: "Care instructions",
                     }[k]
                   }

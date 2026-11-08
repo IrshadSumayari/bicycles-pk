@@ -1,9 +1,5 @@
 import type { ProductGuide } from "../../shared/productGuide";
-import type { TryOn } from "../../shared/tryOn";
-import type {
-  LingerieAttributes,
-  LingerieFilterKey,
-} from "../../shared/lingerie";
+
 import type { Database } from "@database";
 export type CatalogRow =
   Database["public"]["Functions"]["catalog_list"]["Returns"][number];
@@ -36,8 +32,6 @@ export type Related = {
 export type Product = {
   purchase_policy?: { cod_enabled?: boolean };
   product_guide?: ProductGuide;
-  try_on?: TryOn;
-  lingerie?: LingerieAttributes;
   style_id: string;
   slug: string;
   title: string;
@@ -57,9 +51,8 @@ export type Product = {
   related: Related[];
 };
 export type Facets = {
-  lingerie_filters_version?: number;
   sizes: string[];
   colors: string[];
   price_min: number | null;
   price_max: number | null;
-} & Partial<Record<LingerieFilterKey, string[]>>;
+};

@@ -1,41 +1,28 @@
 import Link from "next/link";
-import Image from "next/image";
-export const metadata = { title: "Our story" };
+export const metadata = { title: "About us" };
 export default function About() {
   return (
     <article className="lv-guide">
-      <p className="lv-eyebrow">HELLO, WE’RE LADYVOGUE</p>
+      <p className="lv-eyebrow">HELLO, WE’RE BICYCLES.PK</p>
       <h1>
-        Everyday.
+        Ride further.
         <br />
-        <em>Beautifully yours.</em>
+        <em>Ride better.</em>
       </h1>
       <p className="lv-lead">
-        A space for lingerie, nightwear and essentials that put you first.
+        Bicycles for every age and every road, with the accessories and parts
+        to keep you riding.
       </p>
-      <div className="lv-about-photo">
-        <Image
-          src="/ladyvogue/campaign.webp"
-          alt="Rose satin and blush lace in a warm, softly lit room"
-          fill
-          sizes="90vw"
-        />
-      </div>
       <section className="lv-guide-note">
-        <h2>Small things. Personal moments.</h2>
+        <h2>Bikes for everyone.</h2>
         <p>
-          LadyVogue is being created for women in Pakistan who want to bring a
-          little more comfort and beauty to their everyday wardrobes. Our focus
-          is simple: bras, panties, matching sets and nightwear, with a
-          thoughtful shopping experience.
-        </p>
-        <p>
-          From choosing your first layer to finding something for a quiet
-          evening, this is a space to discover your own kind of confidence.
+          Bicycles.pk brings together city and commuter bikes, kids bikes,
+          sports bikes, e-bikes, accessories and spare parts, with help choosing
+          the right size and delivery across Pakistan.
         </p>
       </section>
       <Link className="lv-button" href="/#collections">
-        Discover the collection
+        Shop by section
       </Link>
     </article>
   );

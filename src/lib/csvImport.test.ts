@@ -18,9 +18,10 @@ describe('buildImportPlan', () => {
   it('groups rows into styles with their variants', () => {
     const plan = buildImportPlan(IMPORT_TEMPLATE, none);
     expect(plan.errors).toEqual([]);
-    expect(plan.rowCount).toBe(4);
-    expect(plan.styles.map(s => [s.code, s.variants.length])).toEqual([['LV-BRA-001', 2], ['LV-PAN-001', 1], ['LV-NGT-001', 1]]);
-    expect(plan.styles[1].variants[0].openingStock).toBe(10);
+    expect(plan.rowCount).toBe(5);
+    expect(plan.styles.map(s => [s.code, s.variants.length])).toEqual([['BK-CTY-001', 2], ['BK-KID-016', 1], ['AC-HLM-001', 1], ['AC-LCK-001', 1]]);
+    expect(plan.styles[1].variants[0].openingStock).toBe(3);
+    expect(plan.styles[1].variants[0].size).toBe('16"');
   });
 
   it('reports every problem with its line number', () => {

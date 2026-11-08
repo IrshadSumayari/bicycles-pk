@@ -1,4 +1,4 @@
-export const CART_KEY = "ladyvogue-bag-v3";
+export const CART_KEY = "bicycles-bag-v1";
 export const CART_VERSION = 3;
 export type CartLine = { variant_id: string; quantity: number };
 export const lineKey = (line: Pick<CartLine, "variant_id">) => line.variant_id;

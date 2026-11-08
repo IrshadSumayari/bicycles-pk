@@ -122,7 +122,7 @@ export function ParcelReturn({
       <p>
         Use this after the whole parcel is back from the courier. For partial or
         missing contents, reconcile the discrepancy before receiving it here.
-        Opened lingerie must pass your hygiene and resale inspection.
+        Used or damaged items must pass your resale inspection.
       </p>
       {error && (
         <p role="alert" className="text-error">

@@ -1,9 +1,10 @@
+import { shopSections } from "../../shared/bicycles";
 import type { MetadataRoute } from 'next';
 import { catalog } from '@/lib/catalog';
 import { siteUrl } from '@/lib/helpers';
 export const revalidate = 60;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const urls: MetadataRoute.Sitemap = [{ url: siteUrl('/') }, { url: siteUrl('/jewellery') }, { url: siteUrl('/bags') }];
+  const urls: MetadataRoute.Sitemap = [{ url: siteUrl('/') }, ...shopSections.map((s) => ({ url: siteUrl(s.href) }))];
   try {
     const collections = await catalog.collections();
     urls.push(
