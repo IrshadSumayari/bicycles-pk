@@ -1,5 +1,5 @@
+import { sectionById } from '../../../shared/bicycles';
 import { allDepartmentCategory, inventoryCategoryFilter, inventoryCategoryOptions, newStyleCategory, type Department } from '../../lib/inventoryCategory';
-import { BAGS_IMPORT_TEMPLATE, JEWELLERY_IMPORT_TEMPLATE } from '../../lib/csvImport';
 import { inventoryMetrics } from '../../lib/inventoryMetrics';
 import {MoreHorizontal}from'lucide-react';
 import {DropdownMenu,DropdownMenuTrigger,DropdownMenuContent,DropdownMenuItem}from'@/components/ui/dropdown-menu';
@@ -120,7 +120,7 @@ export function InventoryManager({ department }: { department?: Department } = {
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
         <div>
-          <p className="text-bodytext mt-1">{department === 'jewellery' ? 'All jewellery stock, or choose a category to manage its sizes and finishes.' : department === 'bags' ? 'All bags, purses and wallets, or choose a shape to manage its sizes and colours.' : 'Manage your products and stock levels'}</p>
+          <p className="text-bodytext mt-1">{department ? `${sectionById(department).description} Choose a category to manage its sizes and colours.` : 'Manage your products and stock levels'}</p>
         </div>
         
         {tab === 'stock' && <div className="flex flex-wrap gap-2">
@@ -149,7 +149,7 @@ export function InventoryManager({ department }: { department?: Department } = {
                   className={`px-4 py-2 -mb-px border-b-2 font-medium ${tab === 'collections' ? 'border-primary text-primary' : 'border-transparent text-bodytext hover:text-link'}`}>Collections</button>}
       </div>
 
-      {tab === 'collections' && canPublish ? <CollectionsManager /> : tab === 'receive' ? <GoodsReceiptPanel /> : tab === 'count' ? <StockCountPanel /> : tab === 'import' ? <ProductImportPanel template={department === 'jewellery' ? JEWELLERY_IMPORT_TEMPLATE : department === 'bags' ? BAGS_IMPORT_TEMPLATE : undefined} /> : (
+      {tab === 'collections' && canPublish ? <CollectionsManager /> : tab === 'receive' ? <GoodsReceiptPanel /> : tab === 'count' ? <StockCountPanel /> : tab === 'import' ? <ProductImportPanel /> : (
       <>
       <ReportStatus loading={query.isPending} error={query.error ?? categoryQuery.error ?? flags.error} retry={() => { void query.refetch(); void categoryQuery.refetch(); if (styleIds.length) void flags.refetch(); }} />
       {/* Stats Cards */}

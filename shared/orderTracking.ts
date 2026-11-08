@@ -67,7 +67,7 @@ export function orderProgress(status: string, fulfilment: string) {
           : status === "expired"
             ? "The payment window expired."
             : status === "returned_to_sender"
-              ? "The parcel was returned to LadyVogue. Contact us about the next steps."
+              ? "The parcel was returned to Bicycles.pk. Contact us about the next steps."
               : index < 0
                 ? "Contact us for the current order status."
                 : null,

@@ -10,7 +10,7 @@ type OrderSummary = Pick<
 export function CustomerOrders({ orders }: { orders: OrderSummary[] }) {
   return (
     <section className="lv-orders-page">
-      <p className="lv-eyebrow">YOUR LADYVOGUE FINDS</p>
+      <p className="lv-eyebrow">YOUR BICYCLES.PK FINDS</p>
       <h1>My orders</h1>
       <p className="lv-account-intro">
         Follow your orders and revisit your favourites.

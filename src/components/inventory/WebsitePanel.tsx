@@ -1,8 +1,4 @@
 import { ProductGuideEditor } from "./ProductGuideEditor";
-import { BagDetailsEditor } from "./BagDetailsEditor";
-import { isBagCategory } from "../../../shared/bags";
-import { TryOnEditor, type RemovedTryOnFiles } from "./TryOnEditor";
-import { readTryOn, tryOnError } from "../../../shared/tryOn";
 import {
   readProductGuide,
   productGuideError,
@@ -83,10 +79,6 @@ function WebsiteForm({
   const [guide, setGuide] = useState(() =>
     readProductGuide(initial.product_guide),
   );
-  const [tryOn, setTryOn] = useState(() =>
-    readTryOn(initial.try_on, initial.id),
-  );
-  const removed = useRef<RemovedTryOnFiles>({ models: [], frames: [] });
   const [variants, setVariants] = useState(
     initial.variants.map((v) => ({ variant_id: v.id, published: v.published })),
   );
@@ -107,7 +99,6 @@ function WebsiteForm({
       web_title: title,
       web_description: description,
       product_guide: guide,
-      try_on: tryOn,
       variants,
     };
     const fingerprint = JSON.stringify(details);
@@ -119,18 +110,6 @@ function WebsiteForm({
       action.current.id,
     );
     action.current = null;
-    // Saved details no longer point at removed files, so they can be deleted.
-    // A failed deletion leaves only an unused file; it is retried next save.
-    const { models, frames } = removed.current;
-    removed.current = { models: [], frames: [] };
-    for (const path of models)
-      await webCatalogService.deleteTryOnModel(path).catch(() => {
-        removed.current.models.push(path);
-      });
-    for (const path of frames)
-      await webCatalogService.deleteObject(path).catch(() => {
-        removed.current.frames.push(path);
-      });
     refresh();
   }
   async function save(publish?: boolean) {
@@ -153,11 +132,6 @@ function WebsiteForm({
       const guideError = productGuideError(guide);
       if (guideError) {
         setProblems([guideError]);
-        return;
-      }
-      const tryOnProblem = tryOnError(tryOn, initial.id);
-      if (tryOnProblem) {
-        setProblems([tryOnProblem]);
         return;
       }
       await saveDetails();
@@ -249,26 +223,7 @@ function WebsiteForm({
         </div>
       )}
       <fieldset disabled={busy} className="space-y-3">
-        {isBagCategory(initial.category?.name) ? (
-          <BagDetailsEditor value={guide} onChange={setGuide} />
-        ) : (
-          <ProductGuideEditor value={guide} onChange={setGuide} />
-        )}
-        {/* The 360° model is for worn garments; bags only show it if one was already added. */}
-        {(!isBagCategory(initial.category?.name) || initial.try_on) && <TryOnEditor
-          styleId={initial.id}
-          colors={[
-            ...new Set(
-              initial.variants.flatMap((v) => (v.color ? [v.color] : [])),
-            ),
-          ]}
-          value={tryOn}
-          onChange={setTryOn}
-          onRemove={(files) => {
-            removed.current.models.push(...files.models);
-            removed.current.frames.push(...files.frames);
-          }}
-        />}
+        <ProductGuideEditor value={guide} onChange={setGuide} />
         <label className="block">
           Web address
           <Input

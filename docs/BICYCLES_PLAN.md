@@ -1,6 +1,6 @@
 # Bicycles.pk: Development Plan
 
-Version 0.1 · 9 November 2026 · Repository: `IrshadSumayari/bicycles-pk` · Branch: `dev`
+Version 0.2 · 9 November 2026 · Repository: `IrshadSumayari/bicycles-pk` · Branch: `dev`
 
 ## 1. Starting point
 

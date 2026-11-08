@@ -1,8 +1,8 @@
-export const PLATFORM_NAME = 'LadyVogue POS';
+export const PLATFORM_NAME = 'Bicycles POS';
 // Shown wherever no store logo has been uploaded in Settings.
-export const PLATFORM_LOGO = '/ladyvogue-icon.svg';
+export const PLATFORM_LOGO = '/bicycles-icon.svg';
 
-// Compatibility with installations created before the LadyVogue rebrand.
+// Compatibility with installations created before the Bicycles.pk rebrand.
 export function platformStoreName(value: string | null | undefined): string {
   return !value?.trim() || /nextera/i.test(value) ? PLATFORM_NAME : value;
 }

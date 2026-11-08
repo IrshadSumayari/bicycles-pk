@@ -19,10 +19,10 @@ export const storeAddress = [
 export function storeJsonLd(url: string) {
   return {
     "@context": "https://schema.org",
-    "@type": "ClothingStore",
+    "@type": "SportingGoodsStore",
     name: brand.name,
     url,
-    image: new URL("/brand/ladyvogue-icon.svg", url).href,
+    image: new URL("/brand/bicycles-icon.svg", url).href,
     address: {
       "@type": "PostalAddress",
       streetAddress: brand.address.line1,

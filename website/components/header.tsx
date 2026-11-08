@@ -82,14 +82,8 @@ export function Header({ nav }: { nav: NavItem[] }) {
             }}
           >
             {item.label === "Help"
-              ? "Contact LadyVogue"
-              : item.label === "More to explore"
-                ? "Explore all collections"
-                : item.label === "Jewellery"
-                  ? "Explore jewellery"
-                  : item.label === "Bags"
-                    ? "Explore bags"
-                    : "Shop all " + item.label.toLowerCase()}
+              ? "Contact Bicycles.pk"
+              : "Shop all " + item.label.toLowerCase()}
           </Link>
           {item.children
             .filter((child) => child.href !== item.href)
@@ -123,7 +117,7 @@ export function Header({ nav }: { nav: NavItem[] }) {
         Skip to content
       </a>
       <div className="lv-announcement">
-        A little luxury. Every single day. <span>Discover LadyVogue</span>
+        Delivery across Pakistan. <span>Shop bicycles</span>
       </div>
       <header className="site-header">
         <Button
@@ -196,24 +190,13 @@ export function Header({ nav }: { nav: NavItem[] }) {
         >
           Shop all
         </Link>
-        {navigation.slice(0, 3).map((item) => (
+        {navigation
+          .filter((item) => item.label !== "Help")
+          .map((item) => (
           <Link key={item.href} href={item.href}>
             {item.label}
           </Link>
         ))}
-        <Link href="/search?category=Lingerie+Sets">Matching sets</Link>
-        <Link
-          href="/jewellery"
-          aria-current={pathname === "/jewellery" ? "page" : undefined}
-        >
-          Jewellery
-        </Link>
-        <Link
-          href="/bags"
-          aria-current={pathname === "/bags" ? "page" : undefined}
-        >
-          Bags
-        </Link>
       </nav>
       <Sheet open={menu} onOpenChange={setMenu}>
         <SheetContent
@@ -252,7 +235,7 @@ export function Header({ nav }: { nav: NavItem[] }) {
           <Input
             autoFocus
             name="q"
-            placeholder="Search lingerie, jewellery, bags…"
+            placeholder="Search bikes, helmets, tyres…"
             aria-label="Search products"
           />
           <Button type="submit">Search</Button>

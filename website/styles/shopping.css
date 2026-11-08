@@ -18,7 +18,7 @@
 }
 .lv-shop-heading h1,
 .lv-checkout-title {
-  font-family: Georgia, serif;
+  font-family: var(--font-poppins), sans-serif;
   font-size: clamp(34px, 4vw, 55px);
   font-weight: 400;
   letter-spacing: -1.5px;
@@ -576,7 +576,7 @@
   padding: 30px 25px;
 }
 .cart-drawer h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-poppins), sans-serif;
   font-weight: 400;
 }
 .cart-drawer .cart-summary {
@@ -736,13 +736,13 @@
   position: absolute;
   inset: auto 30px 35px;
   padding: 20px;
-  background: #fbf8f4e8;
-  color: #4b263a;
+  background: #ffffffe8;
+  color: #111111;
 }
 .lv-signin-editorial .lv-eyebrow {
   font-size: 8px;
   margin-bottom: 12px;
-  color: #78515c;
+  color: #5f6368;
 }
 .lv-signin-editorial h2 {
   font:
@@ -752,7 +752,7 @@
   letter-spacing: -1px;
 }
 .lv-signin-editorial em {
-  color: #9c7278;
+  color: #5f6368;
 }
 .lv-signin .account-panel {
   margin: 0;

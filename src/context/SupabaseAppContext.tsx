@@ -44,7 +44,7 @@ const initialState: AppState = {
   currentUser: null,
   selectedCustomer: null,
   settings: {
-    storeName: 'LadyVogue POS',
+    storeName: 'Bicycles POS',
     storeAddress: '',
     storePhone: '',
     storeEmail: '',

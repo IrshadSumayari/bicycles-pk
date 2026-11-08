@@ -1,12 +1,12 @@
 name: Deploy shop
 # Deploys website/ to Vercel with a token, so the Vercel account never needs
 # the committer's GitHub login. Disconnect Git in the Vercel project.
-# dev deploys to the staging environment, main/ladyvogue to production.
+# dev deploys to the staging environment, main to production.
 on:
   workflow_run:
     workflows: [CI]
     types: [completed]
-    branches: [dev, main/ladyvogue]
+    branches: [dev, main]
 permissions:
   contents: read
   actions: read
@@ -19,9 +19,9 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
-      contains(fromJSON('["dev","main/ladyvogue"]'), github.event.workflow_run.head_branch)
+      contains(fromJSON('["dev","main"]'), github.event.workflow_run.head_branch)
     runs-on: ubuntu-latest
-    environment: ${{ github.event.workflow_run.head_branch == 'main/ladyvogue' && 'production' || 'staging' }}
+    environment: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

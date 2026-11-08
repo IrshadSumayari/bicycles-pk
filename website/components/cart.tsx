@@ -19,7 +19,7 @@ export function CartContents({ drawer = false }: { drawer?: boolean }) {
         <ShoppingBag size={42} strokeWidth={1} />
         <p className="lv-eyebrow">ROOM FOR SOMETHING LOVELY</p>
         <h2>Your bag is waiting for you.</h2>
-        <p>Explore our lingerie, nightwear and everyday essentials.</p>
+        <p>Explore bicycles, accessories and parts.</p>
         <Button asChild>
           <Link href="/collections" onClick={() => setCartOpen(false)}>
             Continue shopping

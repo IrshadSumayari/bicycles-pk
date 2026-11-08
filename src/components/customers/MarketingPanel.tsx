@@ -39,7 +39,7 @@ export function MarketingPanel() {
       const rows = await marketingService.audience(channel, '', offset);
       if (!rows.length) throw new Error('No eligible contacts on this page.');
       const url = URL.createObjectURL(new Blob([marketingCsv(rows)], { type: 'text/csv;charset=utf-8;' }));
-      const a = document.createElement('a'); a.href = url; a.download = `ladyvogue-${channel}-contacts-page-${offset / 50 + 1}.csv`; a.click(); URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = url; a.download = `bicycles-${channel}-contacts-page-${offset / 50 + 1}.csv`; a.click(); URL.revokeObjectURL(url);
       setMessage(`Exported ${rows.length} contacts from this page. Recheck consent before a future send.`);
     } catch (error) { setMessage(getErrorMessage(error)); }
     finally { setBusy(false); }

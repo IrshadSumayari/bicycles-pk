@@ -36,7 +36,7 @@ export function PurchaseReassurance({
         <Phone size={18} />
         <span>
           Need help before ordering?{" "}
-          <Link href="/pages/contact">Contact LadyVogue</Link>.
+          <Link href="/pages/contact">Contact Bicycles.pk</Link>.
         </span>
       </p>
     </div>

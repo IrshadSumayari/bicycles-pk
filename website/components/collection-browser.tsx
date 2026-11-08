@@ -1,9 +1,4 @@
 import Link from "next/link";
-import {
-  lingerieFilterKeys,
-  lingerieFilterLabels,
-  lingerieValueLabel,
-} from "../../shared/lingerie";
 import type { Facets } from "@/lib/types";
 import { SearchX, ArrowUpRight } from "lucide-react";
 import { ShopHeading } from "./shop-heading";
@@ -47,10 +42,7 @@ export async function CollectionBrowser({
       price_max: null,
     }),
   ]);
-  const unavailable =
-    catalogProducts === null ||
-    (lingerieFilterKeys.some((key) => filters[key]) &&
-      facets.lingerie_filters_version !== 1);
+  const unavailable = catalogProducts === null;
   const products = unavailable ? [] : (catalogProducts ?? []);
   const activeFilters = [
     ["q", filters.q],
@@ -59,7 +51,6 @@ export async function CollectionBrowser({
     ["category", filters.category],
     ["price_min", filters.price_min],
     ["price_max", filters.price_max],
-    ...lingerieFilterKeys.map((key) => [key, filters[key]]),
   ].filter(([, value]) => value !== "" && value !== undefined);
   const removeFilter = (key: string) => {
     const params = new URLSearchParams(filterQuery(filters, 1));
@@ -105,43 +96,6 @@ export async function CollectionBrowser({
       {filters.category && (
         <input type="hidden" name="category" value={filters.category} />
       )}
-      {lingerieFilterKeys.some(
-        (key) => facets[key]?.length || filters[key],
-      ) && (
-        <fieldset className="col-span-full min-w-0 space-y-4">
-          <legend className="font-semibold mb-3">Product details</legend>
-          {lingerieFilterKeys.map((key) => {
-            const options = [
-              ...new Set([
-                ...(facets[key] ?? []),
-                ...(filters[key] ? [filters[key]!] : []),
-              ]),
-            ];
-            if (!options.length) return null;
-            return (
-              <label key={key}>
-                {lingerieFilterLabels[key]}
-                <select
-                  className="field"
-                  name={key}
-                  defaultValue={filters[key] ?? ""}
-                >
-                  <option value="">All</option>
-                  {options.map((value) => (
-                    <option key={value} value={value}>
-                      {lingerieValueLabel(key, value)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            );
-          })}
-          <p className="muted text-sm">
-            Band and cup labels follow the supplier sizing system. No conversion
-            is applied.
-          </p>
-        </fieldset>
-      )}
       <label>
         Price from
         <Input
@@ -175,7 +129,7 @@ export async function CollectionBrowser({
     <>
       <ShopHeading
         title={search ? "Find your favourites." : title}
-        eyebrow={search ? "A LITTLE SOMETHING FOR YOU" : "THE LADYVOGUE EDIT"}
+        eyebrow={search ? "A LITTLE SOMETHING FOR YOU" : "THE BICYCLES.PK EDIT"}
         description={
           search
             ? "Discover your next everyday essential."
@@ -193,7 +147,7 @@ export async function CollectionBrowser({
               name="q"
               defaultValue={filters.q}
               aria-label="Search our collections"
-              placeholder="Try bras, satin or nightwear"
+              placeholder="Try city bike, helmet or 20 inch"
             />
             <Button type="submit">Search</Button>
           </form>
@@ -209,10 +163,8 @@ export async function CollectionBrowser({
             >
               {key === "q"
                 ? "Search"
-                : (lingerieFilterLabels[
-                    key as keyof typeof lingerieFilterLabels
-                  ] ?? String(key).replaceAll("_", " "))}
-              : {lingerieValueLabel(String(key), String(value))}
+                : String(key).replaceAll("_", " ")}
+              : {String(value)}
               <span aria-hidden="true"> ×</span>
             </Link>
           ))}

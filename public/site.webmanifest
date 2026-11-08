@@ -1,9 +1,9 @@
 {
-  "name": "LadyVogue POS",
-  "short_name": "LadyVogue",
+  "name": "Bicycles POS",
+  "short_name": "Bicycles.pk",
   "icons": [
     {
-      "src": "/ladyvogue-icon.svg",
+      "src": "/bicycles-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }

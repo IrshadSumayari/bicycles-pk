@@ -31,7 +31,7 @@ export function TrackOrderLookup() {
   }
   return (
     <section className="lv-track-lookup">
-      <p className="lv-eyebrow">FOLLOW YOUR LADYVOGUE ORDER</p>
+      <p className="lv-eyebrow">FOLLOW YOUR BICYCLES.PK ORDER</p>
       <h1>Track my order</h1>
       <p>
         Enter the order number from your confirmation. You can track orders

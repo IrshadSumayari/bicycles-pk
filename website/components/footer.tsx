@@ -3,27 +3,25 @@ import { supportLinks, legalLinks } from "@/lib/shop-navigation";
 import { brand } from "@/lib/brand";
 import { BrandLogo } from "./brand-logo";
 import { Appearance } from "./appearance";
-import { shopCategories, categoryHref } from "@/lib/ladyvogue";
+import { shopSections } from "../../shared/bicycles";
 import type { buildNavigation } from "@/lib/navigation";
 export function Footer({
   navigation,
 }: {
   navigation: ReturnType<typeof buildNavigation>;
 }) {
-  const collections = navigation.map((n) => ({
-    slug: n.href.split("/").pop() || "",
-  }));
+  void navigation;
   return (
     <footer className="lv-footer">
       <div className="lv-footer-top">
         <div className="lv-footer-brand">
-          <Link href="/" aria-label="LadyVogue home">
+          <Link href="/" aria-label="Bicycles.pk home">
             <BrandLogo />
           </Link>
           <p>
-            Your everyday, beautifully considered.
+            Bicycles, kids bikes, sports bikes,
             <br />
-            Lingerie, nightwear, jewellery, bags and little luxuries.
+            accessories and parts.
           </p>
           <span>PAKISTAN · PRICES IN PKR</span>
           {brand.phone && (
@@ -40,21 +38,16 @@ export function Footer({
         </div>
         <div>
           <h3>Explore</h3>
-          {shopCategories.map((c) => (
-            <Link
-              key={c.slug}
-              href={categoryHref(c.slug, c.query, collections)}
-            >
-              {c.label}
+          {shopSections.map((s) => (
+            <Link key={s.id} href={s.href}>
+              {s.label}
             </Link>
           ))}
-          <Link href="/jewellery">Jewellery</Link>
-          <Link href="/bags">Bags</Link>
           <Link href="/collections">All collections</Link>
         </div>
         <div>
-          <h3>Made for you</h3>
-          <Link href="/fit-guide">Find your fit</Link>
+          <h3>Riding with us</h3>
+          <Link href="/fit-guide">Size guide</Link>
           <Link href="/about">Our story</Link>
           <Link href="/account">My account</Link>
           <Link href="/account/orders">My orders</Link>
@@ -70,7 +63,7 @@ export function Footer({
       </div>
       <div className="lv-footer-bottom">
         <span>
-          © {new Date().getFullYear()} LadyVogue. All rights reserved.
+          © {new Date().getFullYear()} Bicycles.pk. All rights reserved.
         </span>
         <nav className="lv-legal-links" aria-label="Legal information">
           {legalLinks.map((link) => (
@@ -79,7 +72,7 @@ export function Footer({
             </Link>
           ))}
         </nav>
-        <span>ladyvogue.pk</span>
+        <span>bicycles.pk</span>
       </div>
     </footer>
   );

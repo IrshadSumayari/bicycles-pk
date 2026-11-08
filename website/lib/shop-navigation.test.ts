@@ -1,38 +1,22 @@
 import { describe, expect, it } from "vitest";
 import pages from "../content/pages/index.json";
 import { buildShopMenus, legalLinks, supportLinks } from "./shop-navigation";
-import { categoryHref } from "./ladyvogue";
+import { shopSections } from "../../shared/bicycles";
 
 describe("shopping navigation contracts", () => {
-  it("uses exact stored categories when collections are unavailable", () => {
-    for (const [slug, label] of [
-      ["bras", "Bras"],
-      ["panties", "Panties"],
-      ["nightwear", "Nightwear"],
-      ["matching-sets", "Lingerie Sets"],
-    ]) {
-      const url = new URL(
-        categoryHref(slug, "ignored keyword", []),
-        "https://ladyvogue.pk",
-      );
-      expect(url.searchParams.get("category")).toBe(label);
-      expect(url.searchParams.has("q")).toBe(false);
-    }
+  it("has one menu per shop section plus help", () => {
+    const menus = buildShopMenus([]);
+    expect(menus.map((m) => m.label)).toEqual([...shopSections.map((s) => s.label), "Help"]);
+    expect(menus.find((m) => m.label === "Kids")!.href).toBe("/kids");
   });
-  it("prefers existing collections and exposes only supplied specialist collections", () => {
-    const menus = buildShopMenus([{ slug: "bras" }, { slug: "wireless-bras" }]);
-    const bras = menus.find((m) => m.label === "Bras")!;
-    expect(bras.href).toBe("/collections/bras");
-    expect(bras.children).toContainEqual({
-      label: "Wireless bras",
-      href: "/collections/wireless-bras",
-    });
-    expect(bras.children.some((c) => c.label === "Wired bras")).toBe(false);
-    expect(
-      buildShopMenus([])
-        .flatMap((m) => m.children)
-        .some((c) => c.href.includes("wireless")),
-    ).toBe(false);
+  it("links categories by their exact stored names, without the general category", () => {
+    const menu = buildShopMenus([]).find((m) => m.label === "Accessories")!;
+    expect(menu.children.find((c) => c.label === "Bottles & Cages")?.href).toBe(
+      "/search?category=Bottles%20%26%20Cages",
+    );
+    expect(menu.children.some((c) => c.label === "Accessories")).toBe(false);
+    const hrefs = buildShopMenus([]).flatMap((m) => m.children.map((c) => c.href));
+    expect(new Set(hrefs).size).toBe(hrefs.length);
   });
   it("every published help/legal page link resolves to an existing content entry", () => {
     for (const link of [...supportLinks, ...legalLinks]) {
@@ -43,22 +27,5 @@ describe("shopping navigation contracts", () => {
         link.href,
       ).toBe(true);
     }
-  });
-  it("jewellery links preserve canonical category names, including sets", () => {
-    const children = buildShopMenus([]).find(
-      (m) => m.label === "Jewellery",
-    )!.children;
-    expect(children.find((c) => c.label === "Jewellery Sets")?.href).toBe(
-      "/search?category=Jewellery%20Sets",
-    );
-    expect(new Set(children.map((c) => c.href)).size).toBe(children.length);
-  });
-  it("bag links preserve canonical category names", () => {
-    const menu = buildShopMenus([]).find((m) => m.label === "Bags")!;
-    expect(menu.href).toBe("/bags");
-    expect(menu.children.find((c) => c.label === "Wallets & Purses")?.href).toBe(
-      "/search?category=Wallets%20%26%20Purses",
-    );
-    expect(menu.children.some((c) => c.label === "Bags")).toBe(false);
   });
 });

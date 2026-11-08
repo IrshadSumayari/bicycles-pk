@@ -27,8 +27,8 @@ export function OrderTracking({ order }: { order: WebOrder }) {
       <h2 id="order-tracking-title">Track your order</h2>
       <p>
         {order.fulfilment === "pickup"
-          ? "Pickup updates recorded by LadyVogue."
-          : "Order updates recorded by LadyVogue. For the courier’s latest scans, use its tracking page below."}
+          ? "Pickup updates recorded by Bicycles.pk."
+          : "Order updates recorded by Bicycles.pk. For the courier’s latest scans, use its tracking page below."}
       </p>
       {progress.notice && (
         <p className="lv-tracking-notice">{progress.notice}</p>

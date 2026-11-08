@@ -1,7 +1,3 @@
-import {
-  lingerieFilterKeys,
-  type LingerieFilterKey,
-} from "../../shared/lingerie";
 import { brand } from "./brand";
 import type { Product, StockBand, Variant } from "./types";
 export type Filters = {
@@ -13,7 +9,7 @@ export type Filters = {
   price_max?: number;
   sort: "new" | "price_asc" | "price_desc";
   page: number;
-} & Partial<Record<LingerieFilterKey, string>>;
+};
 export type Query = Record<string, string | string[] | undefined>;
 export function parseFilters(query: Query): Filters {
   const value = (key: string) => {
@@ -26,9 +22,6 @@ export function parseFilters(query: Query): Filters {
       : undefined;
   const sort = value("sort");
   return {
-    ...Object.fromEntries(
-      lingerieFilterKeys.map((key) => [key, value(key).slice(0, 100)]),
-    ),
     q: value("q"),
     size: value("size"),
     color: value("color"),
@@ -50,7 +43,6 @@ export function filterQuery(filters: Filters, page = filters.page): string {
     "category",
     "price_min",
     "price_max",
-    ...lingerieFilterKeys,
   ] as const)
     if (filters[key] !== "" && filters[key] !== undefined)
       query.set(key, String(filters[key]));
@@ -105,13 +97,6 @@ export function imageUrl(path: string | null | undefined): string | null {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
   return base
     ? `${base.replace(/\/$/, "")}/storage/v1/object/public/product-images/${path.split("/").map(encodeURIComponent).join("/")}`
-    : null;
-}
-export function modelUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  return base
-    ? `${base.replace(/\/$/, "")}/storage/v1/object/public/try-on-models/${path.split("/").map(encodeURIComponent).join("/")}`
     : null;
 }
 export function siteUrl(path = "/"): string {
