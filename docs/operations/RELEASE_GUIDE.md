@@ -12,12 +12,12 @@ references, addresses, which account owns what) in the git-ignored file
 
 | | Staging | Production |
 | --- | --- | --- |
-| Git branch | `dev` | `main/ladyvogue` |
+| Git branch | `dev` | `main` |
 | Staff POS (Vercel) | staging POS project, `platform-staging.<domain>` | `platform.<domain>` |
 | Customer shop (Vercel) | staging project | `<domain>` |
 | Database (Supabase) | staging project | production project |
 
-- **CI:** pushes to dev and main/ladyvogue run application, database and browser smoke checks. The smoke job uses Chromium Headless Shell, with a ten-minute install limit and twenty-minute job limit. Browser setup failure still fails CI; these limits do not bypass tests.
+- **CI:** pushes to dev and main run application, database and browser smoke checks. The smoke job uses Chromium Headless Shell, with a ten-minute install limit and twenty-minute job limit. Browser setup failure still fails CI; these limits do not bypass tests.
 - **Hosted deployment:** after successful push CI, Deploy Supabase and Deploy shop run for the current branch head. They deploy only when the selected GitHub environment has all required secrets. A green run that reports a skipped deployment is not proof that either service was released. Read its job summary.
 - **Database:** the configured Deploy Supabase workflow applies migrations and deploys its named functions. The manual commands below are a fallback when automation is not configured. Keep hosted apps protected until the matching schema and app releases are verified; independent hosting jobs do not guarantee migration-first ordering.
 - **Current readiness (27 October 2026):** the staging GitHub environment exists but its secret listing is empty, and there is no local Vercel project link. The merged parcel-return update passed all GitHub CI checks, including browser smoke tests. No hosted parcel-return rollout was verified. Real inventory and customer checkout rehearsal are separately deferred.
@@ -26,7 +26,7 @@ Required staging secret names (values stay private): Supabase uses SUPABASE_ACCE
 
 ## Before every release: a 30-second check
 
-1. Which branch am I releasing? `dev` = staging, `main/ladyvogue` = production.
+1. Which branch am I releasing? `dev` = staging, `main` = production.
 2. Does the change include files in `supabase/migrations/`? Then the database
    needs updating (Step 1b / 3b).
 3. Does it change `supabase/functions/`? Then functions need deploying.
@@ -97,7 +97,7 @@ npx supabase functions deploy --project-ref <production-ref>
 ```
 
 **3d. Release the code.** On GitHub, open a pull request from **`dev`** into
-**`main/ladyvogue`**. Wait for green checks, then merge. Production rebuilds by itself.
+**`main`**. Wait for green checks, then merge. Production rebuilds by itself.
 
 **3e. Check production.** Open `platform.<domain>` and `<domain>`, sign in, and
 try the change. Check both Vercel projects show the new deployment as
