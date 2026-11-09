@@ -1,5 +1,7 @@
 # Go-live checklist
 
+> **Bicycles.pk:** this document is from the LadyVogue clothing shop and is kept for reference. For the bicycles.pk launch follow [LAUNCH.md](./LAUNCH.md).
+
 Store: **[name]** · Go-live date: **[date]** · Owner: **[name / phone]**
 
 Keep this signed copy with the opening stock count and the numbered paper books.

@@ -1,5 +1,7 @@
 # Website launch record
 
+> **Bicycles.pk:** this document is from the LadyVogue clothing shop and is kept for reference. For the bicycles.pk launch follow [LAUNCH.md](./LAUNCH.md).
+
 This branch prepares a local rehearsal. It does not change DNS, hosted Auth,
 production data or payment-provider configuration. Owner approval and staging
 checks below remain launch gates. The real Easypaisa integration remains deferred;

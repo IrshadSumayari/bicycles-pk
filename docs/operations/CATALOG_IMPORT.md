@@ -1,5 +1,7 @@
 # Catalog import
 
+> **Bicycles.pk:** this document is from the LadyVogue clothing shop and is kept for reference. For the bicycles.pk launch follow [LAUNCH.md](./LAUNCH.md).
+
 Use Node 22. Run this on local Supabase first, then a separate staging project,
 and only after owner approval on production. The source JSON stays outside Git.
 The source location defaults to `D:/LadyVogue/storefront/src/data`; override it
