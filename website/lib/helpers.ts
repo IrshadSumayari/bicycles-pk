@@ -1,3 +1,4 @@
+import { shopSections } from "../../shared/bicycles";
 import { brand } from "./brand";
 import type { Product, StockBand, Variant } from "./types";
 export type Filters = {
@@ -5,6 +6,7 @@ export type Filters = {
   size: string;
   color: string;
   category: string;
+  section: string;
   price_min?: number;
   price_max?: number;
   sort: "new" | "price_asc" | "price_desc";
@@ -26,6 +28,7 @@ export function parseFilters(query: Query): Filters {
     size: value("size"),
     color: value("color"),
     category: value("category"),
+    section: shopSections.some((x) => x.id === value("section")) ? value("section") : "",
     price_min: price("price_min"),
     price_max: price("price_max"),
     sort: sort === "price_asc" || sort === "price_desc" ? sort : "new",
@@ -41,6 +44,7 @@ export function filterQuery(filters: Filters, page = filters.page): string {
     "size",
     "color",
     "category",
+    "section",
     "price_min",
     "price_max",
   ] as const)

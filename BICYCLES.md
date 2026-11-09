@@ -68,3 +68,15 @@ Next: Milestone 1 (bike spec fields), then the landing page, listing and product
   "Book a test ride" pill in the header on wide screens.
 - Below the hero: shop-by-section tiles, a new-arrivals carousel, a kids feature with a kids
   carousel, and a dark "assembled and checked" service band.
+
+## Milestone 3: listing pages (9 November 2026)
+
+- Product cards follow the listing reference: photo on a light-grey panel,
+  bold name, a sizes/colours line and the price (`components/product-card.tsx`,
+  styles in `website/styles/listing.css`).
+- `catalog_list` accepts a `categories` array, so `/search?section=<id>` lists
+  every category in a section (migration `20261109000100_catalog_section_filter`).
+- Search and section pages show category pills. Section pages and Shop all
+  have two large split tiles and a carousel per category or section.
+- The card subtitle uses sizes and colours because `catalog_list` does not
+  return specs yet; returning specs needs a change to its return type.

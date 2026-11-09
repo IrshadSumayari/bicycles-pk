@@ -1,0 +1,219 @@
+/* Listing: grey product cards, category pills, split tiles and shelves. */
+.lv-bike-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.lv-bike-card-photo {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #f2f2f2;
+}
+.dark .lv-bike-card-photo {
+  background: #1c1f27;
+}
+.lv-bike-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.35s ease;
+}
+.lv-bike-card:hover .lv-bike-card-photo img {
+  transform: scale(1.03);
+}
+.lv-bike-card-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--store-muted);
+}
+.lv-bike-card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #d92d20;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.lv-bike-card-badge.muted {
+  background: #111;
+}
+.lv-bike-card-arrow {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.lv-bike-card:hover .lv-bike-card-arrow,
+.lv-bike-card-photo:focus-visible .lv-bike-card-arrow {
+  opacity: 1;
+  transform: none;
+}
+.lv-bike-card h3 {
+  margin: 8px 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.lv-bike-card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.lv-bike-card-sub {
+  margin: 0;
+  color: var(--store-muted);
+  font-size: 0.9rem;
+}
+.lv-bike-card-price {
+  display: flex;
+  gap: 8px;
+  margin: 2px 0 0;
+  font-weight: 600;
+}
+.lv-bike-card-price del {
+  color: var(--store-muted);
+  font-weight: 400;
+}
+
+.lv-category-pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin: 20px 0 8px;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.lv-category-pills::-webkit-scrollbar {
+  display: none;
+}
+.lv-category-pills a {
+  flex: none;
+  padding: 9px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.92rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.lv-category-pills a:hover {
+  border-color: var(--ink);
+}
+.lv-category-pills a[aria-current="page"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper, #fff);
+}
+
+.lv-split-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px clamp(16px, 4vw, 64px) 56px;
+}
+.lv-split-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(280px, 38vw, 560px);
+  overflow: hidden;
+  border-radius: 8px;
+  background: #f2f2f2;
+  color: #fff;
+  text-decoration: none;
+}
+.lv-split-tile img {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.lv-split-tile:hover img {
+  transform: scale(1.03);
+}
+.lv-split-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 45%);
+}
+.lv-split-tile.is-dark {
+  background: #1b2433;
+}
+.lv-split-tile-art {
+  color: rgba(255, 255, 255, 0.6);
+}
+.lv-split-tile-title {
+  position: absolute;
+  left: clamp(20px, 3vw, 40px);
+  bottom: clamp(20px, 3vw, 36px);
+  z-index: 1;
+  font-size: clamp(1.75rem, 3.6vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.lv-split-tile-arrow {
+  position: absolute;
+  right: clamp(20px, 3vw, 36px);
+  bottom: clamp(20px, 3vw, 36px);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+}
+
+.lv-shelf {
+  margin: 0 clamp(16px, 4vw, 64px) 56px;
+}
+.lv-shelf-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.lv-shelf-top h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.lv-section-more {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 72px;
+}
+
+@media (max-width: 760px) {
+  .lv-split-tiles {
+    grid-template-columns: 1fr;
+    margin-bottom: 40px;
+  }
+  .lv-split-tile {
+    min-height: 260px;
+  }
+  .lv-bike-card-arrow {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -13,6 +13,7 @@ import { siteUrl } from "@/lib/helpers";
 import "./globals.css";
 import "../styles/storefront.css";
 import "../styles/landing.css";
+import "../styles/listing.css";
 import "../styles/shopping.css";
 import "../styles/mobile.css";
 import "../styles/account.css";
