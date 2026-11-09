@@ -8,6 +8,7 @@ import {
   specSubtitle,
 } from "../../shared/bicycles";
 import { SupplierSizeChart } from "./size-chart";
+import { SizeFinder } from "./size-finder";
 import { PurchaseReassurance } from "./purchase-reassurance";
 import { brand } from "@/lib/brand";
 import Image from "next/image";
@@ -78,6 +79,7 @@ export function ProductDetail({
       JSON.stringify(initial.size_chart) !== "[]");
   const chart = useRef<HTMLDialogElement>(null);
   const zoom = useRef<HTMLDialogElement>(null);
+  const finder = useRef<HTMLDialogElement>(null);
   const specGroups = groupedSpecs(initial.specs);
   const subtitle = specSubtitle(initial.specs, initial.category ?? undefined);
   const section = sectionOfCategory(initial.category ?? undefined);
@@ -440,9 +442,12 @@ export function ProductDetail({
                   </div>
                   {dimension === "size" && (
                     <div className="lv-pdp-size-links">
-                      <Link href="/fit-guide">
+                      <button
+                        type="button"
+                        onClick={() => finder.current?.showModal()}
+                      >
                         <Ruler size={16} /> What&apos;s my size?
-                      </Link>
+                      </button>
                       {hasChart ? (
                         <button
                           type="button"
@@ -465,7 +470,10 @@ export function ProductDetail({
               <p>
                 <strong>Ship to home</strong>
                 <span>
-                  Delivery across Pakistan. See the{" "}
+                  {initial.bulky
+                    ? "Delivery across Pakistan. Bikes include a bulky item charge; add assembly at checkout to get it ready to ride. "
+                    : "Delivery across Pakistan. "}
+                  See the{" "}
                   <Link href="/policies/shipping-policy">shipping policy</Link>.
                 </span>
               </p>
@@ -475,7 +483,9 @@ export function ProductDetail({
               <p>
                 <strong>Store pickup</strong>
                 <span>
-                  Ask us on WhatsApp to collect your order from the store.
+                  {initial.bulky
+                    ? "Free. Collect it assembled and checked; choose pickup at checkout."
+                    : "Free. Choose pickup at checkout."}
                 </span>
               </p>
             </div>
@@ -654,6 +664,28 @@ export function ProductDetail({
           </div>
         </dialog>
       )}
+      <dialog
+        ref={finder}
+        aria-labelledby="size-finder-title"
+        className="lv-size-dialog"
+      >
+        <div className="flex justify-between gap-8 mb-5">
+          <h2 id="size-finder-title">What&apos;s my size?</h2>
+          <form method="dialog">
+            <Button variant="outline">Close</Button>
+          </form>
+        </div>
+        <SizeFinder
+          initialMode={section?.id === "kids" ? "kids" : "adult"}
+          productSizes={sizes.map((o) => o.value)}
+          onPick={(size) => {
+            choose("size", size);
+            setQuantity("1");
+            finder.current?.close();
+          }}
+        />
+        <Link href="/fit-guide">Full size guide</Link>
+      </dialog>
       {hasChart && (
         <dialog
           ref={chart}

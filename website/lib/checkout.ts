@@ -4,6 +4,8 @@ export type CheckoutForm = {
   phone: string;
   email: string;
   fulfilment: "pickup" | "delivery";
+  // Courier orders with bikes: deliver assembled (priced per bike).
+  assembly?: boolean;
   address: { line1: string; line2: string; city: string; postal_code: string };
   payment_method: "card" | "easypaisa" | "cod";
   notes_customer: string;

@@ -64,6 +64,43 @@ export function OnlineSection({
           </span>
         </label>
         <label className="block text-sm space-y-1">
+          Bulky item charge per bike (PKR)
+          <Input
+            className="input block"
+            type="number"
+            min={0}
+            step="0.01"
+            value={value.bulkyDeliveryFee ?? 0}
+            onChange={(event) =>
+              onChange({ bulkyDeliveryFee: Number(event.target.value) })
+            }
+          />
+          <span className="block text-bodytext">
+            Added to courier delivery for each item marked bulky, even when
+            delivery is otherwise free.
+          </span>
+        </label>
+        <label className="block text-sm space-y-1">
+          Assembly per bike (PKR)
+          <Input
+            className="input block"
+            type="number"
+            min={0}
+            step="0.01"
+            value={value.assemblyFee ?? ""}
+            onChange={(event) =>
+              onChange({
+                assemblyFee:
+                  event.target.value === "" ? null : Number(event.target.value),
+              })
+            }
+          />
+          <span className="block text-bodytext">
+            Optional at checkout for courier orders with bulky items. Leave
+            blank to not offer assembly; zero offers it free.
+          </span>
+        </label>
+        <label className="block text-sm space-y-1">
           Maximum COD order total (PKR)
           <Input
             className="input block"

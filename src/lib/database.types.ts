@@ -19,6 +19,8 @@ export type Database = {
           currency: string | null;
           delivery_fee: number;
           free_delivery_over: number | null;
+          assembly_fee: number | null;
+          bulky_delivery_fee: number;
           id: string;
           interface_mode: string | null;
           invoice_counter: number | null;
@@ -53,6 +55,8 @@ export type Database = {
           currency?: string | null;
           delivery_fee?: number;
           free_delivery_over?: number | null;
+          assembly_fee?: number | null;
+          bulky_delivery_fee?: number;
           id?: string;
           interface_mode?: string | null;
           invoice_counter?: number | null;
@@ -86,6 +90,8 @@ export type Database = {
           currency?: string | null;
           delivery_fee?: number;
           free_delivery_over?: number | null;
+          assembly_fee?: number | null;
+          bulky_delivery_fee?: number;
           id?: string;
           interface_mode?: string | null;
           invoice_counter?: number | null;
@@ -1532,6 +1538,7 @@ export type Database = {
           email: string | null;
           expires_at: string | null;
           fulfilment: string;
+          assembly: boolean;
           id: string;
           notes_customer: string | null;
           notes_staff: string | null;
@@ -1564,6 +1571,7 @@ export type Database = {
           email?: string | null;
           expires_at?: string | null;
           fulfilment: string;
+          assembly?: boolean;
           id?: string;
           notes_customer?: string | null;
           notes_staff?: string | null;
@@ -1595,6 +1603,7 @@ export type Database = {
           email?: string | null;
           expires_at?: string | null;
           fulfilment?: string;
+          assembly?: boolean;
           id?: string;
           notes_customer?: string | null;
           notes_staff?: string | null;
@@ -1996,6 +2005,7 @@ export type Database = {
           kind: string;
           lingerie: NonNullable<Json>;
           specs: NonNullable<Json>;
+          bulky: boolean;
           material: string | null;
           name: string;
           product_guide: NonNullable<Json>;
@@ -2026,6 +2036,7 @@ export type Database = {
           kind: string;
           lingerie?: NonNullable<Json>;
           specs?: NonNullable<Json>;
+          bulky?: boolean;
           material?: string | null;
           name: string;
           product_guide?: NonNullable<Json>;
@@ -2055,6 +2066,7 @@ export type Database = {
           kind?: string;
           lingerie?: NonNullable<Json>;
           specs?: NonNullable<Json>;
+          bulky?: boolean;
           material?: string | null;
           name?: string;
           product_guide?: NonNullable<Json>;

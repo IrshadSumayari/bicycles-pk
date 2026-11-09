@@ -206,6 +206,11 @@ export function OnlineOrderDetail({
             .filter(Boolean)
             .join(", ")}
         </p>
+        {order.assembly && (
+          <p className="font-semibold">
+            Assembly requested: deliver bikes ready to ride
+          </p>
+        )}
         <p>
           {onlineLabel(order.status)} · {onlineLabel(order.payment_status)} ·{" "}
           {order.payment_method === "easypaisa"

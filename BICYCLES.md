@@ -91,3 +91,19 @@ Next: Milestone 1 (bike spec fields), then the landing page, listing and product
   in the bag when it has one in-stock option, otherwise opens it.
 - Specifications are grouped (`specGroups` in `shared/bicycles.ts`) and shown
   as expandable sections under the overview. Styles: `website/styles/pdp.css`.
+
+## Milestone 5: fit and delivery (9 November 2026)
+
+- "What's my size?" finder (`shared/fit.ts`, `components/size-finder.tsx`): adult
+  size from rider height (frame sizes from inside leg), kids wheel from height
+  or age. On the size guide, and as a dialog on the product page that can
+  select the matching size.
+- Bulky items: `product_styles.bulky` (POS "Bulky item" checkbox, on by
+  default for bike sections). Courier delivery adds
+  `app_settings.bulky_delivery_fee` per bulky unit, even when delivery is free.
+- Assembly: courier orders with bulky items can add `assembly_fee` per unit
+  (blank setting = not offered). Recorded as `online_orders.assembly` and shown
+  on the POS order, packing slip and customer order. Pickup bikes are
+  assembled free.
+- Both charges are folded into `delivery_fee`, so order totals still equal
+  subtotal + tax + delivery (migration `20261109000200_bike_delivery`).

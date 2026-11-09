@@ -22,6 +22,7 @@ export function PackingSlip({
               .filter(Boolean)
               .join(", ")}
       </p>
+      {order.assembly && <p className="font-bold">Assemble before delivery</p>}
       <table>
         <tbody>
           {order.lines.map((line) => (

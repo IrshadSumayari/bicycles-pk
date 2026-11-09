@@ -1,4 +1,4 @@
-import { cleanSpecs, type BikeSpecs } from '../../shared/bicycles';
+import { cleanSpecs, isBulkyCategory, type BikeSpecs } from '../../shared/bicycles';
 import type { ProductGuide } from '../../shared/productGuide';
 import { platformStoreName, platformReceiptText, platformStoreEmail } from './branding';
 import type { OpeningBalance } from './goLiveImport'
@@ -320,6 +320,7 @@ export interface StyleVariantInput {
 
 export interface StyleInput {
   specs?: BikeSpecs
+  bulky?: boolean
   styleId?: string
   kind: Product['kind']
   code: string
@@ -346,6 +347,7 @@ export interface SizeScheme {
 
 type StyleRow = {
   specs: unknown
+  bulky: boolean
   id: string
   code: string
   name: string
@@ -410,7 +412,7 @@ export const stylesService = {
         .from('product_styles')
         .select(`
           id, code, name, kind, brand, material, season, design_code, description, taxable, active,
-          track_inventory, image_url, specs,
+          track_inventory, image_url, specs, bulky,
           category:categories ( name ),
           size_scheme:size_schemes ( code ),
           variants:product_variants ( id, sku, size, color, fit, price, min_stock, active,
@@ -424,6 +426,7 @@ export const stylesService = {
     const costs = await loadCosts(row.variants.map(v => v.id))
     return {
       specs: cleanSpecs(row.specs),
+      bulky: row.bulky,
       styleId: row.id,
       kind: row.kind as Product['kind'],
       code: row.code,
@@ -465,6 +468,7 @@ export const stylesService = {
     const { data, error } = await supabase.rpc('save_style', {
       p: {
         ...(input.specs === undefined ? {} : { specs: cleanSpecs(input.specs) }),
+        bulky: input.bulky ?? isBulkyCategory(input.category),
         style_id: input.styleId ?? null,
         kind: input.kind,
         code: input.code,
@@ -1455,13 +1459,15 @@ function mapSettings(data: SettingsRow): AppSettings {
     theme: (data.theme as AppSettings['theme']) || 'light', invoicePrefix: data.invoice_prefix || 'INV', invoiceCounter: data.invoice_counter ?? 1000,
     cashVarianceAlert: data.cash_variance_alert, maxCashierDiscountPercent: data.max_cashier_discount_percent,
     returnWindowDays: data.return_window_days,
-    deliveryFee: data.delivery_fee, freeDeliveryOver: data.free_delivery_over, codEnabled: data.cod_enabled, codMaxTotal: data.cod_max_total,
+    deliveryFee: data.delivery_fee, freeDeliveryOver: data.free_delivery_over,
+    bulkyDeliveryFee: data.bulky_delivery_fee, assemblyFee: data.assembly_fee, codEnabled: data.cod_enabled, codMaxTotal: data.cod_max_total,
     onlineCardEnabled: data.online_card_enabled, onlineMaxPendingOrders: data.online_max_pending_orders, onlineMaxOpenCodOrders: data.online_max_open_cod_orders,
     receiptHeader: platformReceiptText(data.receipt_header), receiptFooter: platformReceiptText(data.receipt_footer), ntn: data.ntn ?? '', strn: data.strn ?? '',
   }
 }
 const settingsColumns = {
-  deliveryFee: 'delivery_fee', freeDeliveryOver: 'free_delivery_over', codEnabled: 'cod_enabled', codMaxTotal: 'cod_max_total',
+  deliveryFee: 'delivery_fee', freeDeliveryOver: 'free_delivery_over',
+  bulkyDeliveryFee: 'bulky_delivery_fee', assemblyFee: 'assembly_fee', codEnabled: 'cod_enabled', codMaxTotal: 'cod_max_total',
   onlineCardEnabled: 'online_card_enabled', onlineMaxPendingOrders: 'online_max_pending_orders', onlineMaxOpenCodOrders: 'online_max_open_cod_orders',
   storeName: 'store_name', storeAddress: 'store_address', storePhone: 'store_phone', storeEmail: 'store_email', storeLogo: 'store_logo',
   taxRate: 'tax_rate', currency: 'currency', interfaceMode: 'interface_mode', autoBackup: 'auto_backup', receiptPrinter: 'receipt_printer',
