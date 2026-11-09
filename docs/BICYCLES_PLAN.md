@@ -92,7 +92,7 @@ Each milestone is a feature branch from `dev` with a PR into `dev`, matching the
 | 4 | **Product detail** | Gallery, trim switcher, size buttons, delivery method, spec list, "Complete your ride" (3c). |
 | 5 | **Fit and delivery** | Size guide by rider height and inseam, a kids age chart, a "What's my size?" helper. Delivery charges for bulky items, an assembly option, store pickup. |
 | 6 | **Backend and staging** | New Supabase project, migrations, a staging publishing test (a labelled NOT-FOR-SALE test bike), a COD test order on staging. |
-| 7 | **Launch** | Real inventory and photos, policies (warranty, returns), turn indexing on, deploy, switch bicycles.pk from the coming-soon page. |
+| 7 | **Launch** | Real inventory and photos, policies (warranty, returns), turn indexing on, deploy, switch bicycles.pk from the coming-soon page. Runbook: `docs/operations/LAUNCH.md`. |
 | Later | Reviews, service/test-ride booking, EMI/installments, trade-in. | |
 
 ## 5. Open questions for the owner
