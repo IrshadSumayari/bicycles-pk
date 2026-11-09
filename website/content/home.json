@@ -1,0 +1,22 @@
+{
+  "announcement": {
+    "text": "New season bikes have arrived.",
+    "link": { "label": "Shop now", "href": "/bicycles" }
+  },
+  "hero": {
+    "headline": ["Ride further.", "Ride better."],
+    "subline": "Bicycles for every age and every road, delivered across Pakistan.",
+    "cta": { "label": "Shop bicycles", "href": "/bicycles" },
+    "image": "/hero/dusk-ride.svg",
+    "imageAlt": "Illustration of a bicycle on an open road at dusk",
+    "imagePosition": "70% 60%",
+    "video": "",
+    "poster": ""
+  },
+  "usps": [
+    { "icon": "shield", "title": "Warranty on every bike", "text": "Frame and parts covered" },
+    { "icon": "wrench", "title": "Assembled and checked", "text": "Ready to ride on delivery" },
+    { "icon": "truck", "title": "Delivery across Pakistan", "text": "Or collect from our store" }
+  ],
+  "headerCta": { "label": "Book a test ride", "href": "/pages/contact" }
+}

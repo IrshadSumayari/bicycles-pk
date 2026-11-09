@@ -1,41 +1,26 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, ShieldCheck, Truck, Wrench } from "lucide-react";
+import { ArrowUpRight, Ruler } from "lucide-react";
 import { shopSections } from "../../shared/bicycles";
 import { ProductCard } from "./product-card";
+import { ProductCarousel } from "./product-carousel";
 import { SectionIcon } from "./section-icon";
+import { LandingHero } from "./landing-hero";
 import type { CatalogRow } from "@/lib/types";
-// Placeholder homepage. The full-bleed hero redesign is the landing-page milestone.
-export function Home({ featured }: { featured: CatalogRow[] }) {
+export function Home({
+  featured,
+  kids,
+}: {
+  featured: CatalogRow[];
+  kids: CatalogRow[];
+}) {
   return (
-    <div className="lv-home">
-      <section className="lv-hero" aria-labelledby="hero-title">
-        <div className="lv-hero-copy">
-          <p className="lv-eyebrow">
-            <span /> BICYCLES.PK
-          </p>
-          <h1 id="hero-title">
-            Ride further.
-            <br />
-            <em>Ride better.</em>
-          </h1>
-          <p className="lv-lead">
-            City bikes, kids bikes, sports bikes and everything for the ride,
-            delivered across Pakistan.
-          </p>
-          <Link className="lv-button" href="/bicycles">
-            Shop bicycles <ArrowRight size={17} />
-          </Link>
-          <Link className="lv-quiet-link" href="/fit-guide">
-            Find your frame size <ArrowUpRight size={15} />
-          </Link>
-        </div>
-      </section>
-      <ul className="lv-usp-strip" aria-label="Why shop with us">
-        <li><ShieldCheck size={20} /> Warranty on every bike</li>
-        <li><Wrench size={20} /> Assembled and checked</li>
-        <li><Truck size={20} /> Delivery across Pakistan</li>
-      </ul>
-      <section id="collections" className="lv-section" aria-labelledby="collection-title">
+    <div className="lv-home lv-landing">
+      <LandingHero />
+      <section
+        id="collections"
+        className="lv-section"
+        aria-labelledby="collection-title"
+      >
         <div className="lv-section-top">
           <div>
             <p className="lv-eyebrow">SHOP BY SECTION</p>
@@ -59,23 +44,71 @@ export function Home({ featured }: { featured: CatalogRow[] }) {
         </div>
       </section>
       {featured.length > 0 && (
-        <section className="lv-section lv-arrivals">
+        <section className="lv-section" aria-labelledby="arrivals-title">
           <div className="lv-section-top">
             <div>
               <p className="lv-eyebrow">NEW ARRIVALS</p>
-              <h2>Just landed.</h2>
+              <h2 id="arrivals-title">Just landed.</h2>
             </div>
             <Link className="lv-link" href="/search?sort=new">
               Shop new arrivals <ArrowUpRight size={17} />
             </Link>
           </div>
-          <div className="lv-product-grid">
-            {featured.slice(0, 4).map((p) => (
+          <ProductCarousel label="new arrivals">
+            {featured.map((p) => (
               <ProductCard key={p.style_id} product={p} />
             ))}
-          </div>
+          </ProductCarousel>
         </section>
       )}
+      <section className="lv-feature-split" aria-labelledby="kids-title">
+        <div className="lv-feature-art" aria-hidden="true">
+          <SectionIcon id="kids" size={120} strokeWidth={0.9} />
+        </div>
+        <div className="lv-feature-copy">
+          <p className="lv-eyebrow">KIDS BIKES</p>
+          <h2 id="kids-title">First pedals. Big adventures.</h2>
+          <p>
+            Balance bikes, training-wheel bikes and junior bikes, sized by wheel
+            and age so they fit from the first ride.
+          </p>
+          <div className="lv-feature-actions">
+            <Link className="lv-pill-button lv-pill-dark" href="/kids">
+              Shop kids bikes
+            </Link>
+            <Link className="lv-link" href="/fit-guide#kids-sizes">
+              <Ruler size={16} /> Kids size chart
+            </Link>
+          </div>
+        </div>
+      </section>
+      {kids.length > 0 && (
+        <section className="lv-section" aria-label="Kids bikes">
+          <ProductCarousel label="kids bikes">
+            {kids.map((p) => (
+              <ProductCard key={p.style_id} product={p} />
+            ))}
+          </ProductCarousel>
+        </section>
+      )}
+      <section className="lv-service-band" aria-labelledby="service-title">
+        <div>
+          <p className="lv-eyebrow">RIDE WITH CONFIDENCE</p>
+          <h2 id="service-title">Assembled, checked and ready to ride.</h2>
+          <p>
+            Every bike is built and safety-checked before it leaves us. Need
+            help choosing a size, or want a test ride? Talk to us.
+          </p>
+        </div>
+        <div className="lv-feature-actions">
+          <Link className="lv-pill-button" href="/pages/contact">
+            Book a test ride
+          </Link>
+          <Link className="lv-pill-button lv-pill-outline" href="/accessories">
+            Shop accessories
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

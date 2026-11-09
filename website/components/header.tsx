@@ -18,6 +18,8 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "./ui/sheet";
 import { Appearance } from "./appearance";
+import { AnnouncementBar } from "./announcement-bar";
+import home from "@/content/home.json";
 type NavItem = {
   label: string;
   href: string;
@@ -116,9 +118,8 @@ export function Header({ nav }: { nav: NavItem[] }) {
       <a className="skip-link" href="#MainContent">
         Skip to content
       </a>
-      <div className="lv-announcement">
-        Delivery across Pakistan. <span>Shop bicycles</span>
-      </div>
+      <div className={pathname === "/" ? "lv-header-shell lv-overlay" : "lv-header-shell"}>
+      <AnnouncementBar />
       <header className="site-header">
         <Button
           variant="ghost"
@@ -178,9 +179,9 @@ export function Header({ nav }: { nav: NavItem[] }) {
             <ShoppingBag size={23} strokeWidth={1.5} />
             {count > 0 && <span>{count}</span>}
           </Button>
-          <span className="currency">
-            <span aria-hidden="true">🇵🇰</span> PKR
-          </span>
+          <Link className="lv-header-cta" href={home.headerCta.href}>
+            {home.headerCta.label}
+          </Link>
         </div>
       </header>
       <nav className="lv-mobile-categories" aria-label="Shop categories">
@@ -198,6 +199,7 @@ export function Header({ nav }: { nav: NavItem[] }) {
           </Link>
         ))}
       </nav>
+      </div>
       <Sheet open={menu} onOpenChange={setMenu}>
         <SheetContent
           side="left"
