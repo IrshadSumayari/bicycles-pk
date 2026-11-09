@@ -1,0 +1,77 @@
+name: Deploy POS
+# Deploys the POS (repository root) to its own Vercel project with a token.
+# Disconnect Git in that Vercel project. dev deploys to the staging
+# environment, main to production.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [dev, main]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: pos-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      contains(fromJSON('["dev","main"]'), github.event.workflow_run.head_branch)
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_POS_PROJECT_ID }}
+    steps:
+      - name: Skip when this environment has no Vercel POS secrets
+        id: secrets
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::notice::Vercel POS secrets are not set for this environment; POS not deployed."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "## POS deployment skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "No POS was deployed. Configure VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_POS_PROJECT_ID in the selected GitHub environment, then rerun CI for the current branch head." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.secrets.outputs.ready == 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - name: Refuse injected loader code
+        if: steps.secrets.outputs.ready == 'true'
+        run: bash .github/malware-guard.sh
+      - name: Refuse an obsolete CI result
+        if: steps.secrets.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          CHECKED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          current=$(gh api "repos/$GITHUB_REPOSITORY/commits/$BRANCH" --jq .sha)
+          test "$current" = "$CHECKED_SHA"
+      # Vercel Hobby blocks deploys whose Git author isn't the team owner, and
+      # the CLI reads that author from .git, so deploy a plain copy instead.
+      - name: Drop Git metadata
+        if: steps.secrets.outputs.ready == 'true'
+        run: rm -rf .git
+      - uses: actions/setup-node@v4
+        if: steps.secrets.outputs.ready == 'true'
+        with:
+          node-version: 22
+      # Each environment is its own Vercel project, so both deploy as production.
+      # vercel.json is rendered from the pulled VITE_SUPABASE_URL so the CSP
+      # names this environment's Supabase origin.
+      - name: Build and deploy to Vercel
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          npm install --global vercel@latest
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          node scripts/deploy/pos-vercel.mjs .vercel/.env.production.local
+          vercel build --prod --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
