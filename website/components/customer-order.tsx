@@ -221,6 +221,7 @@ export function CustomerOrder({
         {order.address && (
           <p>{Object.values(order.address).filter(Boolean).join(", ")}</p>
         )}
+        {order.assembly && <p>Delivered assembled, ready to ride.</p>}
       </section>
       <section className="lv-order-panel lv-order-timeline">
         <h2 className="text-2xl mb-4">Order updates</h2>

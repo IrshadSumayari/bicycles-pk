@@ -167,6 +167,8 @@ export interface User {
 export interface AppSettings {
   deliveryFee?: number;
   freeDeliveryOver?: number | null;
+  bulkyDeliveryFee?: number;
+  assemblyFee?: number | null;
   codEnabled?: boolean;
   codMaxTotal?: number | null;
   onlineCardEnabled?: boolean;

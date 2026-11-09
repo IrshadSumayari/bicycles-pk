@@ -1,24 +1,13 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { adultSizes, kidsSizes } from "../../../shared/fit";
+import { SizeFinder } from "@/components/size-finder";
 export const metadata = {
   title: "Bike size guide",
-  description: "Choose a bicycle frame or wheel size by rider height and age.",
+  description:
+    "Find your bicycle frame or wheel size by rider height, inside leg and age.",
 };
 // General guidance only; each product lists its own sizes and rider ranges.
-const adult = [
-  ["XS", "148–158 cm", '13–14"', "47–49 cm"],
-  ["S", "158–168 cm", '15–16"', "50–52 cm"],
-  ["M", "168–178 cm", '17–18"', "53–55 cm"],
-  ["L", "178–188 cm", '19–20"', "56–58 cm"],
-  ["XL", "188–198 cm", '21–22"', "59–61 cm"],
-];
-const kids = [
-  ['10–12"', "2–4 years", "85–100 cm"],
-  ['14"', "3–5 years", "95–110 cm"],
-  ['16"', "4–6 years", "105–120 cm"],
-  ['20"', "6–9 years", "115–135 cm"],
-  ['24"', "8–12 years", "130–150 cm"],
-];
 export default function SizeGuide() {
   return (
     <article className="lv-guide">
@@ -29,10 +18,14 @@ export default function SizeGuide() {
         <em>frame size.</em>
       </h1>
       <p className="lv-lead">
-        Use your height as a starting point. Between two sizes? Choose the
+        Enter the rider’s height to get a size. Between two sizes? Choose the
         smaller frame for easier handling or the larger one for a stretched-out
         position, and check the sizes listed on each product.
       </p>
+      <section className="lv-guide-note" aria-labelledby="whats-my-size">
+        <h2 id="whats-my-size">What’s my size?</h2>
+        <SizeFinder />
+      </section>
       <section className="lv-guide-note" aria-labelledby="adult-sizes">
         <h2 id="adult-sizes">Adult bikes</h2>
         <div className="overflow-x-auto">
@@ -46,21 +39,31 @@ export default function SizeGuide() {
               </tr>
             </thead>
             <tbody>
-              {adult.map(([size, height, mtb, road]) => (
-                <tr key={size}>
-                  <th scope="row">{size}</th>
-                  <td>{height}</td>
-                  <td>{mtb}</td>
-                  <td>{road}</td>
+              {adultSizes.map((s) => (
+                <tr key={s.size}>
+                  <th scope="row">{s.size}</th>
+                  <td>
+                    {s.minHeight}–{s.maxHeight} cm
+                  </td>
+                  <td>{s.mtbFrame}</td>
+                  <td>{s.roadFrame}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        <p className="muted">
+          Measuring your inside leg: stand against a wall in socks, put a book
+          snugly between your legs and measure from its top edge to the floor.
+        </p>
       </section>
       <section className="lv-guide-note" aria-labelledby="kids-sizes">
-        <h2 id="kids-sizes">Kids bikes</h2>
-        <p>Kids bikes are sized by wheel. Your child should reach the ground with the balls of both feet while seated.</p>
+        <h2 id="kids-sizes">Kids bikes by age</h2>
+        <p>
+          Kids bikes are sized by wheel. Height matters more than age: your
+          child should reach the ground with the balls of both feet while
+          seated.
+        </p>
         <div className="overflow-x-auto">
           <table className="lv-size-table">
             <thead>
@@ -71,11 +74,15 @@ export default function SizeGuide() {
               </tr>
             </thead>
             <tbody>
-              {kids.map(([wheel, age, height]) => (
-                <tr key={wheel}>
-                  <th scope="row">{wheel}</th>
-                  <td>{age}</td>
-                  <td>{height}</td>
+              {kidsSizes.map((s) => (
+                <tr key={s.wheel}>
+                  <th scope="row">{s.wheel}</th>
+                  <td>
+                    {s.minAge}–{s.maxAge} years
+                  </td>
+                  <td>
+                    {s.minHeight}–{s.maxHeight} cm
+                  </td>
                 </tr>
               ))}
             </tbody>

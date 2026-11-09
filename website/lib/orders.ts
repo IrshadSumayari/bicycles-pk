@@ -19,6 +19,13 @@ export type OrderQuote = {
   tax: number;
   delivery_fee: number;
   total: number;
+  // Bike delivery (delivery_fee already includes both amounts).
+  bulky_units?: number;
+  bulky_fee?: number;
+  assembly?: boolean;
+  assembly_fee?: number;
+  assembly_available?: boolean;
+  assembly_unit_fee?: number | null;
   cod_allowed: boolean;
   payment_methods: ("card" | "easypaisa" | "cod")[];
 };
@@ -34,6 +41,7 @@ export type WebOrder = Omit<
   contact_name: string;
   phone: string;
   fulfilment: string;
+  assembly?: boolean;
   address: CheckoutForm["address"] | null;
   expires_at: string | null;
   tracking_no: string | null;
@@ -43,9 +51,13 @@ export type WebOrder = Omit<
 export const statusLabel = (value: string) =>
   value.replaceAll("_", " ").replace(/^./, (l) => l.toUpperCase());
 export const ordersService = {
-  async quote(lines: CartLine[], fulfilment: string): Promise<OrderQuote> {
+  async quote(
+    lines: CartLine[],
+    fulfilment: string,
+    assembly = false,
+  ): Promise<OrderQuote> {
     const { data, error } = await browserClient().rpc("quote_online_order", {
-      p: { lines, fulfilment },
+      p: { lines, fulfilment, ...(assembly ? { assembly } : {}) },
     });
     if (error) throw error;
     return data as unknown as OrderQuote;

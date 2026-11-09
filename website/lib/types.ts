@@ -31,6 +31,7 @@ export type Related = {
 };
 export type Product = {
   specs?: unknown;
+  bulky?: boolean;
   purchase_policy?: { cod_enabled?: boolean };
   product_guide?: ProductGuide;
   style_id: string;

@@ -1,4 +1,4 @@
-import { shopCategoryNames, sectionOfCategory, sectionById } from '../../../shared/bicycles';
+import { shopCategoryNames, sectionOfCategory, sectionById, isBulkyCategory } from '../../../shared/bicycles';
 import { departmentCategories, type Department } from '../../lib/inventoryCategory';
 import { BikeVariantBuilder } from './BikeVariantBuilder';
 import { BikeSpecsPanel } from './BikeSpecsPanel';
@@ -314,6 +314,13 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                     <label className="flex items-center space-x-2">
                       <Input type="checkbox" name="trackInventory" checked={style.trackInventory} onChange={setField} />
                       <span className="text-sm text-link">Track stock</span>
+                    </label>
+                  )}
+                  {!isService && (
+                    <label className="flex items-center space-x-2" title="Adds the bulky delivery charge and offers assembly on the website">
+                      <Input type="checkbox" checked={style.bulky ?? isBulkyCategory(style.category)}
+                             onChange={e => setStyle(prev => ({ ...prev, bulky: e.target.checked }))} />
+                      <span className="text-sm text-link">Bulky item (bike delivery)</span>
                     </label>
                   )}
                 </div>

@@ -264,3 +264,11 @@ export function colourSwatch(name: string | null | undefined): string {
   for (const w of words) if (swatches[w]) return swatches[w];
   return "#d0d0d0";
 }
+
+// Bikes need a box-sized courier slot, so they default to "bulky" in the POS
+// (extra delivery charge and optional assembly on the website).
+const bulkySections: readonly SectionId[] = ["bicycles", "kids", "sports", "ebikes"];
+export function isBulkyCategory(category: string | undefined): boolean {
+  const section = sectionOfCategory(category);
+  return !!section && bulkySections.includes(section.id);
+}

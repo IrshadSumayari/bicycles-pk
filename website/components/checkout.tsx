@@ -52,7 +52,13 @@ export function Checkout({
     [error, setError] = useState("");
   const submitting = useRef(false);
   const key = `checkout-attempt-v1:${accountId}`;
-  const result = useBagQuote(lines, form.fulfilment);
+  const result = useBagQuote(
+    lines,
+    form.fulfilment,
+    form.fulfilment === "delivery" && !!form.assembly,
+  );
+  const assemblyOffered =
+    form.fulfilment === "delivery" && !!result.quote?.assembly_available;
   const options = paymentOptions(result.quote);
   const selectedMethod =
     options.find(([method]) => method === form.payment_method)?.[0] ??
@@ -96,6 +102,7 @@ export function Checkout({
           throw new Error("Review your bag and remove unavailable items");
         const checkoutForm = {
           ...form,
+          assembly: assemblyOffered && !!form.assembly,
           payment_method: selectedMethod ?? form.payment_method,
         };
         const validation = validateCheckout(
@@ -280,6 +287,40 @@ export function Checkout({
                 <option value="delivery">Courier delivery</option>
               </select>
             </label>
+            {form.fulfilment === "pickup" && (
+              <p className="muted text-sm">
+                Bikes collected from the store are assembled and checked for
+                you at no extra charge.
+              </p>
+            )}
+            {assemblyOffered && (
+              <label className="lv-assembly-option">
+                <input
+                  type="checkbox"
+                  checked={!!form.assembly}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, assembly: e.target.checked }))
+                  }
+                />
+                <span>
+                  <strong>Deliver assembled</strong>
+                  <span className="muted">
+                    {result.quote?.assembly_unit_fee
+                      ? formatPrice(result.quote.assembly_unit_fee) +
+                        " per bike. "
+                      : "Free. "}
+                    Arrives ready to ride, with brakes and gears adjusted.
+                  </span>
+                </span>
+              </label>
+            )}
+            {form.fulfilment === "delivery" &&
+            (result.quote?.bulky_units ?? 0) > 0 ? (
+              <p className="muted text-sm">
+                Bikes ship in a large box, so courier delivery includes a bulky
+                item charge per bike.
+              </p>
+            ) : null}
             {form.fulfilment === "delivery" && (
               <div className="space-y-4">
                 {(["line1", "line2", "city", "postal_code"] as const).map(
