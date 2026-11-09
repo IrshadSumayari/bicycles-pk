@@ -55,3 +55,16 @@ Next: Milestone 1 (bike spec fields), then the landing page, listing and product
 - POS style editor: a Specifications panel shows the fields relevant to the category's section
   first, with "More specifications" for the rest.
 - Website product page: an "At a glance" list above the description.
+
+## Milestone 2: landing page (9 November 2026)
+
+- Full-bleed homepage hero with the header laid over it (transparent, white text), a very large
+  two-line headline, subline, white pill button and a three-item USP strip along the bottom.
+- Hero text, image/video, USPs, announcement and header button are edited in
+  `website/content/home.json`. Set `hero.video` (and `poster`) to use a video; otherwise
+  `hero.image` is shown. The current image is an original placeholder illustration
+  (`website/public/hero/dusk-ride.svg`) until real photography is supplied.
+- Dismissible announcement bar (remembered per announcement text in that browser) and a
+  "Book a test ride" pill in the header on wide screens.
+- Below the hero: shop-by-section tiles, a new-arrivals carousel, a kids feature with a kids
+  carousel, and a dark "assembled and checked" service band.
