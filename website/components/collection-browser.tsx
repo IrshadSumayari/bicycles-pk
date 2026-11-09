@@ -8,6 +8,12 @@ import { ProductCard } from "./product-card";
 import { FilterPanel } from "./filter-panel";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import {
+  categoryHref,
+  sectionById,
+  sectionOfCategory,
+  type SectionId,
+} from "../../shared/bicycles";
 export async function CollectionBrowser({
   title,
   description,
@@ -24,11 +30,19 @@ export async function CollectionBrowser({
   search?: boolean;
 }) {
   const filters = parseFilters(query);
+  // A section (from ?section= or the chosen category) lists all its categories.
+  const section = filters.section
+    ? sectionById(filters.section as SectionId)
+    : sectionOfCategory(filters.category);
+  const sectionCategories = filters.section
+    ? section?.categories.map((c) => c.name)
+    : undefined;
   const [catalogProducts, facets] = await Promise.all([
     safeCatalog<Awaited<ReturnType<typeof catalog.list>> | null>(
       () =>
         catalog.list({
           ...filters,
+          ...(sectionCategories ? { categories: sectionCategories } : {}),
           collection,
           limit: 24,
           offset: (filters.page - 1) * 24,
@@ -49,6 +63,7 @@ export async function CollectionBrowser({
     ["size", filters.size],
     ["color", filters.color],
     ["category", filters.category],
+    ["section", section && filters.section ? section.label : ""],
     ["price_min", filters.price_min],
     ["price_max", filters.price_max],
   ].filter(([, value]) => value !== "" && value !== undefined);
@@ -66,7 +81,7 @@ export async function CollectionBrowser({
         <Input className="field" name="q" defaultValue={filters.q} />
       </label>
       <label>
-        Size
+        Frame / wheel size
         <select className="field" name="size" defaultValue={filters.size}>
           <option value="">All sizes</option>
           {[
@@ -80,9 +95,9 @@ export async function CollectionBrowser({
         </select>
       </label>
       <label>
-        Color
+        Colour
         <select className="field" name="color" defaultValue={filters.color}>
-          <option value="">All colors</option>
+          <option value="">All colours</option>
           {[
             ...new Set([
               ...facets.colors,
@@ -95,6 +110,9 @@ export async function CollectionBrowser({
       </label>
       {filters.category && (
         <input type="hidden" name="category" value={filters.category} />
+      )}
+      {filters.section && (
+        <input type="hidden" name="section" value={filters.section} />
       )}
       <label>
         Price from
@@ -128,12 +146,18 @@ export async function CollectionBrowser({
   return (
     <>
       <ShopHeading
-        title={search ? "Find your favourites." : title}
-        eyebrow={search ? "A LITTLE SOMETHING FOR YOU" : "THE BICYCLES.PK EDIT"}
+        title={
+          search
+            ? filters.category || section?.label || "Find your ride."
+            : title
+        }
+        eyebrow={
+          search && section ? "BICYCLES.PK · " + section.label.toUpperCase() : "BICYCLES.PK"
+        }
         description={
           search
-            ? "Discover your next everyday essential."
-            : description || "Thoughtful little luxuries for every day."
+            ? section?.description || "Search bicycles, accessories and parts."
+            : description || "Bicycles, accessories and parts."
         }
       >
         {search && (
@@ -153,6 +177,25 @@ export async function CollectionBrowser({
           </form>
         )}
       </ShopHeading>
+      {section && (
+        <nav className="lv-category-pills" aria-label={section.label + " categories"}>
+          <Link
+            href={"/search?section=" + section.id}
+            aria-current={filters.section && !filters.category ? "page" : undefined}
+          >
+            All {section.label.toLowerCase()}
+          </Link>
+          {section.categories.slice(1).map((c) => (
+            <Link
+              key={c.slug}
+              href={categoryHref(c.name)}
+              aria-current={filters.category === c.name ? "page" : undefined}
+            >
+              {c.name}
+            </Link>
+          ))}
+        </nav>
+      )}
       {activeFilters.length > 0 && (
         <nav className="lv-filter-chips" aria-label="Active filters">
           {activeFilters.map(([key, value]) => (
