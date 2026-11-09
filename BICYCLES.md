@@ -80,3 +80,14 @@ Next: Milestone 1 (bike spec fields), then the landing page, listing and product
   have two large split tiles and a carousel per category or section.
 - The card subtitle uses sizes and colours because `catalog_list` does not
   return specs yet; returning specs needs a change to its return type.
+
+## Milestone 4: product page (9 November 2026)
+
+- Product page follows the detail reference: large grey gallery with zoom and
+  thumbnails, and a sticky panel with breadcrumb, spec subtitle, models,
+  price, colour swatches, size buttons, delivery, Add to bag and Share.
+- Bikes show up to three related products as "Models" and a "Complete your
+  ride" row (newest helmet, lock and light). Quick add puts an add-on straight
+  in the bag when it has one in-stock option, otherwise opens it.
+- Specifications are grouped (`specGroups` in `shared/bicycles.ts`) and shown
+  as expandable sections under the overview. Styles: `website/styles/pdp.css`.

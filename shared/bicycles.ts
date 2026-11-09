@@ -215,3 +215,52 @@ export function specRows(value: unknown): { key: SpecKey; label: string; value: 
   const specs = cleanSpecs(value);
   return specFields.flatMap((f) => (specs[f.key] ? [{ key: f.key, label: f.label, value: specs[f.key]! }] : []));
 }
+
+// Spec groups for the expandable "Specifications" list on the product page.
+export const specGroups: readonly { title: string; keys: readonly SpecKey[] }[] = [
+  { title: "Frame and fork", keys: ["frame", "fork", "suspension"] },
+  { title: "Drivetrain", keys: ["gears", "drivetrain"] },
+  { title: "Wheels and brakes", keys: ["wheel_size", "tyres", "brakes"] },
+  { title: "Electric", keys: ["motor", "battery", "range"] },
+  { title: "Size and weight", keys: ["rider_height", "age_range", "weight", "max_load", "folded_size"] },
+  { title: "Warranty", keys: ["warranty"] },
+];
+
+// Filled specs per group; groups with nothing filled are left out.
+export function groupedSpecs(value: unknown) {
+  const rows = specRows(value);
+  return specGroups
+    .map((g) => ({ title: g.title, rows: rows.filter((r) => g.keys.includes(r.key)) }))
+    .filter((g) => g.rows.length > 0);
+}
+
+// Short line under the product name, e.g. "Aluminium 6061 · 27.5" · 21-speed".
+export function specSubtitle(value: unknown, category: string | undefined, max = 3): string {
+  const specs = cleanSpecs(value);
+  return primarySpecKeys(category)
+    .flatMap((k) => (specs[k] ? [specs[k]!] : []))
+    .slice(0, max)
+    .join(" · ");
+}
+
+// Swatch colour for a colour name; unknown names get a neutral swatch.
+const swatches: Record<string, string> = {
+  black: "#111111",
+  white: "#f7f7f7",
+  grey: "#8a8f98",
+  gray: "#8a8f98",
+  silver: "#c4c8cc",
+  red: "#c8102e",
+  blue: "#1f4fa3",
+  green: "#2f6b3a",
+  yellow: "#f2c230",
+  orange: "#e8702a",
+  pink: "#e98aa9",
+  purple: "#6b3fa0",
+  brown: "#6f4a2f",
+};
+export function colourSwatch(name: string | null | undefined): string {
+  const words = key(name ?? "").split(/[\s/&-]+/);
+  for (const w of words) if (swatches[w]) return swatches[w];
+  return "#d0d0d0";
+}
