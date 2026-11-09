@@ -13,7 +13,7 @@ export function SplitTile({
 }: {
   title: string;
   href: string;
-  image?: string;
+  image?: string | null;
   icon?: ReactNode;
   dark?: boolean;
 }) {
