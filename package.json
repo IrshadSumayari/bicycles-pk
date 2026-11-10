@@ -31,7 +31,8 @@
     "web:dev": "npm --prefix website run dev",
     "web:build": "npm --prefix website run build",
     "web:lint": "npm --prefix website run lint",
-    "web:test": "npm --prefix website run test"
+    "web:test": "npm --prefix website run test",
+    "seed:photos": "node scripts/seed-local/photos.mjs"
   },
   "dependencies": {
     "@fontsource-variable/manrope": "5.3.0",
