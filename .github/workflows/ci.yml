@@ -79,6 +79,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # The sample catalogue in seed.sql is for local testing; tests start from an empty shop.
+      - name: Use an empty seed
+        run: echo "-- empty in CI" > supabase/seed.sql
       - name: Start Postgres and apply migrations
         run: npx supabase db start
       - name: Run database tests

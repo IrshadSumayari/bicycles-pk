@@ -123,3 +123,24 @@ Next: Milestone 1 (bike spec fields), then the landing page, listing and product
 - **Tests:** database tests use bike fixtures; `supabase/tests/database/bikes.test.sql` covers specs,
   bulky items, the new filters, the bulky charge, assembly and admin-only fees. The PGlite tests that
   loaded individual migration files were removed with those files.
+
+## Local sample catalogue (10 November 2026)
+
+For local testing only; nothing here is deployed.
+
+```sh
+npx supabase db reset      # schema plus supabase/seed.sql
+npm run seed:photos        # uploads the sample photos to local storage
+npm run web:dev            # website on http://localhost:3000
+```
+
+- `supabase/seed.sql`: ten real bike models (Trek FX 2 Disc, Giant Escape 3, Brompton C Line
+  Explore, Electra Townie 7D, Specialized Rockhopper Sport 29, Cannondale CAAD Optimo 3, Mongoose
+  Legion L20, Strider 12 Sport, Trek Precaliber 16, Aventon Pace 500.3) plus a helmet and a light,
+  with specs, sizes, colours, sample prices and stock, one collection per section, and sample
+  bulky (PKR 1,500) and assembly (PKR 2,000) fees.
+- Photos: free Unsplash photos listed in `scripts/seed-local/photos.json`. They show similar bikes,
+  not the exact models; the script refuses any non-local Supabase.
+- Homepage video: a free Pexels clip streamed from `videos.pexels.com` (allowed in the website CSP
+  in `website/lib/security.ts`). Before launch, put the shop's own video in `website/public/hero/`,
+  point `website/content/home.json` at it and remove the Pexels hosts from the CSP.

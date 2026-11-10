@@ -30,6 +30,12 @@ export function paymentOrigins(value = ""): string[] {
     ),
   ];
 }
+// The sample homepage video is streamed from Pexels (free licence). Replace it with
+// the shop's own video in website/public/hero/ and remove these hosts before launch.
+const HERO_MEDIA = {
+  video: "https://videos.pexels.com",
+  poster: "https://images.pexels.com",
+};
 export function buildCsp({
   nonce,
   supabase,
@@ -45,9 +51,10 @@ export function buildCsp({
     "default-src 'self'",
     `script-src 'self'${nonce ? ` 'nonce-${nonce}' 'strict-dynamic'` : ""}${development ? " 'unsafe-eval'" : ""}${analytics ? " https://www.googletagmanager.com" : ""}`,
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data: blob: ${origin}${analytics ? " https://www.google-analytics.com https://region1.google-analytics.com" : ""}`,
+    `img-src 'self' data: blob: ${origin} ${HERO_MEDIA.poster}${analytics ? " https://www.google-analytics.com https://region1.google-analytics.com" : ""}`,
     // blob: lets the 3D viewer read textures packed inside a .glb model.
     `connect-src 'self' blob: ${origin} ${ws}${development ? " ws://localhost:* ws://127.0.0.1:*" : ""}${analytics ? " https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com" : ""}`,
+    `media-src 'self' ${HERO_MEDIA.video}`,
     "font-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",
