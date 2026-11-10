@@ -52,6 +52,11 @@ export async function CollectionBrowser({
     safeCatalog<Facets>(() => catalog.facets(collection ?? null), {
       sizes: [],
       colors: [],
+      brands: [],
+      wheel_sizes: [],
+      brakes: [],
+      gears: [],
+      suspension: [],
       price_min: null,
       price_max: null,
     }),
@@ -64,6 +69,12 @@ export async function CollectionBrowser({
     ["color", filters.color],
     ["category", filters.category],
     ["section", section && filters.section ? section.label : ""],
+    ["brand", filters.brand],
+    ["wheel_size", filters.wheel_size],
+    ["brakes", filters.brakes],
+    ["gears", filters.gears],
+    ["suspension", filters.suspension],
+    ["in_stock", filters.in_stock ? "Yes" : ""],
     ["price_min", filters.price_min],
     ["price_max", filters.price_max],
   ].filter(([, value]) => value !== "" && value !== undefined);
@@ -80,33 +91,63 @@ export async function CollectionBrowser({
         Search
         <Input className="field" name="q" defaultValue={filters.q} />
       </label>
-      <label>
-        Frame / wheel size
-        <select className="field" name="size" defaultValue={filters.size}>
-          <option value="">All sizes</option>
-          {[
-            ...new Set([
-              ...facets.sizes,
-              ...(filters.size ? [filters.size] : []),
-            ]),
-          ].map((size) => (
-            <option key={size}>{size}</option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Colour
-        <select className="field" name="color" defaultValue={filters.color}>
-          <option value="">All colours</option>
-          {[
-            ...new Set([
-              ...facets.colors,
-              ...(filters.color ? [filters.color] : []),
-            ]),
-          ].map((color) => (
-            <option key={color}>{color}</option>
-          ))}
-        </select>
+      <FacetSelect
+        label="Frame / wheel size"
+        name="size"
+        all="All sizes"
+        options={facets.sizes}
+        value={filters.size}
+      />
+      <FacetSelect
+        label="Colour"
+        name="color"
+        all="All colours"
+        options={facets.colors}
+        value={filters.color}
+      />
+      <FacetSelect
+        label="Brand"
+        name="brand"
+        all="All brands"
+        options={facets.brands}
+        value={filters.brand}
+      />
+      <FacetSelect
+        label="Wheel size"
+        name="wheel_size"
+        all="All wheel sizes"
+        options={facets.wheel_sizes}
+        value={filters.wheel_size}
+      />
+      <FacetSelect
+        label="Brakes"
+        name="brakes"
+        all="All brakes"
+        options={facets.brakes}
+        value={filters.brakes}
+      />
+      <FacetSelect
+        label="Gears"
+        name="gears"
+        all="All gears"
+        options={facets.gears}
+        value={filters.gears}
+      />
+      <FacetSelect
+        label="Suspension"
+        name="suspension"
+        all="All suspension"
+        options={facets.suspension}
+        value={filters.suspension}
+      />
+      <label className="catalog-filter-check">
+        <input
+          type="checkbox"
+          name="in_stock"
+          value="1"
+          defaultChecked={filters.in_stock}
+        />
+        In stock only
       </label>
       {filters.category && (
         <input type="hidden" name="category" value={filters.category} />
@@ -285,5 +326,35 @@ export async function CollectionBrowser({
         )}
       </FilterPanel>
     </>
+  );
+}
+
+// A filter select that only shows values present in the catalogue, plus the
+// current value so a shared link never loses its filter.
+function FacetSelect({
+  label,
+  name,
+  all,
+  options,
+  value,
+}: {
+  label: string;
+  name: string;
+  all: string;
+  options: string[];
+  value: string;
+}) {
+  const values = [...new Set([...options, ...(value ? [value] : [])])];
+  if (values.length === 0) return null;
+  return (
+    <label>
+      {label}
+      <select className="field" name={name} defaultValue={value}>
+        <option value="">{all}</option>
+        {values.map((option) => (
+          <option key={option}>{option}</option>
+        ))}
+      </select>
+    </label>
   );
 }

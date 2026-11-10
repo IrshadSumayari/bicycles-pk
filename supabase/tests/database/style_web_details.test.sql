@@ -7,8 +7,8 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
 UPDATE users SET role='manager',active=true WHERE id='00000000-0000-0000-0000-000000007202';
 UPDATE users SET active=true WHERE id='00000000-0000-0000-0000-000000007203';
 INSERT INTO product_styles(id,code,name,kind,slug) VALUES
- ('00000000-0000-0000-0000-0000000072a1','DETAILS-A','First style','garment',NULL),
- ('00000000-0000-0000-0000-0000000072a2','DETAILS-B','Second style','garment','second-style');
+ ('00000000-0000-0000-0000-0000000072a1','DETAILS-A','First style','item',NULL),
+ ('00000000-0000-0000-0000-0000000072a2','DETAILS-B','Second style','item','second-style');
 INSERT INTO product_variants(id,style_id,sku,price) VALUES
  ('00000000-0000-0000-0000-0000000072b1','00000000-0000-0000-0000-0000000072a1','DETAILS-A',100),
  ('00000000-0000-0000-0000-0000000072b2','00000000-0000-0000-0000-0000000072a2','DETAILS-B',200);

@@ -1,4 +1,4 @@
-export type ProductKind = 'garment' | 'pack' | 'service';
+export type ProductKind = 'item' | 'pack' | 'service';
 
 // A sellable item: one variant (size / color / fit) of a product style.
 export interface Product {
@@ -27,7 +27,7 @@ export interface Product {
   trackInventory?: boolean;
 }
 
-// Name with size / color / fit, e.g. "Kurta L White"
+// Name with size / color / fit, e.g. "City Bike M Black"
 export function productLabel(product: Pick<Product, 'name' | 'size' | 'color' | 'fit'>): string {
   return [product.name, product.size, product.color, product.fit].filter(Boolean).join(' ');
 }

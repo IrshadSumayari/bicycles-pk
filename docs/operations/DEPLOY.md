@@ -53,7 +53,7 @@ After the first hosted migration job, verify these in each Supabase **SQL Editor
 
 ```sql
 select id, public, file_size_limit from storage.buckets
-where id in ('product-images','tailoring-photos');
+where id in ('product-images','return-evidence');
 select policyname, roles, cmd from pg_policies
 where schemaname='storage' and tablename='objects';
 select extname from pg_extension where extname='pg_cron';
@@ -62,7 +62,7 @@ where jobname='expire-online-orders';
 select online_card_enabled, cod_enabled from public.app_settings;
 ```
 
-Expect public `product-images`, private `tailoring-photos`, the product-image staff-write policies and private-photo ownership/counter-staff-read policies. Migration `20261026000000` creates product storage; `20261027000000` creates private photos and policies. Migration `20261028000000` enables pg_cron and schedules `SELECT public.expire_online_orders()` every minute. No seed is needed (`seed.sql` is intentionally empty). Card must be **false**, COD **true** for launch.
+Expect public `product-images`, private `return-evidence`, the product-image staff-write policies and the return-photo access policies. The baseline migration `20261110000000_bicycles_baseline.sql` creates both buckets, enables pg_cron and schedules `SELECT public.expire_online_orders()` every minute. No seed is needed (`seed.sql` is intentionally empty). Card must be **false**, COD **true** for launch.
 
 If pg_cron creation failed on hosted infrastructure, enable **Database → Extensions → pg_cron**, then rerun the failed migration job; do not mark the migration applied manually. If the migration succeeded but the schedule was removed, restore it as owner:
 
@@ -131,7 +131,7 @@ Wait until each provider says Valid/Active and each HTTPS URL opens without warn
 1. Confirm the matching Supabase migration/function job passed. Inspect buckets/policies/cron as above. In POS enable COD settings as needed and keep card/wallet off. Publish one reviewed stocked test item through Inventory.
 2. Sign in with a website customer code: verify sender, new/existing accounts and rejection of an incorrect/expired code. Ensure this customer cannot enter staff screens.
 3. Place a COD order, view it in both account orders and the POS queue, confirm, pack, mark ready/shipped with tracking and deliver. Collect cash COD with the cashier's open shift and reconcile the shift. Cancel another unfulfilled COD order and confirm stock availability returns. Check configured COD maximums. No card/wallet radio buttons should appear.
-4. Open a shift, make a POS sale, print its receipt, return it and reconcile cash/refund and stock. Submit a tailoring request with a photo; correct staff can view it, another customer cannot. Check light/dark and mobile checkout.
+4. Open a shift, make a POS sale, print its receipt, return it and reconcile cash/refund and stock. Submit a return request with a photo; correct staff can view it, another customer cannot. Check light/dark and mobile checkout.
 5. Keep the expiry cron active for historical/future online payment holds; test expiration on staging through the tested payment rehearsal when online payments are eventually enabled. Do not temporarily use mock on a hosted domain: the safety guard deliberately rejects it.
 6. Installer: `npm ci` at the repository root and `npx playwright install chromium` once, then run the read-only check below. Supply only the public anon key, using the environment variable `SUPABASE_ANON_KEY` privately. Do not commit its value:
 
@@ -144,9 +144,9 @@ Wait until each provider says Valid/Active and each HTTPS URL opens without warn
 
 ## 10. Go-live, backups and rollback
 
-1. Follow [CATALOG_IMPORT.md](./CATALOG_IMPORT.md) on production with the owner reviewing the dry-run problem list first. Automatic photo import is removed. Upload the shop's own photos through POS, enter physical stock and costs and publish a small reviewed collection first. Retained campaign photos still need owner approval/replacement before claiming an entirely original photographic site.
-2. Verify all totals, contact details and delivery/return wording. Follow [WEBSITE_LAUNCH.md](./WEBSITE_LAUNCH.md) for legal/launch signoff. Monitor COD failures, fulfillment queue, stock and cash daily.
-3. Follow [BACKUP_AND_RESTORE.md](./BACKUP_AND_RESTORE.md): Pro backups plus encrypted off-site exports, both public product images and private tailoring photographs, and regular local restore rehearsal. Record Auth/SMTP/secrets settings privately; SQL backups do not restore all provider configuration.
+1. Enter products in the production POS (or import the spreadsheet template), upload the shop's own photos, enter physically counted stock and costs, and publish a small reviewed set first. See section 3 of [LAUNCH.md](./LAUNCH.md).
+2. Verify all totals, contact details and delivery/return wording. Follow [LAUNCH.md](./LAUNCH.md) for policy and launch signoff. Monitor COD failures, fulfillment queue, stock and cash daily.
+3. Follow [BACKUP_AND_RESTORE.md](./BACKUP_AND_RESTORE.md): Pro backups plus encrypted off-site exports, both public product images and private return photographs, and regular local restore rehearsal. Record Auth/SMTP/secrets settings privately; SQL backups do not restore all provider configuration.
 4. If release behavior is wrong, pause new sales/publication through the POS and retain existing order access. Restore the last compatible successful website deployment in Vercel and POS deployment in Vercel, checking the approved scope before any Vercel action. Both must remain compatible with the current schema. This additive switch can stay in the schema with card disabled.
 5. Do not reverse migrations by deleting hosted history or use db reset/seed on hosted data. Fix forward in a reviewed migration. A data restore requires owner authorization, a verified recovery point, downtime and separate image restore/reconciliation as described in the backup runbook.
 

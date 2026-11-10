@@ -7,6 +7,12 @@ export type Filters = {
   color: string;
   category: string;
   section: string;
+  brand: string;
+  wheel_size: string;
+  brakes: string;
+  gears: string;
+  suspension: string;
+  in_stock: boolean;
   price_min?: number;
   price_max?: number;
   sort: "new" | "price_asc" | "price_desc";
@@ -29,6 +35,12 @@ export function parseFilters(query: Query): Filters {
     color: value("color"),
     category: value("category"),
     section: shopSections.some((x) => x.id === value("section")) ? value("section") : "",
+    brand: value("brand"),
+    wheel_size: value("wheel_size"),
+    brakes: value("brakes"),
+    gears: value("gears"),
+    suspension: value("suspension"),
+    in_stock: value("in_stock") === "1",
     price_min: price("price_min"),
     price_max: price("price_max"),
     sort: sort === "price_asc" || sort === "price_desc" ? sort : "new",
@@ -45,11 +57,17 @@ export function filterQuery(filters: Filters, page = filters.page): string {
     "color",
     "category",
     "section",
+    "brand",
+    "wheel_size",
+    "brakes",
+    "gears",
+    "suspension",
     "price_min",
     "price_max",
   ] as const)
     if (filters[key] !== "" && filters[key] !== undefined)
       query.set(key, String(filters[key]));
+  if (filters.in_stock) query.set("in_stock", "1");
   if (filters.sort !== "new") query.set("sort", filters.sort);
   if (page > 1) query.set("page", String(page));
   return query.toString();

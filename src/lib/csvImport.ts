@@ -10,14 +10,14 @@ export const IMPORT_COLUMNS = [
 
 export const IMPORT_TEMPLATE = [
   IMPORT_COLUMNS.join(','),
-  'BK-CTY-001,Urban 7-Speed City Bike,garment,City & Commuter,Bicycles.pk,Aluminium,2027,BK-CTY-001-BLAC-M,M,Black,7-speed,65000,48000,,2,1',
-  'BK-CTY-001,Urban 7-Speed City Bike,garment,City & Commuter,Bicycles.pk,Aluminium,2027,BK-CTY-001-BLAC-L,L,Black,7-speed,65000,48000,,2,1',
-  'BK-KID-016,Junior 16 Inch Kids Bike,garment,Kids Bicycles,Bicycles.pk,Steel,2027,BK-KID-016-RED-16,"16""",Red,,22000,15000,,3,1',
-  'AC-HLM-001,Commuter Helmet,garment,Helmets,Bicycles.pk,EPS foam,2027,AC-HLM-001-WHIT-M,M,White,,6500,4000,,5,2',
-  'AC-LCK-001,U-Lock with Cable,garment,Locks,Bicycles.pk,Steel,2027,AC-LCK-001,One size,,,4500,2800,,8,2',
+  'BK-CTY-001,Urban 7-Speed City Bike,item,City & Commuter,Bicycles.pk,Aluminium,2027,BK-CTY-001-BLAC-M,M,Black,7-speed,65000,48000,,2,1',
+  'BK-CTY-001,Urban 7-Speed City Bike,item,City & Commuter,Bicycles.pk,Aluminium,2027,BK-CTY-001-BLAC-L,L,Black,7-speed,65000,48000,,2,1',
+  'BK-KID-016,Junior 16 Inch Kids Bike,item,Kids Bicycles,Bicycles.pk,Steel,2027,BK-KID-016-RED-16,"16""",Red,,22000,15000,,3,1',
+  'AC-HLM-001,Commuter Helmet,item,Helmets,Bicycles.pk,EPS foam,2027,AC-HLM-001-WHIT-M,M,White,,6500,4000,,5,2',
+  'AC-LCK-001,U-Lock with Cable,item,Locks,Bicycles.pk,Steel,2027,AC-LCK-001,One size,,,4500,2800,,8,2',
 ].join('\n') + '\n';
 
-const KINDS: ProductKind[] = ['garment', 'pack', 'service'];
+const KINDS: ProductKind[] = ['item', 'pack', 'service'];
 
 // RFC 4180 style parser: commas, double quotes, "" escapes, CRLF or LF
 export function parseCsv(text: string): string[][] {

@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(26);
+SELECT plan(25);
 INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000ac01','lookup-admin@test.local','{"name":"Lookup admin"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000ac02','lookup-cashier@test.local','{"name":"Lookup cashier"}','{"account_type":"staff"}'),
@@ -11,13 +11,13 @@ GRANT ALL ON lookup_test_ids TO authenticated;
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000ac01","role":"authenticated"}';
 
-INSERT INTO lookup_test_ids VALUES('category',save_business_lookup('{"kind":"category","name":"Lookup Clothing","description":"Owner-managed category"}'));
+INSERT INTO lookup_test_ids VALUES('category',save_business_lookup('{"kind":"category","name":"Lookup Bicycles","description":"Owner-managed category"}'));
 SELECT ok(EXISTS(SELECT 1 FROM categories WHERE id=(SELECT id FROM lookup_test_ids WHERE key='category')),'manager adds category');
-SELECT throws_ok($$SELECT save_business_lookup('{"kind":"category","name":"lookup clothing"}')$$,'P0001',NULL,'case-insensitive duplicates refused');
-INSERT INTO lookup_test_ids VALUES('style',save_style('{"code":"LKP-CATALOG","name":"Lookup fixture garment","kind":"garment","category":"Lookup Clothing","brand":"Lookup Brand","track_inventory":false,"variants":[{"sku":"LKP-CATALOG-M","size":"M","color":"Lookup White","price":1000}]}'));
+SELECT throws_ok($$SELECT save_business_lookup('{"kind":"category","name":"lookup bicycles"}')$$,'P0001',NULL,'case-insensitive duplicates refused');
+INSERT INTO lookup_test_ids VALUES('style',save_style('{"code":"LKP-CATALOG","name":"Lookup fixture bike","kind":"item","category":"Lookup Bicycles","brand":"Lookup Brand","track_inventory":false,"variants":[{"sku":"LKP-CATALOG-M","size":"M","color":"Lookup White","price":1000}]}'));
 SELECT is((SELECT category_id FROM product_styles WHERE id=(SELECT id FROM lookup_test_ids WHERE key='style')),(SELECT id FROM lookup_test_ids WHERE key='category'),'real style keeps category identity');
-SELECT FROM save_business_lookup(jsonb_build_object('kind','category','id',(SELECT id FROM lookup_test_ids WHERE key='category'),'name','Lookup Clothing Renamed','active',false));
-SELECT is((SELECT name FROM categories WHERE id=(SELECT category_id FROM product_styles WHERE id=(SELECT id FROM lookup_test_ids WHERE key='style'))),'Lookup Clothing Renamed','category rename retains product relationship');
+SELECT FROM save_business_lookup(jsonb_build_object('kind','category','id',(SELECT id FROM lookup_test_ids WHERE key='category'),'name','Lookup Bicycles Renamed','active',false));
+SELECT is((SELECT name FROM categories WHERE id=(SELECT category_id FROM product_styles WHERE id=(SELECT id FROM lookup_test_ids WHERE key='style'))),'Lookup Bicycles Renamed','category rename retains product relationship');
 SELECT is((SELECT count(*)::int FROM categories WHERE id=(SELECT id FROM lookup_test_ids WHERE key='category') AND active),0,'inactive category excluded by dropdown query');
 SELECT throws_ok($$SELECT delete_business_lookup('category',(SELECT id::text FROM lookup_test_ids WHERE key='category'))$$,'P0001',NULL,'used category cannot be deleted');
 SELECT ok(EXISTS(SELECT 1 FROM product_styles WHERE code='LKP-CATALOG'),'deletion attempt does not remove product');
@@ -47,7 +47,6 @@ SELECT throws_ok($$SELECT delete_business_lookup('bank',(SELECT id::text FROM lo
 
 SELECT throws_ok($$SELECT save_business_lookup('{"kind":"customer_tier","name":"Standard"}')$$,'P0001',NULL,'default tier is a system fallback');
 SELECT throws_ok($$SELECT save_business_lookup('{"kind":"return_reason","name":"Other"}')$$,'P0001',NULL,'free-text reason fallback is not duplicate data');
-SELECT throws_ok($$SELECT delete_business_lookup('garment_type',gen_random_uuid()::text)$$,'P0001','Lookup no longer exists','garment forms are no longer a lookup type');
 SELECT ok((SELECT count(*)>0 FROM lookup_events),'lookup changes have an audit trail');
 SELECT is(has_table_privilege('authenticated','public.categories','DELETE'),false,'direct deletion cannot bypass used-category check');
 SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000ac02","role":"authenticated"}';

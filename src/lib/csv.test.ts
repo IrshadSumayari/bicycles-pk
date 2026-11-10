@@ -18,7 +18,7 @@ describe('CSV export', () => {
     expect(
       toCsv(
         [
-          { name: 'Kurta, white', amount: 1 },
+          { name: 'Helmet, white', amount: 1 },
           { name: 'Size "L"', amount: 2 },
           { name: 'one\ntwo', amount: 3 },
           { name: 'one\r\ntwo', amount: 4 },
@@ -28,7 +28,7 @@ describe('CSV export', () => {
       ),
     ).toBe(
       String.fromCharCode(0xfeff) +
-        'Name,Amount\r\n"Kurta, white",1\r\n"Size ""L""",2\r\n"one\ntwo",3\r\n"one\r\ntwo",4\r\n"one\rtwo",5',
+        'Name,Amount\r\n"Helmet, white",1\r\n"Size ""L""",2\r\n"one\ntwo",3\r\n"one\r\ntwo",4\r\n"one\rtwo",5',
     );
   });
   it('quotes headers too', () => {

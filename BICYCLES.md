@@ -2,16 +2,14 @@
 
 Domain: https://bicycles.pk (still serving the coming-soon page from `main`).
 
-This repository started as an export of LadyVogue `origin/dev` at `dde73de` (tracked files only; no
-environment files, data or secrets). POS source is in `src/`, the Next.js website in `website/`,
-shared rules in `shared/`, and database migrations in `supabase/`. The plan is in
-[docs/BICYCLES_PLAN.md](docs/BICYCLES_PLAN.md); the inherited LadyVogue history is in
-[docs/LADYVOGUE_HISTORY.md](docs/LADYVOGUE_HISTORY.md).
+POS source is in `src/`, the Next.js website in `website/`, shared rules in `shared/`, and the
+database in `supabase/` (one baseline migration plus any later ones). The plan is in
+[docs/BICYCLES_PLAN.md](docs/BICYCLES_PLAN.md) and the launch runbook in
+[docs/operations/LAUNCH.md](docs/operations/LAUNCH.md).
 
 ## Configuration
 
-Use a dedicated Bicycles.pk Supabase project. Local Supabase uses project ID `bicycles` and ports 55330–55339, so it can run beside a local LadyVogue instance (55320–55329). Search indexing stays off (`noindex`) until launch. Never reuse
-LadyVogue's database, Vercel projects or deployment secrets. Install with `npm ci` and
+Use a dedicated Bicycles.pk Supabase project. Local Supabase uses project ID `bicycles` and ports 55330–55339. Search indexing stays off (`noindex`) until launch. Install with `npm ci` and
 `npm --prefix website ci`; run `npm run dev` (POS) and `npm run web:dev` (website), each with its own
 environment file based on the examples. Production branch is `main`; staging is `dev`.
 
@@ -32,9 +30,7 @@ environment file based on the examples. Production branch is `main`; staging is 
 - Removed lingerie (attributes, band/cup sizes, filters, fit guide), jewellery, bags and the 3D
   try-on viewer from both applications. `/fit-guide` is now a bike size guide by rider height and a
   kids wheel-size chart.
-- Database unchanged. Lingerie, bra band/cup and try-on columns, functions and the `try-on-models`
-  bucket remain unused; omitting `try_on` when saving web details keeps the stored value. They can be
-  dropped in a later migration. The website still depends on `three`, now unused.
+- The leftover database objects were removed later in the bikes-only cleanup (below).
 
 Validation: 239 POS tests and 59 website tests passed; POS and website TypeScript, ESLint (no
 errors; 9 inherited POS warnings) and both production builds passed (builds used local placeholder
@@ -107,3 +103,23 @@ Next: Milestone 1 (bike spec fields), then the landing page, listing and product
   assembled free.
 - Both charges are folded into `delivery_fee`, so order totals still equal
   subtotal + tax + delivery (migration `20261109000200_bike_delivery`).
+
+## Bikes-only cleanup (10 November 2026)
+
+- **Database:** the 56 inherited migrations were replaced by one baseline,
+  `supabase/migrations/20261110000000_bicycles_baseline.sql`, generated from the final schema. It has
+  no clothing objects: the lingerie, bra band/cup, product guide (garment size chart), size-scheme
+  chart and try-on columns, their checks and functions, the `try-on-models` bucket and the workroom
+  location are gone. Product kind `garment` is now `item`. The wrapper chains for `save_style`,
+  `update_settings`, `quote_online_order` and `create_online_order` were merged into single
+  functions. Starting data: store name Bicycles.pk, the main branch with shop floor, stockroom and
+  online locations, and Frame, Wheel and One size presets.
+- **Listing filters:** `catalog_list` and `catalog_facets` add brand, wheel size, brakes, gears,
+  suspension and in-stock filters; search also matches the brand. The listing filter panel shows
+  each filter only when the catalogue has values for it.
+- **Code:** removed the garment size-chart editor and display, the old storefront catalogue import
+  script, the unused `three` and PGlite packages, and the LadyVogue documents and plans. POS labels
+  now read *Model year* (stored as `season`), *Frame materials* and *Variants* (stored as `fit`).
+- **Tests:** database tests use bike fixtures; `supabase/tests/database/bikes.test.sql` covers specs,
+  bulky items, the new filters, the bulky charge, assembly and admin-only fees. The PGlite tests that
+  loaded individual migration files were removed with those files.

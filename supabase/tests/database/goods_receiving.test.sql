@@ -11,9 +11,9 @@ SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ee01","role":"authenticated"}';
 
 CREATE TEMP TABLE s AS SELECT
-    save_style('{"kind":"garment","code":"SK","name":"Kameez","variants":[
+    save_style('{"kind":"item","code":"SK","name":"City bike","variants":[
         {"sku":"SK-M","size":"M","price":4500,"cost":2000,"opening_stock":4},
-        {"sku":"SK-L","size":"L","price":4500,"cost":2000}]}') AS garment,
+        {"sku":"SK-L","size":"L","price":4500,"cost":2000}]}') AS item,
     save_style('{"kind":"pack","code":"GIFT","name":"Gift set","variants":[{"sku":"GIFT-1","color":"Blue","price":800}]}') AS pack;
 CREATE TEMP TABLE ids AS SELECT
     (SELECT id FROM product_variants WHERE sku = 'SK-M') AS m,
@@ -35,7 +35,7 @@ SELECT lives_ok($$ SELECT pg_temp.receipt('00000000-0000-0000-0000-00000000f101'
 SELECT matches((SELECT receipt_no FROM goods_receipts), '^GRN-[0-9]{6}$', 'receipt numbered');
 SELECT is((SELECT total_cost FROM goods_receipts), 33450.00, 'receipt total = 6x2500 + 3x2400 + 25x450');
 SELECT is((SELECT count(*)::int FROM suppliers WHERE name = 'Al-Karam Textiles'), 1, 'new supplier created by name');
-SELECT is((SELECT on_hand FROM stock_balances WHERE variant_id = (SELECT m FROM ids)), 10.000000, 'garment stock received');
+SELECT is((SELECT on_hand FROM stock_balances WHERE variant_id = (SELECT m FROM ids)), 10.000000, 'item stock received');
 SELECT is((SELECT unit_cost FROM variant_costs WHERE variant_id = (SELECT m FROM ids)), 2300.0000,
           'weighted average cost: (4x2000 + 6x2500) / 10');
 SELECT is((SELECT unit_cost FROM variant_costs WHERE variant_id = (SELECT l FROM ids)), 2400.0000,

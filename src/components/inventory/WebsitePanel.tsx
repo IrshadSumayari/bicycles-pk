@@ -1,8 +1,3 @@
-import { ProductGuideEditor } from "./ProductGuideEditor";
-import {
-  readProductGuide,
-  productGuideError,
-} from "../../../shared/productGuide";
 import { Input } from "@/components/ui/input";
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -76,9 +71,6 @@ function WebsiteForm({
   const [slug, setSlug] = useState(initial.slug ?? slugify(initial.name));
   const [title, setTitle] = useState(initial.web_title ?? "");
   const [description, setDescription] = useState(initial.web_description ?? "");
-  const [guide, setGuide] = useState(() =>
-    readProductGuide(initial.product_guide),
-  );
   const [variants, setVariants] = useState(
     initial.variants.map((v) => ({ variant_id: v.id, published: v.published })),
   );
@@ -98,7 +90,6 @@ function WebsiteForm({
       slug: slug || null,
       web_title: title,
       web_description: description,
-      product_guide: guide,
       variants,
     };
     const fingerprint = JSON.stringify(details);
@@ -127,11 +118,6 @@ function WebsiteForm({
         setProblems([
           "Use a web address of at most 120 lowercase letters, numbers and hyphens",
         ]);
-        return;
-      }
-      const guideError = productGuideError(guide);
-      if (guideError) {
-        setProblems([guideError]);
         return;
       }
       await saveDetails();
@@ -223,7 +209,6 @@ function WebsiteForm({
         </div>
       )}
       <fieldset disabled={busy} className="space-y-3">
-        <ProductGuideEditor value={guide} onChange={setGuide} />
         <label className="block">
           Web address
           <Input

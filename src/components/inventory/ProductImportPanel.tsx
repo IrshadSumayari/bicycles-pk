@@ -100,7 +100,7 @@ export function ProductImportPanel({ template = IMPORT_TEMPLATE }: { template?: 
             <h2 className="text-lg font-bold text-link">Import products from a spreadsheet</h2>
             <p className="text-sm text-bodytext max-w-2xl">
               Save your sheet as CSV with one row per size/color. Rows with the same <code>style_code</code> become one
-              style. Kinds: <code>garment</code>, <code>pack</code>, <code>service</code>.
+              style. Kinds: <code>item</code>, <code>pack</code>, <code>service</code>.
               The file is checked before anything is saved.
             </p>
             <p className="text-xs text-bodytext mt-2 font-mono break-all">{IMPORT_COLUMNS.join(', ')}</p>
@@ -115,7 +115,7 @@ export function ProductImportPanel({ template = IMPORT_TEMPLATE }: { template?: 
           </div>
         </div>
 
-        <p className="text-sm text-bodytext">Start with the blank template for your real products. Example prices and stock are for guidance only. For jewellery, color means finish and fit means design. For bags, fit means style (for example Chain strap). Count a pair or complete set sold together as one item. Add photos and publish each saved style from its Website tab.</p>
+        <p className="text-sm text-bodytext">Start with the blank template for your real products. Example prices and stock are for guidance only. Use size for the frame size (S, M, L) or wheel size for kids bikes, and fit for the variant such as 7-speed. Specifications such as brakes and gears are added per style after import. Add photos and publish each saved style from its Website tab.</p>
         <label className="flex items-center justify-center gap-3 border-2 border-dashed border-border rounded-xl p-8 cursor-pointer hover:border-primary">
           <Upload className="h-6 w-6 text-bodytext" />
           <span className="text-link">{checking ? 'Checking…' : fileName ? `Choose another file (${fileName})` : 'Choose a CSV file'}</span>

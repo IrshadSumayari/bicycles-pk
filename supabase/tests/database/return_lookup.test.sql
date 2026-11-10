@@ -9,7 +9,7 @@ UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-000000
 
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000cd01","role":"authenticated"}';
-SELECT FROM save_style('{"kind":"garment","code":"SK","name":"Kameez","variants":[{"sku":"SK-M","size":"M","price":1000,"opening_stock":5}]}');
+SELECT FROM save_style('{"kind":"item","code":"SK","name":"City bike","variants":[{"sku":"SK-M","size":"M","price":1000,"opening_stock":5}]}');
 CREATE TEMP TABLE inv AS SELECT (post_sale(jsonb_build_object('request_id', '00000000-0000-0000-0000-0000000cd001',
     'lines', jsonb_build_array(jsonb_build_object('variant_id', (SELECT id FROM product_variants WHERE sku = 'SK-M'), 'quantity', 2)),
     'payments', jsonb_build_array(jsonb_build_object('method', 'card', 'card_last4', '1111'))))->'sale'->>'invoice_number') AS no;

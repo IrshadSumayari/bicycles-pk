@@ -4,7 +4,7 @@ Owner decision (28 October 2026): accept every request for **staff review**. No 
 
 ## Customer and staff flow
 
-A signed-in website customer opens a delivered order, selects affected lines and quantities, chooses a reason and preferred resolution, and describes the problem. One request is allowed per order; all affected items should be included. Other order problems and further concerns on closed requests use Contact LadyVogue.
+A signed-in website customer opens a delivered order, selects affected lines and quantities, chooses a reason and preferred resolution, and describes the problem. One request is allowed per order; all affected items should be included. Other order problems and further concerns on closed requests use the Contact page.
 
 Admins and branch managers use POS → Online orders → Return requests. Cashiers cannot access reviews or evidence. The queue defaults to active requests and also supports completed statuses and pagination.
 
@@ -32,7 +32,7 @@ RPCs check roles and ownership before returning data; raw request tables and the
 
 ## Rollout
 
-Apply migrations through 20261102000400_online_return_requests.sql to the correct LadyVogue staging project before deploying either app. This phase applied it **only to the isolated local database**. Generated database types are included.
+Return requests are part of the baseline migration; deploy it to staging before either app.
 
 Verify private bucket access, owner/customer separation, staff branch permissions, customer replies, failure retries and photo removal operations in staging. Confirm the operating process and responsible staff before production. Real product data, the owner's deferred checkout rehearsal, hosting/domain work and final policy decisions remain separate launch tasks.
 

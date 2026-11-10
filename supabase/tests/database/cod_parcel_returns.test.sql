@@ -7,7 +7,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
 UPDATE users SET active=true,role='cashier' WHERE id='00000000-0000-0000-0000-0000000cc003';
 UPDATE app_settings SET cod_enabled=true,delivery_fee=250,free_delivery_over=NULL,cod_max_total=NULL,tax_rate=0,online_max_open_cod_orders=20;
 INSERT INTO product_styles(id,code,name,kind,unit,published,slug,taxable) VALUES
- ('00000000-0000-0000-0000-0000000cca01','PARCEL-RING','Parcel ring','garment','piece',true,'parcel-ring',false);
+ ('00000000-0000-0000-0000-0000000cca01','PARCEL-RING','Parcel ring','item','piece',true,'parcel-ring',false);
 INSERT INTO product_variants(id,style_id,sku,price,published) VALUES
  ('00000000-0000-0000-0000-0000000ccb01','00000000-0000-0000-0000-0000000cca01','PARCEL-RING-1',100,true);
 SELECT post_stock_movement((SELECT id FROM locations WHERE code='FLOOR'),'00000000-0000-0000-0000-0000000ccb01',20,'opening');

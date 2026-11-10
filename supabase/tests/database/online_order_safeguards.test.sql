@@ -10,9 +10,9 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
 UPDATE users SET active=true WHERE id='00000000-0000-0000-0000-00000000a102';
 UPDATE app_settings SET tax_rate=0,cod_enabled=true,cod_max_total=NULL,online_max_pending_orders=3,online_max_open_cod_orders=3;
 INSERT INTO product_styles(id,code,name,kind,unit,taxable,published,slug) VALUES
- ('00000000-0000-0000-0000-00000000a1a1','GUARD-SHIRT','Guard shirt','garment','piece',false,true,'guard-shirt');
+ ('00000000-0000-0000-0000-00000000a1a1','GUARD-TUBE','Guard tube','item','piece',false,true,'guard-tube');
 INSERT INTO product_variants(id,style_id,sku,price,published) VALUES
- ('00000000-0000-0000-0000-00000000a1b1','00000000-0000-0000-0000-00000000a1a1','GUARD-SHIRT-M',100,true);
+ ('00000000-0000-0000-0000-00000000a1b1','00000000-0000-0000-0000-00000000a1a1','GUARD-TUBE-M',100,true);
 SELECT post_stock_movement((SELECT id FROM locations WHERE code='FLOOR'),'00000000-0000-0000-0000-00000000a1b1',50,'opening');
 
 CREATE TEMP TABLE work(key TEXT PRIMARY KEY,value JSONB);

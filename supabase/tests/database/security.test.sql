@@ -15,7 +15,7 @@ SELECT is(
     'cashier:false', 'staff created by an admin start as inactive cashiers'
 );
 
-INSERT INTO product_styles (code, name, kind, unit) VALUES ('KURTA', 'Kurta', 'garment', 'piece');
+INSERT INTO product_styles (code, name, kind, unit) VALUES ('BIKE', 'Bike', 'item', 'piece');
 
 -- Inactive cashier gets nothing
 SET LOCAL ROLE authenticated;

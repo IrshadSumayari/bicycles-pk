@@ -11,7 +11,9 @@ export type Database = {
     Tables: {
       app_settings: {
         Row: {
+          assembly_fee: number | null;
           auto_backup: boolean | null;
+          bulky_delivery_fee: number;
           cash_variance_alert: number;
           cod_enabled: boolean;
           cod_max_total: number | null;
@@ -19,8 +21,6 @@ export type Database = {
           currency: string | null;
           delivery_fee: number;
           free_delivery_over: number | null;
-          assembly_fee: number | null;
-          bulky_delivery_fee: number;
           id: string;
           interface_mode: string | null;
           invoice_counter: number | null;
@@ -47,7 +47,9 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          assembly_fee?: number | null;
           auto_backup?: boolean | null;
+          bulky_delivery_fee?: number;
           cash_variance_alert?: number;
           cod_enabled?: boolean;
           cod_max_total?: number | null;
@@ -55,8 +57,6 @@ export type Database = {
           currency?: string | null;
           delivery_fee?: number;
           free_delivery_over?: number | null;
-          assembly_fee?: number | null;
-          bulky_delivery_fee?: number;
           id?: string;
           interface_mode?: string | null;
           invoice_counter?: number | null;
@@ -82,7 +82,9 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          assembly_fee?: number | null;
           auto_backup?: boolean | null;
+          bulky_delivery_fee?: number;
           cash_variance_alert?: number;
           cod_enabled?: boolean;
           cod_max_total?: number | null;
@@ -90,8 +92,6 @@ export type Database = {
           currency?: string | null;
           delivery_fee?: number;
           free_delivery_over?: number | null;
-          assembly_fee?: number | null;
-          bulky_delivery_fee?: number;
           id?: string;
           interface_mode?: string | null;
           invoice_counter?: number | null;
@@ -1527,6 +1527,7 @@ export type Database = {
         Row: {
           account_id: string;
           address: Json | null;
+          assembly: boolean;
           branch_id: string;
           cancelled_reason: string | null;
           contact_name: string;
@@ -1538,7 +1539,6 @@ export type Database = {
           email: string | null;
           expires_at: string | null;
           fulfilment: string;
-          assembly: boolean;
           id: string;
           notes_customer: string | null;
           notes_staff: string | null;
@@ -1560,6 +1560,7 @@ export type Database = {
         Insert: {
           account_id: string;
           address?: Json | null;
+          assembly?: boolean;
           branch_id: string;
           cancelled_reason?: string | null;
           contact_name: string;
@@ -1571,7 +1572,6 @@ export type Database = {
           email?: string | null;
           expires_at?: string | null;
           fulfilment: string;
-          assembly?: boolean;
           id?: string;
           notes_customer?: string | null;
           notes_staff?: string | null;
@@ -1592,6 +1592,7 @@ export type Database = {
         Update: {
           account_id?: string;
           address?: Json | null;
+          assembly?: boolean;
           branch_id?: string;
           cancelled_reason?: string | null;
           contact_name?: string;
@@ -1603,7 +1604,6 @@ export type Database = {
           email?: string | null;
           expires_at?: string | null;
           fulfilment?: string;
-          assembly?: boolean;
           id?: string;
           notes_customer?: string | null;
           notes_staff?: string | null;
@@ -1994,6 +1994,7 @@ export type Database = {
         Row: {
           active: boolean;
           brand: string | null;
+          bulky: boolean;
           category_id: string | null;
           code: string;
           created_at: string;
@@ -2003,19 +2004,15 @@ export type Database = {
           id: string;
           image_url: string | null;
           kind: string;
-          lingerie: NonNullable<Json>;
-          specs: NonNullable<Json>;
-          bulky: boolean;
           material: string | null;
           name: string;
-          product_guide: NonNullable<Json>;
           published: boolean;
           season: string | null;
           size_scheme_id: string | null;
           slug: string | null;
+          specs: NonNullable<Json>;
           taxable: boolean;
           track_inventory: boolean;
-          try_on: NonNullable<Json>;
           unit: string;
           updated_at: string;
           web_description: string | null;
@@ -2025,6 +2022,7 @@ export type Database = {
         Insert: {
           active?: boolean;
           brand?: string | null;
+          bulky?: boolean;
           category_id?: string | null;
           code: string;
           created_at?: string;
@@ -2034,19 +2032,15 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           kind: string;
-          lingerie?: NonNullable<Json>;
-          specs?: NonNullable<Json>;
-          bulky?: boolean;
           material?: string | null;
           name: string;
-          product_guide?: NonNullable<Json>;
           published?: boolean;
           season?: string | null;
           size_scheme_id?: string | null;
           slug?: string | null;
+          specs?: NonNullable<Json>;
           taxable?: boolean;
           track_inventory?: boolean;
-          try_on?: NonNullable<Json>;
           unit?: string;
           updated_at?: string;
           web_description?: string | null;
@@ -2055,6 +2049,7 @@ export type Database = {
         Update: {
           active?: boolean;
           brand?: string | null;
+          bulky?: boolean;
           category_id?: string | null;
           code?: string;
           created_at?: string;
@@ -2064,19 +2059,15 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           kind?: string;
-          lingerie?: NonNullable<Json>;
-          specs?: NonNullable<Json>;
-          bulky?: boolean;
           material?: string | null;
           name?: string;
-          product_guide?: NonNullable<Json>;
           published?: boolean;
           season?: string | null;
           size_scheme_id?: string | null;
           slug?: string | null;
+          specs?: NonNullable<Json>;
           taxable?: boolean;
           track_inventory?: boolean;
-          try_on?: NonNullable<Json>;
           unit?: string;
           updated_at?: string;
           web_description?: string | null;
@@ -2102,8 +2093,6 @@ export type Database = {
       product_variants: {
         Row: {
           active: boolean;
-          bra_band: string | null;
-          bra_cup: string | null;
           color: string | null;
           compare_at_price: number | null;
           created_at: string;
@@ -2121,8 +2110,6 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           active?: boolean;
-          bra_band?: string | null;
-          bra_cup?: string | null;
           color?: string | null;
           compare_at_price?: number | null;
           created_at?: string;
@@ -2139,8 +2126,6 @@ export type Database = {
         };
         Update: {
           active?: boolean;
-          bra_band?: string | null;
-          bra_cup?: string | null;
           color?: string | null;
           compare_at_price?: number | null;
           created_at?: string;
@@ -2669,7 +2654,6 @@ export type Database = {
           created_at: string;
           id: string;
           name: string;
-          size_chart: Json | null;
           sizes: string[];
         };
         ComputedFields: never;
@@ -2679,7 +2663,6 @@ export type Database = {
           created_at?: string;
           id?: string;
           name: string;
-          size_chart?: Json | null;
           sizes: string[];
         };
         Update: {
@@ -2688,7 +2671,6 @@ export type Database = {
           created_at?: string;
           id?: string;
           name?: string;
-          size_chart?: Json | null;
           sizes?: string[];
         };
         Relationships: [];
@@ -3861,7 +3843,6 @@ export type Database = {
         Returns: Json;
       };
       save_style: { Args: { p: Json }; Returns: string };
-      save_style_base: { Args: { p: Json }; Returns: string };
       save_style_web_details: {
         Args: { p: Json; p_request_id: string; p_style: string };
         Returns: Json;

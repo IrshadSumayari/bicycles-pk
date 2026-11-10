@@ -12,14 +12,14 @@ UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-000000
 UPDATE public.users SET role = 'cashier', active = false WHERE id = '00000000-0000-0000-0000-00000000bb04';
 UPDATE public.app_settings SET tax_rate = 10, max_cashier_discount_percent = 10;
 
--- Catalog: taxable kurta (2000), non-taxable shawl (1000), gift set (800 / set), gift pocket square
+-- Catalog: taxable bike (2000), non-taxable bell (1000), gift set (800 / set), gift bottle cage
 INSERT INTO product_styles (id, code, name, kind, unit, taxable) VALUES
-    ('00000000-0000-0000-0000-0000000c0001', 'KURTA', 'Kurta', 'garment', 'piece', true),
-    ('00000000-0000-0000-0000-0000000c0002', 'SHAWL', 'Shawl', 'garment', 'piece', false),
+    ('00000000-0000-0000-0000-0000000c0001', 'BIKE', 'Bike', 'item', 'piece', true),
+    ('00000000-0000-0000-0000-0000000c0002', 'SHAWL', 'Shawl', 'item', 'piece', false),
     ('00000000-0000-0000-0000-0000000c0003', 'GIFTSET', 'Gift set', 'pack', 'set', true),
-    ('00000000-0000-0000-0000-0000000c0004', 'POCKET', 'Pocket square', 'garment', 'piece', true);
+    ('00000000-0000-0000-0000-0000000c0004', 'POCKET', 'Pocket square', 'item', 'piece', true);
 INSERT INTO product_variants (id, style_id, sku, size, color, price) VALUES
-    ('00000000-0000-0000-0000-0000000d0001', '00000000-0000-0000-0000-0000000c0001', 'KURTA-L', 'L', 'White', 2000),
+    ('00000000-0000-0000-0000-0000000d0001', '00000000-0000-0000-0000-0000000c0001', 'BIKE-L', 'L', 'White', 2000),
     ('00000000-0000-0000-0000-0000000d0002', '00000000-0000-0000-0000-0000000c0002', 'SHAWL-1', NULL, 'Grey', 1000),
     ('00000000-0000-0000-0000-0000000d0003', '00000000-0000-0000-0000-0000000c0003', 'GIFTSET-BLUE', NULL, 'Blue', 800),
     ('00000000-0000-0000-0000-0000000d0004', '00000000-0000-0000-0000-0000000c0004', 'POCKET-1', NULL, 'Red', 300);
@@ -46,7 +46,7 @@ SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bb03","role":"authenticated"}';
 SELECT FROM open_cash_session(0);
 
--- Quote: tax only on the taxable kurtas
+-- Quote: tax only on the taxable bikes
 SELECT is(
     (SELECT jsonb_build_object('subtotal', q->'subtotal', 'tax', q->'tax_amount', 'total', q->'total')
      FROM quote_sale('{"lines":[{"variant_id":"00000000-0000-0000-0000-0000000d0001","quantity":2},
@@ -65,8 +65,8 @@ $$, 'cashier posts a cash sale');
 SELECT is((SELECT total FROM sales WHERE request_id = '00000000-0000-0000-0000-0000000f0001'), 5400.00, 'total from database prices');
 SELECT is((SELECT change_due FROM sales WHERE request_id = '00000000-0000-0000-0000-0000000f0001'), 600.00, 'change worked out');
 SELECT matches((SELECT invoice_number FROM sales WHERE request_id = '00000000-0000-0000-0000-0000000f0001'), '^INV-\d{6}$', 'invoice number assigned');
-SELECT is(pg_temp.on_hand('00000000-0000-0000-0000-0000000d0001'), 3.000000, 'kurta stock deducted');
-SELECT is(pg_temp.on_hand('00000000-0000-0000-0000-0000000d0002'), 4.000000, 'shawl stock deducted');
+SELECT is(pg_temp.on_hand('00000000-0000-0000-0000-0000000d0001'), 3.000000, 'bike stock deducted');
+SELECT is(pg_temp.on_hand('00000000-0000-0000-0000-0000000d0002'), 4.000000, 'bell stock deducted');
 SELECT is((SELECT count(*)::int FROM sale_lines sl JOIN sales s ON s.id = sl.sale_id
            WHERE s.request_id = '00000000-0000-0000-0000-0000000f0001'), 2, 'two sale lines stored');
 SELECT is((SELECT count(*)::int FROM payments p JOIN sales s ON s.id = p.sale_id
@@ -117,7 +117,7 @@ SELECT throws_ok($$
 $$, NULL, NULL, 'packs only in whole sets');
 SELECT throws_ok($$
     SELECT quote_sale('{"lines":[{"variant_id":"00000000-0000-0000-0000-0000000d0001","quantity":1.5}]}')
-$$, NULL, NULL, 'garments only in whole pieces');
+$$, NULL, NULL, 'items only in whole pieces');
 
 -- Payments must add up
 SELECT throws_ok($$
@@ -176,7 +176,7 @@ SET LOCAL "request.jwt.claims" = '';
 INSERT INTO discounts (name, type, value, min_amount, valid_from, valid_to) VALUES
     ('10% over 3000', 'percentage', 10, 3000, now() - interval '1 day', now() + interval '1 day');
 INSERT INTO discounts (name, type, value, free_gift_products, conditions, valid_from, valid_to) VALUES
-    ('Gift with kurta', 'free_gift', 0, ARRAY['00000000-0000-0000-0000-0000000d0004'],
+    ('Gift with bike', 'free_gift', 0, ARRAY['00000000-0000-0000-0000-0000000d0004'],
      '[{"type":"specific_products","value":["00000000-0000-0000-0000-0000000d0001"]}]',
      now() - interval '1 day', now() + interval '1 day');
 

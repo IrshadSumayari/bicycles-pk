@@ -19,7 +19,7 @@ Added 23 October 2026. One rule per salesperson per branch: **fixed amount per i
 - Returns after a payout can make outstanding commission negative; the debit carries forward. The original payout is preserved. Two payout requests for the same account are serialized and duplicate request IDs are checked against the original payment details.
 - An exchange reverses the original invoice's commission and calculates commission on its replacement invoice only if a salesperson is selected for that new invoice.
 - Existing historical invoices are not backfilled. Disabling a salesperson's rule keeps their earned commission and statements. Disable staff accounts rather than deleting accounts referenced by commission history.
-- Attribution currently applies to POS invoices and replacement invoices posted through checkout. Website-only and tailoring-order workflows do not automatically earn a salesperson commission. Tailoring services sold as POS invoice lines follow the normal POS rule.
+- Attribution currently applies to POS invoices and replacement invoices posted through checkout. Website orders do not automatically earn a salesperson commission. Services such as assembly or a tune-up sold as POS invoice lines follow the normal POS rule.
 
 ## Deployment and verification
 

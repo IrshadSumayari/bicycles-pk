@@ -6,8 +6,8 @@ function product(overrides: Partial<Product> = {}): Product {
   return {
     id: 'p1',
     styleId: 's1',
-    kind: 'garment',
-    name: 'Navy Kurta',
+    kind: 'item',
+    name: 'Urban City Bike',
     sku: 'KUR-NAVY-L',
     price: 2500,
     cost: 1200,

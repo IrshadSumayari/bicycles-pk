@@ -10,7 +10,7 @@ UPDATE public.app_settings SET tax_rate = 10, max_cashier_discount_percent = 20;
 
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bc01","role":"authenticated"}';
-SELECT FROM save_style('{"kind":"garment","code":"SK","name":"Kameez","variants":[
+SELECT FROM save_style('{"kind":"item","code":"SK","name":"City bike","variants":[
     {"sku":"SK-M","size":"M","price":1000,"opening_stock":10},
     {"sku":"SK-L","size":"L","price":1000,"opening_stock":10},
     {"sku":"SK-XL","size":"XL","price":1500,"opening_stock":10}]}');

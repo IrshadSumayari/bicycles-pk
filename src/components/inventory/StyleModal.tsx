@@ -31,7 +31,7 @@ interface StyleModalProps {
 }
 
 const KINDS: { value: ProductKind; label: string; priceLabel: string; stockUnit: string }[] = [
-  { value: 'garment', label: 'Ready-made item', priceLabel: 'Price', stockUnit: 'pcs' },
+  { value: 'item', label: 'Ready-made item', priceLabel: 'Price', stockUnit: 'pcs' },
   { value: 'pack', label: 'Pack or multipack', priceLabel: 'Price per pack', stockUnit: 'packs' },
   { value: 'service', label: 'Service (no stock)', priceLabel: 'Charge', stockUnit: '' },
 ];
@@ -39,7 +39,7 @@ const KINDS: { value: ProductKind; label: string; priceLabel: string; stockUnit:
 type Row = StyleVariantInput & { key: string };
 
 const emptyStyle: Omit<StyleInput, 'variants'> = {
-  kind: 'garment',
+  kind: 'item',
   code: '',
   name: '',
   category: '',
@@ -126,7 +126,7 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
   if (!isOpen) return null;
 
   const kind = KINDS.find(k => k.value === style.kind) ?? KINDS[0];
-  const isGarment = style.kind === 'garment';
+  const isItem = style.kind === 'item';
   const section = sectionOfCategory(style.category);
   const isService = style.kind === 'service';
   const scheme = schemes.find(s => s.code === style.sizeScheme);
@@ -150,9 +150,9 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
       swalConfig.warning('Enter the style code first; SKUs are built from it');
       return;
     }
-    const sizes = isGarment ? [...selectedSizes, ...splitList(extraSizes)] : [];
+    const sizes = isItem ? [...selectedSizes, ...splitList(extraSizes)] : [];
     const colorList = isService ? [] : splitList(colors);
-    const fitList = isGarment ? splitList(fits) : [];
+    const fitList = isItem ? splitList(fits) : [];
     const added: Row[] = missingVariants(style.code, sizes, colorList, fitList, rows).map(variant => ({
       ...variant, key: newKey(), price: Number(defaultPrice || 0),
       cost: defaultCost === '' ? undefined : Number(defaultCost), active: true, openingStock: 0,
@@ -205,7 +205,7 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
         ...style,
         code: style.code.trim(),
         name: style.name.trim(),
-        sizeScheme: isGarment ? style.sizeScheme : undefined,
+        sizeScheme: isItem ? style.sizeScheme : undefined,
         trackInventory: !isService && style.trackInventory,
         variants: variants.map(({ key: _key, stock: _stock, ...v }) => v),
       });
@@ -283,8 +283,8 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                   <ComboInput aria-label="Frame / material" name="material" value={style.material} onChange={setText('material')} className="input" options={catalogLookups.data?.material || []} placeholder="e.g. Aluminium, Steel, Carbon" />
                 </div>
                 <div className="block">
-                  {label('Season / collection')}
-                  <ComboInput aria-label="Season / collection" name="season" value={style.season} onChange={setText('season')} className="input" options={catalogLookups.data?.season || []} placeholder="e.g. 2027 range" />
+                  {label('Model year')}
+                  <ComboInput aria-label="Model year" name="season" value={style.season} onChange={setText('season')} className="input" options={catalogLookups.data?.season || []} placeholder="e.g. 2027" />
                 </div>
                 <label className="block">
                   {label('Design code')}
@@ -331,9 +331,9 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
               {!isService && (
                 <div className="bg-lightgray rounded-xl p-4 space-y-4">
                   <h3 className="font-semibold text-link">
-                    {isGarment ? 'Sizes and colours' : 'Colours / designs'}
+                    {isItem ? 'Sizes and colours' : 'Colours / designs'}
                   </h3>
-                  {isGarment && (
+                  {isItem && (
                     <div className="space-y-2">
                       {section && <BikeVariantBuilder category={style.category ?? ''} onSizes={sizes => setSelectedSizes(prev => uniqueOptions([...prev, ...sizes]))} onColours={values => setColors(prev => uniqueOptions([...splitList(prev), ...values]).join(', '))}/>}
                       {selectedSizes.length > 0 && <div className="flex flex-wrap gap-2" aria-label="Selected sizes">{selectedSizes.map(size => <button type="button" key={size} className="btn btn-secondary btn-sm" aria-label={'Remove size ' + size} onClick={() => toggleSize(size)}>{size} ×</button>)}</div>}
@@ -359,7 +359,7 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                     <ComboInput multiple aria-label="Colors, comma separated" value={colors} onChange={setColors} className="input"
                                 options={catalogLookups.data?.color || []}
                                 placeholder="Colours, comma separated (e.g. Black, Red, Blue)" />
-                    {isGarment && (
+                    {isItem && (
                       <ComboInput multiple aria-label="Variants, comma separated" value={fits} onChange={setFits} className="input"
                                   options={catalogLookups.data?.fit || []}
                                   placeholder="Variants, optional (e.g. 21-speed, Disc brakes)" />
@@ -397,9 +397,9 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                 <DataTable className="table">
                   <thead className="table-header">
                     <tr>
-                      {isGarment && <th className="table-header-cell">Size</th>}
+                      {isItem && <th className="table-header-cell">Size</th>}
                       {!isService && <th className="table-header-cell">Colour</th>}
-                      {isGarment && <th className="table-header-cell">Variant</th>}
+                      {isItem && <th className="table-header-cell">Variant</th>}
                       <th className="table-header-cell">SKU</th>
                       {!isService && <th className="table-header-cell">Barcode</th>}
                       <th className="table-header-cell">{kind.priceLabel}</th>
@@ -419,7 +419,7 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                     )}
                     {rows.map(r => (
                       <tr key={r.key}>
-                        {isGarment && (
+                        {isItem && (
                           <td className="table-cell">
                             <Input value={r.size || ''} onChange={e => updateRow(r.key, { size: e.target.value })} className="input w-20" />
                           </td>
@@ -429,7 +429,7 @@ export function StyleModal({ isOpen, onClose, styleId, initialCategory, departme
                             <Input value={r.color || ''} onChange={e => updateRow(r.key, { color: e.target.value })} className="input w-28" />
                           </td>
                         )}
-                        {isGarment && (
+                        {isItem && (
                           <td className="table-cell">
                             <Input value={r.fit || ''} onChange={e => updateRow(r.key, { fit: e.target.value })} className="input w-24" />
                           </td>

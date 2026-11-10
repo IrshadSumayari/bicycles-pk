@@ -1,11 +1,10 @@
 BEGIN;
-SELECT plan(7);
+SELECT plan(6);
 SELECT results_eq($$SELECT p.oid::regprocedure::text FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prokind='f' AND has_function_privilege('anon',p.oid,'EXECUTE') ORDER BY 1$$,
  $$VALUES ('catalog_collections()'),('catalog_facets(text)'),('catalog_list(jsonb)'),('catalog_policy()'),('catalog_product(text)'),('needs_bootstrap()'),('quote_online_order(jsonb)')$$,'anonymous function surface is an exact allow-list');
 SELECT is((SELECT count(*)::int FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace CROSS JOIN unnest(ARRAY['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER']) AS grants(privilege) WHERE n.nspname='public' AND c.relkind IN('r','p','v','m','f') AND has_table_privilege('anon',c.oid,grants.privilege) AND NOT(c.relname='public_catalog' AND grants.privilege='SELECT')),0,'anon has no other public table privileges, including inherited grants');
 SELECT ok(has_table_privilege('anon','public.public_catalog','SELECT'),'safe legacy catalog view remains readable');
-SELECT is((SELECT count(*)::int FROM storage.buckets WHERE public AND id NOT IN('product-images','try-on-models')),0,'only product images and 360° models are public');
-SELECT is((SELECT count(*)::int FROM storage.buckets WHERE id='tailoring-photos'),0,'old tailoring photo bucket is gone');
+SELECT is((SELECT count(*)::int FROM storage.buckets WHERE public AND id<>'product-images'),0,'only product images are public');
 INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-0000000fe201','surface-admin@t.local','{}','{}'),
  ('00000000-0000-0000-0000-0000000fe202','surface-customer@t.local','{}','{}');

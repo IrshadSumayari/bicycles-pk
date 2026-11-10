@@ -24,8 +24,8 @@ SELECT is((SELECT count(*)::int FROM public.locations l JOIN public.branches b O
           'main branch has its four locations');
 
 -- Staff roles are admin, manager and cashier only
-SELECT throws_ok($$ UPDATE public.users SET role = 'tailor' WHERE id = '00000000-0000-0000-0000-0000000000c1' $$,
-                 '23514', NULL, 'the old tailor role is refused');
+SELECT throws_ok($$ UPDATE public.users SET role = 'mechanic' WHERE id = '00000000-0000-0000-0000-0000000000c1' $$,
+                 '23514', NULL, 'roles outside admin, manager and cashier are refused');
 
 -- Phone normalisation
 SELECT is(public.normalize_phone('0300 1234567'), '+923001234567', 'local mobile format');
