@@ -26,7 +26,7 @@ INSERT INTO customer_ledger(customer_id,entry_type,amount,created_at) VALUES
 UPDATE app_settings SET tax_rate=0;
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb01","role":"authenticated"}';
-SELECT FROM save_style('{"kind":"garment","code":"CREDIT","name":"Shirt","variants":[{"sku":"CREDIT-M","size":"M","price":1000,"opening_stock":20},{"sku":"CREDIT-S","size":"S","price":500,"opening_stock":20}]}');
+SELECT FROM save_style('{"kind":"item","code":"CREDIT","name":"Helmet","variants":[{"sku":"CREDIT-M","size":"M","price":1000,"opening_stock":20},{"sku":"CREDIT-S","size":"S","price":500,"opening_stock":20}]}');
 CREATE TEMP TABLE fixture(name TEXT PRIMARY KEY,value JSONB);
 GRANT ALL ON fixture TO authenticated;
 SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb02","role":"authenticated"}';

@@ -1,5 +1,4 @@
 "use client";
-import { readProductGuide } from "../../shared/productGuide";
 import {
   categoryHref,
   colourSwatch,
@@ -7,7 +6,6 @@ import {
   sectionOfCategory,
   specSubtitle,
 } from "../../shared/bicycles";
-import { SupplierSizeChart } from "./size-chart";
 import { SizeFinder } from "./size-finder";
 import { PurchaseReassurance } from "./purchase-reassurance";
 import { brand } from "@/lib/brand";
@@ -71,13 +69,6 @@ export function ProductDetail({
   const [quantity, setQuantity] = useState("1");
   const [refreshKey, setRefreshKey] = useState(0);
   const [shared, setShared] = useState("");
-  const guide = readProductGuide(initial.product_guide ?? {});
-  const hasChart =
-    !!guide.size_chart ||
-    (initial.size_chart != null &&
-      JSON.stringify(initial.size_chart) !== "{}" &&
-      JSON.stringify(initial.size_chart) !== "[]");
-  const chart = useRef<HTMLDialogElement>(null);
   const zoom = useRef<HTMLDialogElement>(null);
   const finder = useRef<HTMLDialogElement>(null);
   const specGroups = groupedSpecs(initial.specs);
@@ -448,16 +439,7 @@ export function ProductDetail({
                       >
                         <Ruler size={16} /> What&apos;s my size?
                       </button>
-                      {hasChart ? (
-                        <button
-                          type="button"
-                          onClick={() => chart.current?.showModal()}
-                        >
-                          Size guide
-                        </button>
-                      ) : (
-                        <Link href="/fit-guide">Size guide</Link>
-                      )}
+                      <Link href="/fit-guide">Size guide</Link>
                     </div>
                   )}
                 </fieldset>
@@ -604,23 +586,6 @@ export function ProductDetail({
               </dl>
             </details>
           ))}
-          {(["included", "fit", "care"] as const)
-            .map((k) => [k, guide[k]] as const)
-            .filter(([, text]) => text?.trim())
-            .map(([k, text]) => (
-              <details key={k}>
-                <summary>
-                  {
-                    {
-                      included: "What’s in the box",
-                      fit: "Fit notes",
-                      care: "Care and maintenance",
-                    }[k]
-                  }
-                </summary>
-                <p className="whitespace-pre-line">{text}</p>
-              </details>
-            ))}
           <details>
             <summary>Delivery and returns</summary>
             <p>
@@ -686,34 +651,6 @@ export function ProductDetail({
         />
         <Link href="/fit-guide">Full size guide</Link>
       </dialog>
-      {hasChart && (
-        <dialog
-          ref={chart}
-          aria-labelledby="size-chart-title"
-          className="lv-size-dialog"
-        >
-          <div className="flex justify-between gap-8 mb-5">
-            <h2 id="size-chart-title">Size guide</h2>
-            <form method="dialog">
-              <Button variant="outline">Close</Button>
-            </form>
-          </div>
-          <p className="muted">For {initial.title}</p>
-          {guide.size_chart ? (
-            <SupplierSizeChart chart={guide.size_chart} />
-          ) : (
-            <>
-              <p>
-                This is the existing size-scheme chart. Use only units and
-                measurement labels explicitly stated below; missing units are
-                not assumed. Confirm with us if unclear.
-              </p>
-              <Chart value={initial.size_chart} />
-            </>
-          )}
-          <Link href="/fit-guide">How to measure</Link>
-        </dialog>
-      )}
     </div>
   );
 }
@@ -793,66 +730,4 @@ function AddOn({ product }: { product: CatalogRow }) {
       </button>
     </article>
   );
-}
-function Chart({ value }: { value: Product["size_chart"] }) {
-  if (Array.isArray(value)) {
-    const rows = value.filter(
-      (
-        row,
-      ): row is {
-        [key: string]: Exclude<Product["size_chart"], undefined> | undefined;
-      } => !!row && typeof row === "object" && !Array.isArray(row),
-    );
-    if (rows.length === value.length && rows.length) {
-      const keys = [...new Set(rows.flatMap((row) => Object.keys(row)))];
-      return (
-        <div className="overflow-x-auto">
-          <table>
-            <caption className="sr-only">Measurements by size</caption>
-            <thead>
-              <tr>
-                {keys.map((key) => (
-                  <th key={key} scope="col">
-                    {key.replaceAll("_", " ")}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, index) => (
-                <tr key={index}>
-                  {keys.map((key) => (
-                    <td key={key}>{String(row[key] ?? "—")}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      );
-    }
-    return (
-      <ul>
-        {value.map((item, index) => (
-          <li key={index}>
-            <Chart value={item} />
-          </li>
-        ))}
-      </ul>
-    );
-  }
-  if (value && typeof value === "object")
-    return (
-      <dl className="space-y-3">
-        {Object.entries(value).map(([key, item]) => (
-          <div key={key}>
-            <dt className="font-semibold capitalize">
-              {key.replaceAll("_", " ")}
-            </dt>
-            <dd>{item !== undefined && <Chart value={item} />}</dd>
-          </div>
-        ))}
-      </dl>
-    );
-  return <span>{String(value ?? "—")}</span>;
 }

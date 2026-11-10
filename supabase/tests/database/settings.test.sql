@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(24);
+SELECT plan(23);
 INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000fc01','admin@t.local','{"name":"Admin"}','{}'),
  ('00000000-0000-0000-0000-00000000fc02','manager@t.local','{"name":"Manager"}','{"account_type":"staff"}'),
@@ -19,7 +19,6 @@ SELECT throws_ok($$ SELECT update_settings('{"typo":1}') $$,'P0001','Unknown set
 SELECT throws_ok($$ SELECT update_settings('{"tax_rate":150}') $$,'P0001',NULL,'tax range');
 SELECT throws_ok($$ SELECT update_settings('{"return_window_days":-1}') $$,'P0001',NULL,'window range');
 SELECT throws_ok($$ SELECT update_settings('{"max_cashier_discount_percent":101}') $$,'P0001',NULL,'discount range');
-SELECT throws_ok($$ SELECT update_settings('{"min_tailoring_deposit_percent":30}') $$,'P0001','Unknown setting: min_tailoring_deposit_percent','old deposit setting is gone');
 SELECT throws_ok($$ SELECT update_settings('{"cash_variance_alert":-1}') $$,'P0001',NULL,'variance range');
 SELECT throws_ok($$ SELECT update_settings('{"return_window_days":2.5}') $$,'P0001',NULL,'whole return days');
 SELECT throws_ok($$ SELECT update_settings(jsonb_build_object('receipt_header',repeat('x',501))) $$,'P0001',NULL,'receipt length');

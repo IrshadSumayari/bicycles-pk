@@ -133,11 +133,6 @@ Pick a quiet time and allow 2 hours plus DNS propagation. The coming-soon page s
 - **Quality:** check delivery quotes against real courier costs for bulky items, and adjust the bulky charge if needed. Read the first customer questions; recurring ones become FAQ entries.
 - **Admin:** confirm the first daily backup exists and do the first off-site export. Record the launch date, the release commit and signoff privately.
 
-## Older documents
+## Related documents
 
-The following documents still describe the LadyVogue clothing shop, kept for reference. Where they conflict with this runbook, follow this runbook.
-- [GO_LIVE_CHECKLIST.md](./GO_LIVE_CHECKLIST.md): tailoring and opening-debt imports.
-- [WEBSITE_LAUNCH.md](./WEBSITE_LAUNCH.md): the LadyVogue launch record.
-- [CATALOG_IMPORT.md](./CATALOG_IMPORT.md): the old storefront catalogue import.
-
-[BACKUP_AND_RESTORE.md](./BACKUP_AND_RESTORE.md) and [OFFLINE_PROCEDURE.md](./OFFLINE_PROCEDURE.md) still apply as written.
+[BACKUP_AND_RESTORE.md](./BACKUP_AND_RESTORE.md) and [OFFLINE_PROCEDURE.md](./OFFLINE_PROCEDURE.md) cover backups and working without the internet.

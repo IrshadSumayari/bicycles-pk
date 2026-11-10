@@ -7,9 +7,9 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000009e03','payment-b@t.local','{"name":"Customer B"}','{}');
 UPDATE app_settings SET tax_rate=0,cod_enabled=true,cod_max_total=NULL,online_max_pending_orders=20,online_max_open_cod_orders=20;
 INSERT INTO product_styles(id,code,name,kind,taxable,published,slug) VALUES
- ('00000000-0000-0000-0000-000000009ea1','PAYMENT-SHIRT','Payment shirt','garment',false,true,'payment-shirt');
+ ('00000000-0000-0000-0000-000000009ea1','PAYMENT-TUBE','Payment tube','item',false,true,'payment-tube');
 INSERT INTO product_variants(id,style_id,sku,price,published) VALUES
- ('00000000-0000-0000-0000-000000009eb1','00000000-0000-0000-0000-000000009ea1','PAYMENT-SHIRT-M',100,true);
+ ('00000000-0000-0000-0000-000000009eb1','00000000-0000-0000-0000-000000009ea1','PAYMENT-TUBE-M',100,true);
 SELECT post_stock_movement((SELECT id FROM locations WHERE code='FLOOR'),'00000000-0000-0000-0000-000000009eb1',20,'opening');
 CREATE TEMP TABLE work(key TEXT PRIMARY KEY,value JSONB);
 GRANT ALL ON work TO authenticated,service_role;

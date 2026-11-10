@@ -17,7 +17,7 @@ tracked files only. No environment files, secrets, database data or deployment s
 
 `main` still serves the bicycles.pk "coming soon" page. It stays live until launch.
 
-**Kept from LadyVogue:** POS selling, inventory with variants and barcodes, stock movements, online
+**Kept from the original codebase:** POS selling, inventory with variants and barcodes, stock movements, online
 orders, COD, returns and exchanges, discount codes, customer accounts, bag and checkout, the
 mobile-first storefront and filters.
 
@@ -81,7 +81,7 @@ These sites are layout references only. No assets, copy or logos are reused from
 
 ## 4. Milestones
 
-Each milestone is a feature branch from `dev` with a PR into `dev`, matching the LadyVogue workflow.
+Each milestone is a feature branch from `dev` with a PR into `dev`.
 
 | # | Milestone | Main work |
 |---|---|---|

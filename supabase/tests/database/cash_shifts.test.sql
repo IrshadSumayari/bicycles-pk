@@ -10,7 +10,7 @@ UPDATE public.users SET active = true WHERE id IN ('00000000-0000-0000-0000-0000
 
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab01","role":"authenticated"}';
-CREATE TEMP TABLE s AS SELECT save_style('{"kind":"garment","code":"SK","name":"Kameez","variants":[
+CREATE TEMP TABLE s AS SELECT save_style('{"kind":"item","code":"SK","name":"City bike","variants":[
     {"sku":"SK-M","size":"M","price":1000,"opening_stock":10}]}') AS id;
 CREATE TEMP TABLE v AS SELECT id FROM product_variants WHERE sku = 'SK-M';
 GRANT SELECT ON s, v TO authenticated;

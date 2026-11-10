@@ -27,8 +27,8 @@ describe('buildImportPlan', () => {
   it('reports every problem with its line number', () => {
     const csv = [
       header,
-      'K1,Kurta,garment,K1-M,M,White,abc,,111,1',
-      'K1,Kurta,garment,K1-M,L,White,100,,111,1.5',
+      'K1,City bike,item,K1-M,M,White,abc,,111,1',
+      'K1,City bike,item,K1-M,L,White,100,,111,1.5',
       'K2,Shirt,jacket,K2-M,M,,100,,,',
     ].join('\n');
     const { errors } = buildImportPlan(csv, none);
@@ -37,13 +37,13 @@ describe('buildImportPlan', () => {
       { row: 3, message: 'opening_stock must be a whole number' },
       { row: 3, message: 'SKU K1-M is also on line 2' },
       { row: 3, message: 'barcode 111 is also on line 2' },
-      { row: 4, message: 'kind must be one of garment, pack, service' },
+      { row: 4, message: 'kind must be one of item, pack, service' },
     ]));
   });
 
   it('refuses SKUs, barcodes and styles that already exist', () => {
     const existing = { skus: new Set(['K1-M']), barcodes: new Set(['111']), styleCodes: new Set(['K1']) };
-    const { errors } = buildImportPlan(`${header}\nk1,Kurta,garment,k1-m,M,,100,,111,`, existing);
+    const { errors } = buildImportPlan(`${header}\nk1,City bike,item,k1-m,M,,100,,111,`, existing);
     expect(errors.map(e => e.message)).toEqual([
       'style K1 already exists (edit it in Inventory instead)',
       'SKU K1-M already exists',
@@ -52,7 +52,7 @@ describe('buildImportPlan', () => {
   });
 
   it('refuses the same size and color twice in a style', () => {
-    const { errors } = buildImportPlan(`${header}\nK1,Kurta,garment,A,M,Red,1,,,\nK1,Kurta,garment,B,m,red,1,,,`, none);
+    const { errors } = buildImportPlan(`${header}\nK1,City bike,item,A,M,Red,1,,,\nK1,City bike,item,B,m,red,1,,,`, none);
     expect(errors).toEqual([{ row: 3, message: 'same size and color as line 2' }]);
   });
 

@@ -1,5 +1,4 @@
 import { cleanSpecs, isBulkyCategory, type BikeSpecs } from '../../shared/bicycles';
-import type { ProductGuide } from '../../shared/productGuide';
 import { platformStoreName, platformReceiptText, platformStoreEmail } from './branding';
 import type { OpeningBalance } from './goLiveImport'
 import type { OnlineOrder, OnlineOrderRow } from './onlineOrders'
@@ -1149,7 +1148,7 @@ export function saleFromDetail(detail: SaleDetail): Sale {
   const item = (line: SaleDetail['lines'][number]): CartItem => ({
     product: {
       id: line.variant_id ?? line.id, styleId: '', name: line.description, sku: line.sku ?? '',
-      kind: line.unit === 'job' ? 'service' : 'garment',
+      kind: line.unit === 'job' ? 'service' : 'item',
       price: line.unit_price, unit: line.unit,
       cost: 0, stock: 0, minStock: 0, category: '', description: '',
       taxable: line.taxable, active: true, createdAt: timestamp, updatedAt: timestamp,
@@ -1688,7 +1687,7 @@ export const goLiveService = {
 }
 
 export type ProductImage = Pick<Database['public']['Tables']['product_images']['Row'], 'storage_path' | 'alt' | 'variant_color' | 'sort_order'>
-export type WebDetails = { product_guide?: ProductGuide; slug?: string | null; web_title?: string | null; web_description?: string | null; variants?: { variant_id: string; published: boolean }[] }
+export type WebDetails = { slug?: string | null; web_title?: string | null; web_description?: string | null; variants?: { variant_id: string; published: boolean }[] }
 export type WebCollection = Database['public']['Tables']['collections']['Row']
 function invalidateWebCatalog() {
   invalidateProducts()
@@ -1710,7 +1709,7 @@ export async function uploadAvatar(blob: Blob): Promise<string> {
 }
 export const webCatalogService = {
   async details(styleId: string) {
-    const { data, error } = await supabase.from('product_styles').select('id,name,kind,unit,slug,category:categories(name),web_title,web_description,product_guide,published,active,track_inventory,variants:product_variants(id,sku,size,color,price,published,active,min_stock,stock:stock_balances(on_hand,reserved,location:locations(active,kind)))').eq('id', styleId).single()
+    const { data, error } = await supabase.from('product_styles').select('id,name,kind,unit,slug,category:categories(name),web_title,web_description,published,active,track_inventory,variants:product_variants(id,sku,size,color,price,published,active,min_stock,stock:stock_balances(on_hand,reserved,location:locations(active,kind)))').eq('id', styleId).single()
     if (error) throw error
     return data
   },

@@ -117,7 +117,7 @@ not reopen the order or reserve stock again. Failure never downgrades paid;
 paid replays never resurrect refunded payments.
 
 POST `/functions/v1/payment-check` with counter-staff JWT and `{ "orderNo": "..." }`.
-Customer, tailor and inactive staff callers are refused. The same provider
+Customer and inactive staff callers are refused. The same provider
 confirmation and application path is used. **Mock has no inquiry ledger**, so an
 authorized mock check returns 409 instructing the tester to send a signed
 notification. It never infers success from an initiated database row. The real

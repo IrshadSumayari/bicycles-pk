@@ -9,7 +9,7 @@ UPDATE public.users SET role='cashier',active=true WHERE id='00000000-0000-0000-
 UPDATE public.app_settings SET tax_rate=10;
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000cf01","role":"authenticated"}';
-SELECT FROM save_style('{"kind":"garment","code":"COMM-TEST","name":"Commission test suit","variants":[{"sku":"COMM-TEST-M","price":1000,"opening_stock":20}]}');
+SELECT FROM save_style('{"kind":"item","code":"COMM-TEST","name":"Commission test bike","variants":[{"sku":"COMM-TEST-M","price":1000,"opening_stock":20}]}');
 CREATE TEMP TABLE comm_ids AS SELECT id variant FROM public.product_variants WHERE sku='COMM-TEST-M';
 GRANT SELECT ON comm_ids TO authenticated;
 SELECT save_commission_rule(default_branch_id(),'00000000-0000-0000-0000-00000000cf02','fixed',100,true);

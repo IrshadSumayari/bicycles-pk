@@ -15,8 +15,8 @@ GRANT ALL ON saved TO authenticated;
 
 SELECT lives_ok($$
     INSERT INTO saved SELECT save_style('{
-        "kind":"garment","code":"sk-001","name":"Classic Shalwar Kameez","category":"Shalwar Kameez",
-        "brand":"House","material":"Wash and wear","season":"Winter 2026","size_scheme":"LETTER",
+        "kind":"item","code":"sk-001","name":"Classic City Bike","category":"City Bike",
+        "brand":"House","material":"Aluminium","season":"2027","size_scheme":"FRAME",
         "variants":[
             {"sku":"sk-001-wht-m","size":"M","color":"White","price":4500,"cost":2000,"barcode":"SK001WM","opening_stock":4},
             {"sku":"sk-001-wht-l","size":"L","color":"White","price":4500,"cost":2000,"opening_stock":3},
@@ -31,12 +31,12 @@ SELECT is((SELECT sum(b.on_hand)::int FROM stock_balances b JOIN product_variant
 SELECT is((SELECT count(*)::int FROM stock_movements m JOIN product_variants v ON v.id = m.variant_id
            WHERE v.style_id = (SELECT id FROM saved)), 3, 'no movement for zero opening stock');
 SELECT is((SELECT s.name FROM product_styles st JOIN size_schemes s ON s.id = st.size_scheme_id WHERE st.id = (SELECT id FROM saved)),
-          'Letter sizes', 'size scheme linked');
+          'Frame sizes', 'size scheme linked');
 
 -- Edit: change a price, add XL, keep stock untouched
 SELECT lives_ok($$
     SELECT save_style(jsonb_build_object(
-        'style_id', (SELECT id FROM saved), 'kind', 'garment', 'code', 'SK-001', 'name', 'Classic Shalwar Kameez',
+        'style_id', (SELECT id FROM saved), 'kind', 'item', 'code', 'SK-001', 'name', 'Classic City Bike',
         'variants', jsonb_build_array(
             jsonb_build_object('variant_id', (SELECT id FROM product_variants WHERE sku = 'SK-001-WHT-M'),
                                'sku', 'SK-001-WHT-M', 'size', 'M', 'color', 'White', 'price', 4800, 'opening_stock', 50),
@@ -50,7 +50,7 @@ SELECT is((SELECT count(*)::int FROM barcodes WHERE code = 'SK001WM'), 1, 'barco
 
 -- Bulk editor payload updates every row and leaves quantities alone.
 SELECT save_style(jsonb_build_object(
-  'style_id',(SELECT id FROM saved),'kind','garment','code','SK-001','name','Classic Shalwar Kameez',
+  'style_id',(SELECT id FROM saved),'kind','item','code','SK-001','name','Classic City Bike',
   'variants',(SELECT jsonb_agg(jsonb_build_object(
     'variant_id',id,'sku',sku,'size',size,'color',color,'fit',fit,'price',3490,'cost',1900))
     FROM product_variants WHERE style_id=(SELECT id FROM saved))));
@@ -60,17 +60,17 @@ SELECT is((SELECT sum(b.on_hand)::int FROM stock_balances b JOIN product_variant
 
 -- Validation
 SELECT throws_ok($$
-    SELECT save_style('{"kind":"garment","code":"DUP","name":"Dup","variants":[
+    SELECT save_style('{"kind":"item","code":"DUP","name":"Dup","variants":[
         {"sku":"DUP-1","size":"M","color":"Red","price":1},{"sku":"DUP-2","size":"m","color":"red","price":1}]}')
 $$, NULL, NULL, 'the same size and color cannot be listed twice');
 SELECT throws_ok($$
-    SELECT save_style('{"kind":"garment","code":"OTHER","name":"Other","variants":[
+    SELECT save_style('{"kind":"item","code":"OTHER","name":"Other","variants":[
         {"sku":"OTHER-1","price":1,"barcode":"SK001WM"}]}')
 $$, NULL, NULL, 'a barcode cannot be reused by another style');
 
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000cc02","role":"authenticated"}';
 SELECT throws_ok($$
-    SELECT save_style('{"kind":"garment","code":"CHEAP","name":"Cheap","variants":[{"sku":"CHEAP-1","price":1}]}')
+    SELECT save_style('{"kind":"item","code":"CHEAP","name":"Cheap","variants":[{"sku":"CHEAP-1","price":1}]}')
 $$, '42501', NULL, 'cashier cannot edit styles');
 
 SELECT * FROM finish();

@@ -21,8 +21,8 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
 UPDATE users SET active=true WHERE id='00000000-0000-0000-0000-000000009d02';
 UPDATE app_settings SET tax_rate=0,cod_enabled=true,cod_max_total=NULL;
 INSERT INTO product_styles(id,code,name,kind,published,slug,taxable) VALUES
- ('00000000-0000-0000-0000-000000009da1','RACE-ONLINE','Online last unit','garment',true,'race-online',false),
- ('00000000-0000-0000-0000-000000009da2','RACE-TILL','Till last unit','garment',true,'race-till',false);
+ ('00000000-0000-0000-0000-000000009da1','RACE-ONLINE','Online last unit','item',true,'race-online',false),
+ ('00000000-0000-0000-0000-000000009da2','RACE-TILL','Till last unit','item',true,'race-till',false);
 INSERT INTO product_variants(id,style_id,sku,price,published) VALUES
  ('00000000-0000-0000-0000-000000009db1','00000000-0000-0000-0000-000000009da1','RACE-ONLINE-1',100,true),
  ('00000000-0000-0000-0000-000000009db2','00000000-0000-0000-0000-000000009da2','RACE-TILL-1',100,true);

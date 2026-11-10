@@ -4,7 +4,7 @@ describe('image helpers', () => {
   it.each([
     ['Classic Shirt', 'classic-shirt'],
     ['  Sale!!! Blue / White  ', 'sale-blue-white'],
-    ['عید Eid Kurta نیا', 'eid-kurta'],
+    ['عید Eid Bike نیا', 'eid-bike'],
     ['اردو', ''],
     ['---', ''],
     ['A_B.C 42', 'a-b-c-42'],

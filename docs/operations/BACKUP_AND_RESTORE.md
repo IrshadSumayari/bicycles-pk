@@ -68,16 +68,16 @@ Dashboard's Storage page. Keep the bucket names and paths for later re-upload.
 
 ## Monthly: rehearse on the local computer
 
-### Website orders and tailoring
+### Website orders
 
 The full public-schema dump also includes online orders, their lines and events,
-online payments/payment sessions, stock reservations, customer accounts, tailoring
-requests, quotes and appointments. Keep these related records in the same recovery
+online payments/payment sessions, stock reservations, customer accounts and online return
+requests. Keep these related records in the same recovery
 point; restoring an order without its payments or reservations can sell stock twice.
 After restoring, compare counts and totals for online orders, payments, refunds,
-pending holds, tailoring requests and quotes with the original backup records.
+pending holds and return requests with the original backup records.
 Check one account's order history, an unpaid expired hold, a paid order, a cancelled
-order and a tailoring request with a photograph. Do not replay payment notifications
+order and a return request with a photograph. Do not replay payment notifications
 or take live money during rehearsal. Reconcile the provider's transaction ledger
 before re-enabling payments after a real recovery.
 
@@ -86,12 +86,12 @@ personal data and must remain encrypted and access-restricted, including in loca
 rehearsals. Never make its bucket public to simplify a restore.
 
 ```powershell
-npx supabase storage cp --linked --recursive ss:///tailoring-photos/ .\backups\YYYY-MM-DD\tailoring-photos
+npx supabase storage cp --linked --recursive ss:///return-evidence/ .\backups\YYYY-MM-DD\return-evidence
 npx supabase storage cp --linked --recursive ss:///product-images/ .\backups\YYYY-MM-DD\product-images
 ```
 
 Restore original object paths, MIME types and metadata. Confirm anonymous product
-images work, and another customer cannot read a private tailoring photograph;
+images work, and another customer cannot read a private return photograph;
 check a short-lived signed link as the correct customer or authorized staff member.
 Record bucket policies, website/POS deployment versions, Auth and SMTP settings,
 redirect allow-lists, function secrets and provider configuration in the private

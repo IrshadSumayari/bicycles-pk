@@ -13,7 +13,7 @@ UPDATE app_settings SET tax_rate=0;
 INSERT INTO customers(id,name,phone) VALUES ('00000000-0000-0000-0000-00000000fac1','Customer','03001112233');
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated"}';
-SELECT FROM save_style('{"kind":"garment","code":"HISTORY","name":"Shirt","variants":[{"sku":"HISTORY-M","size":"M","price":1000,"opening_stock":20}]}');
+SELECT FROM save_style('{"kind":"item","code":"HISTORY","name":"Helmet","variants":[{"sku":"HISTORY-M","size":"M","price":1000,"opening_stock":20}]}');
 CREATE TEMP TABLE fixture (name TEXT PRIMARY KEY, value JSONB);
 GRANT ALL ON fixture TO authenticated;
 SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fa03","role":"authenticated"}';

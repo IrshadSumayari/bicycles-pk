@@ -11,9 +11,9 @@ SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ff01","role":"authenticated"}';
 
 CREATE TEMP TABLE s AS SELECT
-    save_style('{"kind":"garment","code":"SK","name":"Kameez","variants":[
+    save_style('{"kind":"item","code":"SK","name":"City bike","variants":[
         {"sku":"SK-M","size":"M","price":4500,"opening_stock":5},
-        {"sku":"SK-L","size":"L","price":4500,"opening_stock":3}]}') AS garment,
+        {"sku":"SK-L","size":"L","price":4500,"opening_stock":3}]}') AS item,
     save_style('{"kind":"pack","code":"GIFT","name":"Gift set","variants":[{"sku":"GIFT-1","price":800,"opening_stock":20}]}') AS pack;
 CREATE TEMP TABLE ids AS SELECT
     (SELECT id FROM product_variants WHERE sku = 'SK-M') AS m,

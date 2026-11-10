@@ -13,12 +13,12 @@ UPDATE users SET role='cashier',active=false WHERE id='00000000-0000-0000-0000-0
 UPDATE users SET role='manager' WHERE id='00000000-0000-0000-0000-000000009a06';
 UPDATE app_settings SET tax_rate=17,delivery_fee=250,free_delivery_over=NULL,cod_max_total=NULL,cod_enabled=true,online_max_pending_orders=20,online_max_open_cod_orders=20;
 INSERT INTO product_styles(id,code,name,kind,unit,taxable,published,slug) VALUES
- ('00000000-0000-0000-0000-000000009aa1','ORDER-SHIRT','Order shirt','garment','piece',true,true,'order-shirt'),
- ('00000000-0000-0000-0000-000000009aa2','ORDER-LAST','Last scarf','garment','piece',false,true,'order-last'),
- ('00000000-0000-0000-0000-000000009aa3','ORDER-HIDDEN','Hidden shirt','garment','piece',false,false,NULL),
+ ('00000000-0000-0000-0000-000000009aa1','ORDER-TUBE','Order tube','item','piece',true,true,'order-tube'),
+ ('00000000-0000-0000-0000-000000009aa2','ORDER-LAST','Last scarf','item','piece',false,true,'order-last'),
+ ('00000000-0000-0000-0000-000000009aa3','ORDER-HIDDEN','Hidden tube','item','piece',false,false,NULL),
  ('00000000-0000-0000-0000-000000009aa4','ORDER-PACK','Order gift set','pack','set',false,true,'order-pack');
 INSERT INTO product_variants(id,style_id,sku,price,published) VALUES
- ('00000000-0000-0000-0000-000000009ab1','00000000-0000-0000-0000-000000009aa1','ORDER-SHIRT-M',100.05,true),
+ ('00000000-0000-0000-0000-000000009ab1','00000000-0000-0000-0000-000000009aa1','ORDER-TUBE-M',100.05,true),
  ('00000000-0000-0000-0000-000000009ab2','00000000-0000-0000-0000-000000009aa2','ORDER-LAST-1',50,true),
  ('00000000-0000-0000-0000-000000009ab3','00000000-0000-0000-0000-000000009aa3','ORDER-HIDDEN-1',90,true),
  ('00000000-0000-0000-0000-000000009ab4','00000000-0000-0000-0000-000000009aa4','ORDER-PACK-1',80,true);
@@ -53,7 +53,7 @@ SET LOCAL "request.jwt.claims"='{"role":"anon"}';
 SELECT is((quote_online_order(pg_temp.cart())->>'subtotal')::numeric,100.05,'quote ignores client prices');
 SELECT is((quote_online_order(pg_temp.cart())->>'tax')::numeric,17.01,'tax rounds each line to paisa');
 SELECT is((quote_online_order(pg_temp.cart('00000000-0000-0000-0000-000000009ab1',2,'delivery'))->>'total')::numeric,484.12,'delivery fee is added after per-line tax');
-SELECT throws_ok($$SELECT quote_online_order(pg_temp.cart('00000000-0000-0000-0000-000000009ab3'))$$,'P0001','Hidden shirt is not available online','unpublished style refused by name');
+SELECT throws_ok($$SELECT quote_online_order(pg_temp.cart('00000000-0000-0000-0000-000000009ab3'))$$,'P0001','Hidden tube is not available online','unpublished style refused by name');
 SELECT throws_ok($$SELECT quote_online_order(pg_temp.cart('00000000-0000-0000-0000-000000009ab1',11))$$,'P0001','Choose a whole quantity from 1 to 10','quantity limit');
 SELECT throws_ok($$SELECT quote_online_order('{"fulfilment":"pickup","lines":[{"variant_id":"00000000-0000-0000-0000-000000009ab1","quantity":1.5}]}')$$,'P0001','Choose a whole quantity from 1 to 10','fractional quantity refused');
 SELECT throws_ok($$SELECT quote_online_order('{"fulfilment":"pickup","lines":[{"variant_id":"00000000-0000-0000-0000-000000009ab1","quantity":1},{"variant_id":"00000000-0000-0000-0000-000000009ab1","quantity":1}]}')$$,'P0001','Combine duplicate items into one line','duplicate variants refused');

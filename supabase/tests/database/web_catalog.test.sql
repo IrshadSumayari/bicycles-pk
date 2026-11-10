@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(88);
+SELECT plan(86);
 INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000007101','web-admin@t.local','{"name":"Admin"}','{}'),
  ('00000000-0000-0000-0000-000000007102','web-manager@t.local','{"name":"Manager"}','{"account_type":"staff"}'),
@@ -7,14 +7,13 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000007104','web-customer@t.local','{"name":"Website customer"}','{}');
 UPDATE users SET role='manager',active=true WHERE id='00000000-0000-0000-0000-000000007102';
 UPDATE users SET active=true WHERE id='00000000-0000-0000-0000-000000007103';
-INSERT INTO categories(id,name) VALUES('00000000-0000-0000-0000-0000000071c1','Web shirts'),('00000000-0000-0000-0000-0000000071c2','Web trousers');
-UPDATE size_schemes SET size_chart='{"unit":"inches","rows":[{"size":"S","chest":36}]}' WHERE code='LETTER';
+INSERT INTO categories(id,name) VALUES('00000000-0000-0000-0000-0000000071c1','Web tubes'),('00000000-0000-0000-0000-0000000071c2','Web tyres');
 INSERT INTO product_styles(id,code,name,kind,slug,published,active,category_id,size_scheme_id,created_at,taxable) VALUES
- ('00000000-0000-0000-0000-0000000071a1','WEB-A',E'100%_Back\\slash shirt','garment','web-a',true,true,'00000000-0000-0000-0000-0000000071c1',(SELECT id FROM size_schemes WHERE code='LETTER'),'2026-01-01',false),
- ('00000000-0000-0000-0000-0000000071a2','WEB-B','Blue shirt','garment','web-b',true,true,'00000000-0000-0000-0000-0000000071c1',NULL,'2026-01-02',false),
- ('00000000-0000-0000-0000-0000000071a3','WEB-C','Trousers','garment','web-c',true,true,'00000000-0000-0000-0000-0000000071c2',NULL,'2026-01-03',false),
- ('00000000-0000-0000-0000-0000000071a4','WEB-D','Draft','garment',NULL,false,true,NULL,NULL,now(),false),
- ('00000000-0000-0000-0000-0000000071a5','WEB-E','Inactive','garment','web-e',true,false,NULL,NULL,now(),false);
+ ('00000000-0000-0000-0000-0000000071a1','WEB-A',E'100%_Back\\slash tube','item','web-a',true,true,'00000000-0000-0000-0000-0000000071c1',(SELECT id FROM size_schemes WHERE code='FRAME'),'2026-01-01',false),
+ ('00000000-0000-0000-0000-0000000071a2','WEB-B','Blue tube','item','web-b',true,true,'00000000-0000-0000-0000-0000000071c1',NULL,'2026-01-02',false),
+ ('00000000-0000-0000-0000-0000000071a3','WEB-C','Trousers','item','web-c',true,true,'00000000-0000-0000-0000-0000000071c2',NULL,'2026-01-03',false),
+ ('00000000-0000-0000-0000-0000000071a4','WEB-D','Draft','item',NULL,false,true,NULL,NULL,now(),false),
+ ('00000000-0000-0000-0000-0000000071a5','WEB-E','Inactive','item','web-e',true,false,NULL,NULL,now(),false);
 INSERT INTO product_variants(id,style_id,sku,size,color,price,compare_at_price,published,active) VALUES
  ('00000000-0000-0000-0000-0000000071b1','00000000-0000-0000-0000-0000000071a1','WEB-A-S','S','Red',100,125,true,true),
  ('00000000-0000-0000-0000-0000000071b2','00000000-0000-0000-0000-0000000071a1','WEB-A-M','M','Blue',150,180,true,true),
@@ -106,7 +105,7 @@ SELECT is((SELECT array_agg(slug ORDER BY slug) FROM catalog_list('{"collection"
 SELECT is((SELECT count(*)::int FROM catalog_list('{"collection":"web-hidden"}')),0,'private collection cannot be used as a filter');
 SELECT is((SELECT count(*)::int FROM catalog_list('{"collection":"web-future"}')),0,'future collection hidden');
 SELECT is((SELECT count(*)::int FROM catalog_list('{"collection":"web-expired"}')),0,'expired collection hidden');
-SELECT is((SELECT count(*)::int FROM catalog_list('{"category":"Web shirts"}')),2,'category filter');
+SELECT is((SELECT count(*)::int FROM catalog_list('{"category":"Web tubes"}')),2,'category filter');
 SELECT is((SELECT count(*)::int FROM catalog_list('{"size":"M","color":"Blue"}')),1,'size and color filter');
 SELECT is((SELECT count(*)::int FROM catalog_list('{"size":"S","color":"Blue"}')),0,'size and color must match the same variant');
 SELECT is((SELECT count(*)::int FROM catalog_list('{"price_min":140,"price_max":160}')),1,'price range filter');
@@ -124,8 +123,6 @@ SELECT is((SELECT sizes FROM catalog_list('{"q":"100"}')),ARRAY['M','S'],'size f
 SELECT is((SELECT stock_level FROM catalog_list('{"q":"100"}')),'low_stock','any size availability');
 SELECT is(jsonb_array_length(catalog_product('web-a')->'variants'),2,'only active published variants in detail');
 SELECT is(catalog_product('web-a')->'images'->0->>'alt','Back','images sorted');
-SELECT is(catalog_product('web-a')->'size_chart'->>'unit','inches','optional size chart returned');
-SELECT is(catalog_product('web-b')->'size_chart','null'::jsonb,'no size chart yields null');
 SELECT is(catalog_product('web-a')->'related'->0->>'slug','web-b','related styles from live collection only');
 SELECT is((SELECT count(*)::int FROM catalog_collections()),1,'only collections inside publication window');
 SELECT is(catalog_facets('web-main')->'sizes','["M","S"]'::jsonb,'collection sizes facets');
@@ -167,7 +164,7 @@ SELECT is((SELECT allowed_mime_types FROM storage.buckets WHERE id='product-imag
 SELECT is((SELECT public FROM storage.buckets WHERE id='product-images'),true,'bucket public read');
 -- More than one public page also exercises the cap and related-product bound.
 INSERT INTO product_styles(code,name,kind,slug,published)
- SELECT 'WEB-CAP-'||n,'Cap item '||n,'garment','web-cap-'||n,true FROM generate_series(1,50) n;
+ SELECT 'WEB-CAP-'||n,'Cap item '||n,'item','web-cap-'||n,true FROM generate_series(1,50) n;
 INSERT INTO product_variants(style_id,sku,size,color,price)
  SELECT id,code,'M','Blue',75 FROM product_styles WHERE code LIKE 'WEB-CAP-%';
 INSERT INTO collection_styles(collection_id,style_id)

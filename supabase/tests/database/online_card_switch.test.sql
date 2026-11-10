@@ -8,7 +8,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000da03','deploy-customer@t.local','{"name":"Customer"}','{}');
 UPDATE public.users SET active=true,role='manager' WHERE id='00000000-0000-0000-0000-00000000da02';
 INSERT INTO public.product_styles(id,code,name,kind,unit,published,slug) VALUES
- ('00000000-0000-0000-0000-00000000daa1','DEPLOY-ITEM','Deploy item','garment','piece',true,'deploy-item');
+ ('00000000-0000-0000-0000-00000000daa1','DEPLOY-ITEM','Deploy item','item','piece',true,'deploy-item');
 INSERT INTO public.product_variants(id,style_id,sku,price,published) VALUES
  ('00000000-0000-0000-0000-00000000dab1','00000000-0000-0000-0000-00000000daa1','DEPLOY-ITEM-1',100,true);
 SELECT public.post_stock_movement((SELECT id FROM locations WHERE code='FLOOR'),'00000000-0000-0000-0000-00000000dab1',20,'opening');

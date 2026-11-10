@@ -210,6 +210,16 @@ select {
 .catalog-filter-fields label {
   margin: 0;
 }
+.catalog-filter-fields .catalog-filter-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.catalog-filter-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: currentColor;
+}
 .filter-panel > div {
   display: block;
   margin: 0;

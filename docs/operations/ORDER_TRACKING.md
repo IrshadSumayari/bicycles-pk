@@ -27,7 +27,7 @@ This is staff-recorded tracking with links to courier scans. No courier API poll
 
 ## Rollout and verification
 
-Apply 20261102000500_order_tracking.sql to LadyVogue staging before deploying the POS editor. The migration adds tracking_version, the guarded update RPC and branch-scoped search/read policies. Existing orders default to version zero. No API credentials are needed for manual tracking.
+Order tracking is part of the baseline migration, which adds tracking_version, the guarded update RPC and branch-scoped search/read policies. Existing orders default to version zero. No API credentials are needed for manual tracking.
 
 This task applied and replayed the migration only in the isolated local database. Hosted staging and production were not changed by the task.
 

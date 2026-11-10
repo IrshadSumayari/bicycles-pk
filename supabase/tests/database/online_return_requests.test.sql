@@ -13,12 +13,12 @@ UPDATE users SET role='cashier',active=false WHERE id='00000000-0000-0000-0000-0
 UPDATE users SET role='manager' WHERE id='00000000-0000-0000-0000-000000009a06';
 UPDATE app_settings SET tax_rate=17,delivery_fee=250,free_delivery_over=NULL,cod_max_total=NULL,cod_enabled=true,online_max_pending_orders=20,online_max_open_cod_orders=20;
 INSERT INTO product_styles(id,code,name,kind,unit,taxable,published,slug) VALUES
- ('00000000-0000-0000-0000-000000009aa1','ORDER-SHIRT','Order shirt','garment','piece',true,true,'order-shirt'),
- ('00000000-0000-0000-0000-000000009aa2','ORDER-LAST','Last scarf','garment','piece',false,true,'order-last'),
- ('00000000-0000-0000-0000-000000009aa3','ORDER-HIDDEN','Hidden shirt','garment','piece',false,false,NULL),
+ ('00000000-0000-0000-0000-000000009aa1','ORDER-TUBE','Order tube','item','piece',true,true,'order-tube'),
+ ('00000000-0000-0000-0000-000000009aa2','ORDER-LAST','Last scarf','item','piece',false,true,'order-last'),
+ ('00000000-0000-0000-0000-000000009aa3','ORDER-HIDDEN','Hidden tube','item','piece',false,false,NULL),
  ('00000000-0000-0000-0000-000000009aa4','ORDER-PACK','Order gift set','pack','set',false,true,'order-pack');
 INSERT INTO product_variants(id,style_id,sku,price,published) VALUES
- ('00000000-0000-0000-0000-000000009ab1','00000000-0000-0000-0000-000000009aa1','ORDER-SHIRT-M',100.05,true),
+ ('00000000-0000-0000-0000-000000009ab1','00000000-0000-0000-0000-000000009aa1','ORDER-TUBE-M',100.05,true),
  ('00000000-0000-0000-0000-000000009ab2','00000000-0000-0000-0000-000000009aa2','ORDER-LAST-1',50,true),
  ('00000000-0000-0000-0000-000000009ab3','00000000-0000-0000-0000-000000009aa3','ORDER-HIDDEN-1',90,true),
  ('00000000-0000-0000-0000-000000009ab4','00000000-0000-0000-0000-000000009aa4','ORDER-PACK-1',80,true);

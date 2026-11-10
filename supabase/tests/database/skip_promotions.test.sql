@@ -9,11 +9,11 @@ UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-000000
 UPDATE public.app_settings SET tax_rate = 0;
 UPDATE public.discounts SET active = false;
 
--- One kurta at 2000 and two automatic promotions
+-- One bike at 2000 and two automatic promotions
 INSERT INTO product_styles (id, code, name, kind, unit, taxable) VALUES
-    ('00000000-0000-0000-0000-00000005c101', 'SP-KURTA', 'Kurta', 'garment', 'piece', true);
+    ('00000000-0000-0000-0000-00000005c101', 'SP-BIKE', 'Bike', 'item', 'piece', true);
 INSERT INTO product_variants (id, style_id, sku, size, color, price) VALUES
-    ('00000000-0000-0000-0000-00000005c201', '00000000-0000-0000-0000-00000005c101', 'SP-KURTA-L', 'L', 'White', 2000);
+    ('00000000-0000-0000-0000-00000005c201', '00000000-0000-0000-0000-00000005c101', 'SP-BIKE-L', 'L', 'White', 2000);
 SELECT post_stock_movement(
     (SELECT l.id FROM locations l JOIN branches b ON b.id = l.branch_id WHERE b.code = 'MAIN' AND l.code = 'FLOOR'),
     '00000000-0000-0000-0000-00000005c201', 20, 'opening');

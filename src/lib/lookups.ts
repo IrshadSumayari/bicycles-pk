@@ -6,8 +6,8 @@ import type { Json } from './database.types';
 
 export const lookupKinds = [
   ['category', 'Categories'], ['size_scheme', 'Size lists'], ['brand', 'Brands'],
-  ['material', 'Materials'], ['season', 'Seasons / collections'], ['color', 'Colors'],
-  ['fit', 'Fits'], ['bank', 'Banks'], ['customer_tier', 'Customer tiers'], ['return_reason', 'Return reasons'], ['stock_reason', 'Stock adjustment reasons'],
+  ['material', 'Frame materials'], ['season', 'Model years'], ['color', 'Colors'],
+  ['fit', 'Variants'], ['bank', 'Banks'], ['customer_tier', 'Customer tiers'], ['return_reason', 'Return reasons'], ['stock_reason', 'Stock adjustment reasons'],
 ] as const;
 export type LookupKind = typeof lookupKinds[number][0];
 export type LookupRow = { id: string; name: string; active: boolean; usage_count: number; description?: string; code?: string; sizes?: string[] };

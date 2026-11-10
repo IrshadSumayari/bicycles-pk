@@ -18,7 +18,7 @@ CREATE TEMP TABLE ids(label TEXT PRIMARY KEY, id UUID);
 GRANT ALL ON ids TO authenticated;
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated"}';
-SELECT FROM save_style('{"kind":"garment","code":"SEARCH","name":"Search kurta","taxable":true,
+SELECT FROM save_style('{"kind":"item","code":"SEARCH","name":"Search bike","taxable":true,
  "variants":[{"sku":"SEARCH-M","price":1000,"cost":400,"size":"M","opening_stock":30}]}');
 INSERT INTO ids SELECT 'variant', id FROM product_variants WHERE sku = 'SEARCH-M';
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa02","role":"authenticated"}';
@@ -82,7 +82,7 @@ INSERT INTO public.locations(id,branch_id,code,name,kind) VALUES
  ('00000000-0000-0000-0000-0000000fa0b2','00000000-0000-0000-0000-0000000fa0b1','FLOOR','Other floor','shop_floor');
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated"}';
-SELECT FROM save_style('{"kind":"garment","code":"TS-OTHER","name":"Other branch kurta",
+SELECT FROM save_style('{"kind":"item","code":"TS-OTHER","name":"Other branch bike",
  "location_id":"00000000-0000-0000-0000-0000000fa0b2","variants":[{"sku":"TS-OTHER","price":100,"opening_stock":10}]}');
 INSERT INTO ids SELECT 'other', (post_sale(jsonb_build_object('request_id',gen_random_uuid(),
  'location_id','00000000-0000-0000-0000-0000000fa0b2',

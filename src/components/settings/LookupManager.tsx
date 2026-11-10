@@ -61,7 +61,7 @@ function LookupEditor({ kind, initial, close }: { kind: LookupKind; initial: Loo
       {kind === 'category' && <label className="block text-sm">Description<textarea className="textarea block w-full" value={description} maxLength={2000} onChange={e => setDescription(e.target.value)} /></label>}
       {kind === 'size_scheme' && <><label className="block text-sm">Code<input className="input block" value={code} onChange={e => setCode(e.target.value.toUpperCase())} pattern="[A-Z0-9][A-Z0-9_-]{0,39}" maxLength={40} required /></label><label className="block text-sm">Sizes, separated by commas<input className="input block" value={sizes} onChange={e => setSizes(e.target.value)} required /><span className="text-xs text-bodytext">Keep them in the order you want to use when building variants.</span></label></>}
       <label className="flex gap-2 items-center"><input type="checkbox" checked={active} onChange={e => setActive(e.target.checked)} />Active</label>
-      {initial && <p className="text-xs text-bodytext">Renaming a category, brand, material, season, color or fit updates current catalog records. Posted sale and payment history remains unchanged.</p>}
+      {initial && <p className="text-xs text-bodytext">Renaming a category, brand, frame material, model year, colour or variant updates current catalog records. Posted sale and payment history remains unchanged.</p>}
       {error && <p role="alert" className="text-error">{error}</p>}
     </fieldset><div className="modal-footer flex gap-3"><button type="button" className="btn btn-secondary" disabled={saving} onClick={close}>Cancel</button><button className="btn btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save lookup'}</button></div>
   </form></div>;

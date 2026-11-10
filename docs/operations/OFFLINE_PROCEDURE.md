@@ -14,7 +14,7 @@ Do not start another sale or charge the card twice to get past an error.
 Use the next numbered slip and give the customer the carbon copy. Record:
 
 - Date, time, slip number and cashier initials.
-- Each item, SKU/barcode if available, size, colour, quantity or fabric meters.
+- Each item, SKU/barcode if available, size, colour and quantity.
 - Unit price, discount and total; customer name/phone if needed.
 - Payment method, amount received and cash change. For cards, note the terminal
   slip reference and last four digits only. Never write the full card number.
@@ -25,9 +25,9 @@ payments that you cannot verify. Keep the cash with the till and both slips toge
 
 ## Returns and deliveries — واپسی اور حوالگی
 
-Pause returns and tailoring deliveries. A manager may approve an exception only
+Pause returns. A manager may approve an exception only
 when the paper slip clearly shows the outstanding balance and payment history.
-Write any refund, balance paid or garment handed over on the numbered slip.
+Write any refund, balance paid or bike handed over on the numbered slip.
 
 ## Back online — دوبارہ آن لائن
 

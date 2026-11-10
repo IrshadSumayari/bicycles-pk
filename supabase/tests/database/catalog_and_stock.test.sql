@@ -13,7 +13,7 @@ UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-000000
 CREATE TEMP TABLE ids AS
 SELECT
     (SELECT l.id FROM locations l JOIN branches b ON b.id = l.branch_id WHERE b.code = 'MAIN' AND l.code = 'FLOOR') AS floor,
-    (SELECT id FROM size_schemes WHERE code = 'LETTER') AS letter;
+    (SELECT id FROM size_schemes WHERE code = 'FRAME') AS frame;
 GRANT SELECT ON ids TO authenticated;
 
 -- ---------------------------------------------------------------------
@@ -24,8 +24,8 @@ SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000aa02",
 
 SELECT lives_ok($$
     INSERT INTO product_styles (id, code, name, kind, unit, size_scheme_id, published, slug)
-    VALUES ('00000000-0000-0000-0000-0000000005a1', 'SK-NAVY', 'Navy Shalwar Kameez', 'garment', 'piece',
-            (SELECT letter FROM ids), true, 'navy-shalwar-kameez')
+    VALUES ('00000000-0000-0000-0000-0000000005a1', 'SK-NAVY', 'Navy City Bike', 'item', 'piece',
+            (SELECT frame FROM ids), true, 'navy-city-bike')
 $$, 'manager can create a style');
 SELECT lives_ok($$
     INSERT INTO product_variants (id, style_id, sku, size, color, price) VALUES
@@ -63,8 +63,8 @@ SELECT is((SELECT on_hand FROM stock_balances WHERE variant_id = '00000000-0000-
 SELECT is((SELECT count(*)::int FROM stock_movements WHERE variant_id = '00000000-0000-0000-0000-0000000005b1'), 1,
           'one movement for a retried request');
 SELECT throws_ok($$
-    SELECT adjust_stock('00000000-0000-0000-0000-0000000005b1', (SELECT floor FROM ids), 1.5, 'Half a shirt')
-$$, NULL, NULL, 'garments only take whole quantities');
+    SELECT adjust_stock('00000000-0000-0000-0000-0000000005b1', (SELECT floor FROM ids), 1.5, 'Half a tube')
+$$, NULL, NULL, 'items only take whole quantities');
 SELECT throws_ok($$
     SELECT adjust_stock('00000000-0000-0000-0000-0000000005b1', (SELECT floor FROM ids), -5, 'Too many')
 $$, NULL, NULL, 'stock cannot go below zero');

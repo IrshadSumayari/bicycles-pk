@@ -24,7 +24,7 @@ GRANT SELECT ON dates TO authenticated;
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef01","role":"authenticated"}';
 SELECT FROM open_cash_session(0);
-SELECT FROM save_style('{"kind":"garment","code":"R-KURTA","name":"Report Kurta","category":"Report Clothing","taxable":true,
+SELECT FROM save_style('{"kind":"item","code":"R-BIKE","name":"Report Bike","category":"Report Bicycles","taxable":true,
  "variants":[{"sku":"R-M","size":"M","color":"White","price":1000,"cost":400,"opening_stock":10},
              {"sku":"R-L","size":"L","color":"Blue","price":1000,"cost":400,"opening_stock":5}]}');
 SELECT FROM save_style('{"kind":"pack","code":"R-PACK","name":"Report Gift Set","taxable":true,
@@ -57,12 +57,12 @@ SELECT results_eq($$ SELECT money_in,money_out,net,count FROM report_tenders((SE
 SELECT results_eq($$ SELECT money_in,money_out,net,count FROM report_tenders((SELECT d FROM dates),(SELECT d FROM dates)) WHERE method = 'card' $$,
  $$ VALUES (1030::numeric,0::numeric,1030::numeric,1) $$, 'split card tender');
 SELECT is((SELECT count(*)::int FROM report_tenders((SELECT d FROM dates),(SELECT d FROM dates)) WHERE method = 'exchange'),0,'no internal exchange tender');
-SELECT results_eq($$ SELECT quantity,net,cost,margin FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates)) WHERE label = 'Report Kurta' $$,
+SELECT results_eq($$ SELECT quantity,net,cost,margin FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates)) WHERE label = 'Report Bike' $$,
  $$ VALUES (1::numeric,900::numeric,400::numeric,500::numeric) $$, 'style nets returned quantity, tax-exclusive refund and restocked cost');
 SELECT results_eq($$ SELECT quantity,net FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates),NULL,'size') WHERE key = 'M' $$,
  $$ VALUES (1::numeric,900::numeric) $$,'size grouping');
 SELECT is((SELECT key FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates),NULL,'variant',1)),(SELECT m::text FROM ids),'variant ranking and limit');
-SELECT is((SELECT net FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates),NULL,'category') WHERE label = 'Report Clothing'),900::numeric,'category grouping');
+SELECT is((SELECT net FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates),NULL,'category') WHERE label = 'Report Bicycles'),900::numeric,'category grouping');
 SELECT is((SELECT quantity FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates),NULL,'color') WHERE key = 'White'),1::numeric,'color grouping');
 SELECT throws_ok($$ SELECT report_top_items(current_date,current_date,NULL,'bad') $$,'22023',NULL,'invalid group rejected');
 SELECT throws_ok($$ SELECT report_top_items(current_date,current_date,NULL,'style',0) $$,'22023',NULL,'invalid limit rejected');
@@ -96,7 +96,7 @@ SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef04",
 SELECT is((SELECT net_sales FROM report_sales_summary((SELECT d FROM dates),(SELECT d FROM dates))),2300::numeric,'manager can report own branch');
 SELECT is((SELECT count(*)::int FROM report_size_color_matrix((SELECT d FROM dates),(SELECT d FROM dates),'00000000-0000-0000-0000-0000000ef0b1',(SELECT style FROM ids))),0,'matrix hides stock of inaccessible branch');
 
--- Fully refund the garment line: original revenue must remain in the report.
+-- Fully refund the bike line: original revenue must remain in the report.
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef01","role":"authenticated"}';
 SELECT FROM post_return(jsonb_build_object('request_id','00000000-0000-0000-0000-0000000ef005',
  'sale_id',(SELECT result->'sale'->>'id' FROM sale),'reason','Damaged','refund_method','card',
@@ -136,7 +136,7 @@ SELECT ok(EXISTS(SELECT 1 FROM payments WHERE method = 'exchange'),'exchange fix
 SELECT is((SELECT count(*)::int FROM report_tenders((SELECT d FROM dates),(SELECT d FROM dates)) WHERE method = 'exchange'),0,'real exchange excluded from tenders');
 
 -- Populate the second branch through the same catalog and sale APIs.
-SELECT FROM save_style('{"kind":"garment","code":"R-OTHER","name":"Other branch kurta","taxable":true,
+SELECT FROM save_style('{"kind":"item","code":"R-OTHER","name":"Other branch bike","taxable":true,
  "location_id":"00000000-0000-0000-0000-0000000ef0b2",
  "variants":[{"sku":"R-OTHER-M","size":"M","color":"White","price":1000,"cost":400,"opening_stock":10}]}');
 SELECT FROM post_sale(jsonb_build_object('request_id','00000000-0000-0000-0000-0000000ef00a',
@@ -149,7 +149,7 @@ SELECT is((SELECT count(*)::int FROM report_sales_summary((SELECT d FROM dates),
 SELECT is((SELECT count(*)::int FROM report_tenders((SELECT d FROM dates),(SELECT d FROM dates),'00000000-0000-0000-0000-0000000ef0b1')),0,'manager cannot report other branch tenders');
 SELECT is((SELECT count(*)::int FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates),'00000000-0000-0000-0000-0000000ef0b1')),0,'manager cannot report other branch items');
 SELECT is((SELECT count(*)::int FROM report_staff_sales((SELECT d FROM dates),(SELECT d FROM dates),'00000000-0000-0000-0000-0000000ef0b1')),0,'manager cannot report other branch staff sales');
-SELECT is((SELECT count(*)::int FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates)) WHERE label = 'Other branch kurta'),0,'NULL branch is limited to memberships');
+SELECT is((SELECT count(*)::int FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates)) WHERE label = 'Other branch bike'),0,'NULL branch is limited to memberships');
 
 RESET ROLE;
 SELECT ok(NOT has_function_privilege('anon','public.report_sales_summary(date,date,uuid)','EXECUTE'),'anonymous execution revoked');
