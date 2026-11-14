@@ -9,7 +9,7 @@ database in `supabase/` (one baseline migration plus any later ones). The plan i
 
 ## Configuration
 
-Use a dedicated Bicycles.pk Supabase project. Local Supabase uses project ID `bicycles` and ports 55330–55339. Search indexing stays off (`noindex`) until launch. Install with `npm ci` and
+Use a dedicated Bicycles.pk Supabase project. Local Supabase uses project ID `bicycles` and ports 55330–55339. Search engines index only the live shop: pages are `noindex` and `robots.txt` disallows everything unless `NEXT_PUBLIC_SITE_URL` is `https://bicycles.pk`, so indexing starts with the first production deploy. Install with `npm ci` and
 `npm --prefix website ci`; run `npm run dev` (POS) and `npm run web:dev` (website), each with its own
 environment file based on the examples. Production branch is `main`; staging is `dev`.
 

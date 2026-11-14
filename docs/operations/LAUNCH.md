@@ -74,11 +74,10 @@ Enter products only after section 5 (production setup) is done, or enter them on
 
 ## 4. Code changes for launch (developer: one PR into `dev`)
 
-These are deliberately left off until launch:
+Search indexing needs no code change. `isProductionSite()` in `website/lib/helpers.ts` turns it on only when `NEXT_PUBLIC_SITE_URL` is `https://bicycles.pk`, so it starts with the first production deploy. Staging, previews and local builds stay `noindex`, and their `robots.txt` disallows everything.
 
-- [ ] **Turn indexing on:** in `website/app/layout.tsx`, change `robots: { index: false, follow: false }` to `{ index: true, follow: true }`.
-- [ ] **Check `website/app/robots.ts`:** it allows `/`, disallows `/search` and points to `/sitemap.xml`. Keep it as is.
-- [ ] **Update the indexing note:** in `BICYCLES.md`, change "Search indexing stays off (`noindex`) until launch" to the launch date.
+- [ ] **Check the production variable:** `bicycles-shop` has `NEXT_PUBLIC_SITE_URL=https://bicycles.pk` exactly (no `www`, no trailing path).
+- [ ] **Update the indexing note:** in `BICYCLES.md`, add the launch date to the search indexing note.
 - [ ] **Warranty page and footer link** from section 2.
 - [ ] **Release PR `dev → main`:** expect a conflict on the root `index.html`. `main` has the coming-soon page and `dev` has the POS app's `index.html`. Resolve it by keeping **dev's** version, and **delete `CNAME`** in the same PR. The domain moves to Vercel, so GitHub Pages must stop claiming it.
 
