@@ -33,8 +33,8 @@ SELECT is((SELECT phone FROM public.customer_accounts WHERE id = '00000000-0000-
 SELECT is((SELECT count(*)::int FROM public.users WHERE id = '00000000-0000-0000-0000-0000000000c1'), 1,
           'admin-created staff get a staff profile');
 SELECT is((SELECT count(*)::int FROM public.branch_memberships), 2, 'staff join the default branch');
-SELECT is((SELECT count(*)::int FROM public.locations l JOIN public.branches b ON b.id = l.branch_id WHERE b.code = 'MAIN'), 4,
-          'main branch has its four locations');
+SELECT is((SELECT count(*)::int FROM public.locations l JOIN public.branches b ON b.id = l.branch_id WHERE b.code = 'MAIN'), 3,
+          'main branch has its shop floor, stockroom and online locations');
 
 -- Staff roles are admin, manager and cashier only
 SELECT throws_ok($$ UPDATE public.users SET role = 'mechanic' WHERE id = '00000000-0000-0000-0000-0000000000c1' $$,

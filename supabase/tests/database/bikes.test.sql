@@ -11,7 +11,8 @@ UPDATE app_settings SET tax_rate=0,delivery_fee=250,free_delivery_over=NULL,cod_
  online_max_pending_orders=20,online_max_open_cod_orders=20,bulky_delivery_fee=1500,assembly_fee=NULL;
 CREATE TEMP TABLE ids(key TEXT PRIMARY KEY,id UUID);
 GRANT ALL ON ids TO authenticated,anon;
-CREATE FUNCTION pg_temp.variant(k TEXT) RETURNS UUID LANGUAGE sql AS $$
+-- Runs as the test owner: the anon steps below call it, and anon cannot read product_variants.
+CREATE FUNCTION pg_temp.variant(k TEXT) RETURNS UUID LANGUAGE sql SECURITY DEFINER AS $$
  SELECT v.id FROM product_variants v JOIN ids ON ids.id=v.style_id WHERE ids.key=k ORDER BY v.sku LIMIT 1 $$;
 CREATE FUNCTION pg_temp.cart(k TEXT,fulfil TEXT,assembly BOOLEAN DEFAULT NULL,qty INT DEFAULT 1) RETURNS JSONB LANGUAGE sql AS $$
  SELECT jsonb_build_object('fulfilment',fulfil,'lines',jsonb_build_array(jsonb_build_object('variant_id',pg_temp.variant(k),'quantity',qty)))
