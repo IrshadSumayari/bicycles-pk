@@ -18,6 +18,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000009d01','order-race-admin@t.local','{"name":"Admin"}','{}'),
  ('00000000-0000-0000-0000-000000009d02','order-race-cashier@t.local','{"name":"Cashier"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-000000009d03','order-race-customer@t.local','{"name":"Customer"}','{}');
+SELECT app_private.bootstrap_admin('order-race-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET active=true WHERE id='00000000-0000-0000-0000-000000009d02';
 UPDATE app_settings SET tax_rate=0,cod_enabled=true,cod_max_total=NULL;
 INSERT INTO product_styles(id,code,name,kind,published,slug,taxable) VALUES
@@ -38,12 +39,12 @@ CREATE FUNCTION pg_temp.till(v UUID) RETURNS JSONB LANGUAGE sql AS $$
 $$;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA pg_temp TO authenticated;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009d03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009d03","role":"authenticated","aal":"aal2"}';
 SELECT lives_ok($$SELECT pg_temp.web('00000000-0000-0000-0000-000000009db1')$$,'website reserves last unit');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009d02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009d02","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT pg_temp.till('00000000-0000-0000-0000-000000009db1')$$,'P0001',NULL,'till cannot sell website-held unit');
 SELECT lives_ok($$SELECT pg_temp.till('00000000-0000-0000-0000-000000009db2')$$,'till sells other last unit');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009d03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009d03","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT pg_temp.web('00000000-0000-0000-0000-000000009db2')$$,'P0001','Till last unit is sold out','website cannot reserve till-sold unit');
 RESET ROLE;
 SET LOCAL "request.jwt.claims"='';

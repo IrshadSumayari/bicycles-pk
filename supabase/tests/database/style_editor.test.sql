@@ -5,10 +5,11 @@ SELECT plan(17);
 INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-00000000cc01', 'admin@t.local',   '{"name":"Admin"}', '{}'),
     ('00000000-0000-0000-0000-00000000cc02', 'cashier@t.local', '{"name":"Cashier"}', '{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-00000000cc02';
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000cc01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000cc01","role":"authenticated","aal":"aal2"}';
 
 CREATE TEMP TABLE saved (id UUID);
 GRANT ALL ON saved TO authenticated;
@@ -68,7 +69,7 @@ SELECT throws_ok($$
         {"sku":"OTHER-1","price":1,"barcode":"SK001WM"}]}')
 $$, NULL, NULL, 'a barcode cannot be reused by another style');
 
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000cc02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000cc02","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$
     SELECT save_style('{"kind":"item","code":"CHEAP","name":"Cheap","variants":[{"sku":"CHEAP-1","price":1}]}')
 $$, '42501', NULL, 'cashier cannot edit styles');

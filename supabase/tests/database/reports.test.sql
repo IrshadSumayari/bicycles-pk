@@ -8,6 +8,7 @@ INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000ef02','reports-cashier@t.local','{"name":"Reports Cashier"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000ef03','reports-inactive@t.local','{"name":"Reports Inactive"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000ef04','reports-manager@t.local','{"name":"Reports Manager"}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('reports-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET active = true WHERE id IN
  ('00000000-0000-0000-0000-00000000ef02','00000000-0000-0000-0000-00000000ef04');
 UPDATE public.users SET role = 'manager' WHERE id = '00000000-0000-0000-0000-00000000ef04';
@@ -22,7 +23,7 @@ INSERT INTO public.locations(id, branch_id, code, name, kind)
 CREATE TEMP TABLE dates AS SELECT (now() AT TIME ZONE 'Asia/Karachi')::date AS d;
 GRANT SELECT ON dates TO authenticated;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef01","role":"authenticated","aal":"aal2"}';
 SELECT FROM open_cash_session(0);
 SELECT FROM save_style('{"kind":"item","code":"R-BIKE","name":"Report Bike","category":"Report Bicycles","taxable":true,
  "variants":[{"sku":"R-M","size":"M","color":"White","price":1000,"cost":400,"opening_stock":10},
@@ -86,18 +87,18 @@ BEGIN
  END LOOP;
 END;
 $$;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef02","role":"authenticated","aal":"aal2"}';
 SELECT * FROM pg_temp.denied_reports();
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef03","role":"authenticated","aal":"aal2"}';
 SELECT * FROM pg_temp.denied_reports();
 
 -- A manager belongs only to MAIN. Explicit branch selection cannot bypass membership.
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef04","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef04","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT net_sales FROM report_sales_summary((SELECT d FROM dates),(SELECT d FROM dates))),2300::numeric,'manager can report own branch');
 SELECT is((SELECT count(*)::int FROM report_size_color_matrix((SELECT d FROM dates),(SELECT d FROM dates),'00000000-0000-0000-0000-0000000ef0b1',(SELECT style FROM ids))),0,'matrix hides stock of inaccessible branch');
 
 -- Fully refund the bike line: original revenue must remain in the report.
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef01","role":"authenticated","aal":"aal2"}';
 SELECT FROM post_return(jsonb_build_object('request_id','00000000-0000-0000-0000-0000000ef005',
  'sale_id',(SELECT result->'sale'->>'id' FROM sale),'reason','Damaged','refund_method','card',
  'lines',jsonb_build_array(jsonb_build_object('sale_line_id',(SELECT id FROM sale_lines WHERE variant_id = (SELECT m FROM ids) AND sale_id = (SELECT (result->'sale'->>'id')::uuid FROM sale)), 'quantity',1,'condition','damaged'))));
@@ -144,7 +145,7 @@ SELECT FROM post_sale(jsonb_build_object('request_id','00000000-0000-0000-0000-0
  'lines',jsonb_build_array(jsonb_build_object('variant_id',(SELECT id FROM product_variants WHERE sku = 'R-OTHER-M'),'quantity',1)),
  'payments','[{"method":"card","amount":1100,"card_last4":"4242"}]'::jsonb));
 SELECT is((SELECT net_sales FROM report_sales_summary((SELECT d FROM dates),(SELECT d FROM dates),'00000000-0000-0000-0000-0000000ef0b1')),1000::numeric,'admin can explicitly report other branch');
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef04","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef04","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM report_sales_summary((SELECT d FROM dates),(SELECT d FROM dates),'00000000-0000-0000-0000-0000000ef0b1')),0,'manager cannot report other branch sales');
 SELECT is((SELECT count(*)::int FROM report_tenders((SELECT d FROM dates),(SELECT d FROM dates),'00000000-0000-0000-0000-0000000ef0b1')),0,'manager cannot report other branch tenders');
 SELECT is((SELECT count(*)::int FROM report_top_items((SELECT d FROM dates),(SELECT d FROM dates),'00000000-0000-0000-0000-0000000ef0b1')),0,'manager cannot report other branch items');
@@ -164,7 +165,7 @@ SELECT ok(NOT EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pr
 
 -- Credit invoices are revenue even though no cash is collected.
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ef01","role":"authenticated","aal":"aal2"}';
 CREATE TEMP TABLE credit_sale AS SELECT post_sale(jsonb_build_object('request_id','00000000-0000-0000-0000-0000000ef00b',
  'customer_id','00000000-0000-0000-0000-0000000ef0c1',
  'lines',jsonb_build_array(jsonb_build_object('variant_id',(SELECT l FROM ids),'quantity',1)),

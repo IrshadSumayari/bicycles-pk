@@ -5,6 +5,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000fb02','cashier@t.local','{"name":"Cashier"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000fb03','inactive@t.local','{"name":"Inactive"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000fb04','manager@t.local','{"name":"Manager"}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET active=true;
 UPDATE users SET active=false WHERE id='00000000-0000-0000-0000-00000000fb03';
 UPDATE users SET role='manager' WHERE id='00000000-0000-0000-0000-00000000fb04';
@@ -25,11 +26,11 @@ INSERT INTO customer_ledger(customer_id,entry_type,amount,created_at) VALUES
  ('00000000-0000-0000-0000-00000000fbc3','adjustment',50,'2026-01-02 18:59:59+00');
 UPDATE app_settings SET tax_rate=0;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb01","role":"authenticated","aal":"aal2"}';
 SELECT FROM save_style('{"kind":"item","code":"CREDIT","name":"Helmet","variants":[{"sku":"CREDIT-M","size":"M","price":1000,"opening_stock":20},{"sku":"CREDIT-S","size":"S","price":500,"opening_stock":20}]}');
 CREATE TEMP TABLE fixture(name TEXT PRIMARY KEY,value JSONB);
 GRANT ALL ON fixture TO authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb02","role":"authenticated","aal":"aal2"}';
 INSERT INTO fixture VALUES('sale',post_sale(jsonb_build_object('request_id','00000000-0000-0000-0000-0000000fb001',
  'customer_id','00000000-0000-0000-0000-00000000fbc1',
  'lines',jsonb_build_array(jsonb_build_object('variant_id',(SELECT id FROM product_variants WHERE sku='CREDIT-M'),'quantity',3)),
@@ -62,15 +63,15 @@ SELECT is((customer_statement('00000000-0000-0000-0000-00000000fbc3','2026-01-02
 SELECT is((customer_statement('00000000-0000-0000-0000-00000000fbc3','2026-01-02','2026-01-02')->>'closing_balance')::numeric,450::numeric,'statement local day closing');
 SELECT is((SELECT count(*)::int FROM customers_with_balance('{"q":"Bilal"}')),1,'owes list search');
 SELECT is((SELECT total_count FROM customers_with_balance('{"limit":1,"offset":1}')),3::bigint,'owes list paging total');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb03","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT post_customer_payment('{}') $$,'42501',NULL,'inactive staff cannot collect');
 SELECT throws_ok($$ SELECT customer_statement('00000000-0000-0000-0000-00000000fbc1',current_date,current_date) $$,'42501',NULL,'inactive staff cannot read statements');
 SELECT is((SELECT count(*)::int FROM customer_ledger),0,'inactive staff ledger RLS');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb04","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb04","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT adjust_customer_balance('00000000-0000-0000-0000-00000000fbc1',-100,' ','00000000-0000-0000-0000-0000000fb012') $$,'P0001',NULL,'adjustment needs reason');
 SELECT is((adjust_customer_balance('00000000-0000-0000-0000-00000000fbc1',-100,'Write-off','00000000-0000-0000-0000-0000000fb012')->>'balance')::numeric,1300::numeric,'manager adjustment');
 SELECT is((adjust_customer_balance('00000000-0000-0000-0000-00000000fbc1',-100,'Write-off','00000000-0000-0000-0000-0000000fb012')->>'balance')::numeric,1300::numeric,'adjustment retry');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fb01","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ UPDATE customers SET credit_used=1 WHERE name='Bilal' $$,'42501','The balance changes only through payments and sales','even admin cannot edit counter after ledger trigger');
 SELECT lives_ok($$ UPDATE customers SET name='Bilal updated' WHERE name='Bilal' $$,'normal name edit works');
 SELECT throws_ok($$ INSERT INTO customers(name,phone,credit_used) VALUES('Bad','03001112239',100) $$,'42501',NULL,'nonzero insert blocked');

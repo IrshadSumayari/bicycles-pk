@@ -5,6 +5,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000007102','web-manager@t.local','{"name":"Manager"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-000000007103','web-cashier@t.local','{"name":"Cashier"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-000000007104','web-customer@t.local','{"name":"Website customer"}','{}');
+SELECT app_private.bootstrap_admin('web-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET role='manager',active=true WHERE id='00000000-0000-0000-0000-000000007102';
 UPDATE users SET active=true WHERE id='00000000-0000-0000-0000-000000007103';
 INSERT INTO categories(id,name) VALUES('00000000-0000-0000-0000-0000000071c1','Web tubes'),('00000000-0000-0000-0000-0000000071c2','Web tyres');
@@ -43,7 +44,7 @@ $$;
 GRANT EXECUTE ON FUNCTION pg_temp.has_private_key(JSONB) TO anon,authenticated;
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007102","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007102","role":"authenticated","aal":"aal2"}';
 INSERT INTO fixture VALUES('images',save_product_images('00000000-0000-0000-0000-0000000071a1',pg_temp.image_list('00000000-0000-0000-0000-0000000071a1'),'00000000-0000-0000-0000-000000071001'));
 SELECT is(save_product_images('00000000-0000-0000-0000-0000000071a1','[]','00000000-0000-0000-0000-000000071001'),(SELECT value FROM fixture WHERE name='images'),'image retry returns original list');
 SELECT is((SELECT count(*)::int FROM product_images),2,'retry does not replace saved images');
@@ -67,7 +68,7 @@ INSERT INTO collection_styles(collection_id,style_id) SELECT id,'00000000-0000-0
 UPDATE product_styles SET slug='web-d' WHERE id='00000000-0000-0000-0000-0000000071a4';
 UPDATE product_variants SET price=10 WHERE id='00000000-0000-0000-0000-0000000071b7';
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007102","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007102","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT publish_style('00000000-0000-0000-0000-0000000071a4',true) $$,'P0001','Cannot publish: Add at least one image','missing image refused');
 SELECT FROM save_product_images('00000000-0000-0000-0000-0000000071a4',pg_temp.image_list('00000000-0000-0000-0000-0000000071a4'),gen_random_uuid());
 RESET ROLE;
@@ -81,7 +82,7 @@ SET LOCAL ROLE authenticated;
 SELECT throws_ok($$ SELECT publish_style('00000000-0000-0000-0000-0000000071a4',true) $$,'P0001','Cannot publish: Add a published active variant with a price greater than zero','unpriced variant refused');
 SELECT lives_ok($$ SELECT publish_style('00000000-0000-0000-0000-0000000071a4',false) $$,'unpublishing allowed without prerequisites');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007103","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007103","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT save_product_images('00000000-0000-0000-0000-0000000071a1','[]',gen_random_uuid()) $$,'42501',NULL,'cashier cannot save images');
 SELECT throws_ok($$ SELECT save_collection('{}') $$,'42501',NULL,'cashier cannot save collections');
 SELECT throws_ok($$ SELECT set_collection_styles('00000000-0000-0000-0000-0000000071a1','{}',gen_random_uuid()) $$,'42501',NULL,'cashier cannot set collection styles');
@@ -143,7 +144,7 @@ SELECT throws_ok($$ SELECT * FROM catalog_style_rows() $$,'42501',NULL,'private 
 SELECT lives_ok($$ SELECT * FROM public_catalog $$,'legacy public catalog view retained');
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007104","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007104","role":"authenticated","aal":"aal2"}';
 SELECT is(public.is_staff(),false,'website customer is not staff');
 SELECT is((SELECT count(*)::int FROM customer_accounts WHERE id=auth.uid()),1,'website customer account exists');
 SELECT is((SELECT count(*)::int FROM catalog_list('{}')),3,'website customer gets same list');
@@ -153,7 +154,7 @@ SELECT is((SELECT count(*)::int FROM catalog_collections()),1,'website customer 
 SELECT is(catalog_facets('web-main')->'sizes','["M","S"]'::jsonb,'website customer gets facets');
 SELECT is((SELECT count(*)::int FROM product_images),0,'website customer cannot read staff image metadata');
 SELECT throws_ok($$ INSERT INTO storage.objects(bucket_id,name) VALUES('product-images','customer.webp') $$,'42501',NULL,'website customer cannot upload');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007102","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007102","role":"authenticated","aal":"aal2"}';
 SELECT lives_ok($$ SELECT post_sale(jsonb_build_object('request_id',gen_random_uuid(),'lines','[{"variant_id":"00000000-0000-0000-0000-0000000071b1","quantity":1}]'::jsonb,'payments','[{"method":"card","amount":100,"card_last4":"4242"}]'::jsonb)) $$,'sell the last available size');
 SET LOCAL ROLE anon;
 SET LOCAL "request.jwt.claims"='{"role":"anon"}';
@@ -170,7 +171,7 @@ INSERT INTO product_variants(style_id,sku,size,color,price)
 INSERT INTO collection_styles(collection_id,style_id)
  SELECT c.id,s.id FROM collections c CROSS JOIN product_styles s WHERE c.slug='web-main' AND s.code LIKE 'WEB-CAP-%';
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007102","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000007102","role":"authenticated","aal":"aal2"}';
 WITH removed AS (DELETE FROM storage.objects WHERE bucket_id='product-images' AND name='manager-renamed.webp' RETURNING id)
  SELECT is(count(*)::int,1,'manager can delete objects through the Storage context') FROM removed;
 SET LOCAL ROLE anon;

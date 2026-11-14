@@ -8,6 +8,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000009a04','orders-b@t.local','{"name":"Customer B"}','{}'),
  ('00000000-0000-0000-0000-000000009a05','orders-inactive@t.local','{"name":"Inactive"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-000000009a06','orders-manager@t.local','{"name":"Manager"}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('orders-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET active=true WHERE id IN ('00000000-0000-0000-0000-000000009a02','00000000-0000-0000-0000-000000009a05','00000000-0000-0000-0000-000000009a06');
 UPDATE users SET role='cashier',active=false WHERE id='00000000-0000-0000-0000-000000009a05';
 UPDATE users SET role='manager' WHERE id='00000000-0000-0000-0000-000000009a06';
@@ -50,12 +51,12 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA pg_temp TO authenticated,service_role,a
 
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 INSERT INTO work VALUES('a',create_online_order(pg_temp.order_payload('cod','00000000-0000-0000-0000-000000009ab1','delivery',2)));
 INSERT INTO work VALUES('b',create_online_order(pg_temp.order_payload('cod','00000000-0000-0000-0000-000000009ab1','delivery')));
 INSERT INTO work VALUES('pickup',create_online_order(pg_temp.order_payload('cod')));
 SELECT ok(pg_temp.refuse('SELECT update_online_tracking(''{}'')'),'customer cannot post shipment updates');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated","aal":"aal2"}';
 INSERT INTO work VALUES('update',jsonb_build_object('id',pg_temp.order_id('a'),'request_id','00000000-0000-0000-0000-00000000bb01','version',0,'courier','PostEx','tracking_no','CN-TRACK-101','kind','out_for_delivery','message','The parcel is out for delivery today.'));
 SELECT throws_ok($$SELECT update_online_tracking((SELECT value FROM work WHERE key='update'))$$,'P0001',NULL,'cannot update before shipping');
 RESET ROLE;
@@ -80,7 +81,7 @@ SELECT is(list_online_orders('{"q":"cn-track-101"}')->>'total_count','1','tracki
 SELECT is(list_online_orders('{"q":"postex"}')->>'total_count','1','courier-name search');
 SELECT is(jsonb_array_length(list_online_orders('{"q":"postex","offset":1,"limit":1}')->'orders'),0,'tracking search paginates safely');
 SELECT is(list_online_orders('{"q":"CN-TRACK-101","status":"delivered"}')->>'total_count','0','status filter still applies to tracking search');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a06","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a06","role":"authenticated","aal":"aal2"}';
 SELECT ok(pg_temp.refuse($$SELECT update_online_tracking((SELECT value FROM work WHERE key='update'))$$),'another staff member cannot reuse idempotency key');
 RESET ROLE;
 DELETE FROM branch_memberships WHERE user_id='00000000-0000-0000-0000-000000009a06';
@@ -92,18 +93,18 @@ SELECT is((SELECT count(*)::int FROM online_order_events),0,'manager outside bra
 SELECT is((SELECT count(*)::int FROM online_payments),0,'manager outside branch cannot read raw online_payments');
 SELECT ok(pg_temp.refuse('SELECT online_order_detail(pg_temp.order_id(''a''))'),'manager outside branch cannot open shipment detail');
 SELECT ok(pg_temp.refuse($$SELECT update_online_tracking((SELECT value FROM work WHERE key='update')||jsonb_build_object('request_id',gen_random_uuid()))$$),'manager outside branch cannot update shipment');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a05","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a05","role":"authenticated","aal":"aal2"}';
 SELECT ok(pg_temp.refuse('SELECT update_online_tracking(''{}'')'),'inactive staff refused before payload validation');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 SELECT is(my_online_order((SELECT value->>'order_no' FROM work WHERE key='a'))->>'tracking_no','CN-TRACK-101','customer sees current CN');
 SELECT ok(my_online_order((SELECT value->>'order_no' FROM work WHERE key='a'))::text LIKE '%Out for delivery%','customer sees staff delivery update');
 SELECT ok(NOT(my_online_order((SELECT value->>'order_no' FROM work WHERE key='a'))::text~'created_by|notes_staff|tracking_version|account_id|unit_cost'),'tracking preserves customer field whitelist');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a04","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a04","role":"authenticated","aal":"aal2"}';
 SELECT ok(pg_temp.refuse(format('SELECT my_online_order(%L)',(SELECT value->>'order_no' FROM work WHERE key='a'))),'another customer cannot look up this order');
 RESET ROLE;
 UPDATE online_orders SET status='delivered' WHERE id=pg_temp.order_id('a');
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT update_online_tracking((SELECT value FROM work WHERE key='update')||jsonb_build_object('version',1,'request_id',gen_random_uuid()))$$,'P0001',NULL,'cannot publish active delivery update on completed order');
 SELECT is(update_online_tracking((SELECT value FROM work WHERE key='update')||jsonb_build_object('kind','tracking_details','version',1,'request_id',gen_random_uuid()))->>'tracking_version','2','metadata correction allowed after delivery with audit message');
 SET LOCAL ROLE anon;

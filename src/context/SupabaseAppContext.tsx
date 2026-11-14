@@ -147,12 +147,14 @@ const AppContext = createContext<{
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
-  const { user, profile } = useAuth();
+  const { user, profile, mfaStep } = useAuth();
   const [initialized, setInitialized] = useState(false);
 
-  // Load data from Supabase when user is authenticated
+  // Load data from Supabase when user is authenticated (and, for admins and
+  // managers, verified with an authenticator code; until then the database
+  // returns nothing for them)
   useEffect(() => {
-    if (user && profile?.active && !initialized) {
+    if (user && profile?.active && mfaStep === 'ok' && !initialized) {
       loadData();
       setInitialized(true);
     } else if (!user) {
@@ -163,7 +165,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: 'SET_CURRENT_USER', payload: null });
       setInitialized(false);
     }
-  }, [user, profile, initialized]);
+  }, [user, profile, mfaStep, initialized]);
 
   // Set current user from auth profile
   useEffect(() => {

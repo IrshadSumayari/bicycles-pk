@@ -6,10 +6,11 @@ INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-00000000ab01', 'admin@t.local',   '{"name":"Admin"}', '{}'),
     ('00000000-0000-0000-0000-00000000ab02', 'cashier@t.local', '{"name":"Cashier"}', '{"account_type":"staff"}'),
     ('00000000-0000-0000-0000-00000000ab03', 'cashier2@t.local', '{"name":"Cashier Two"}', '{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET active = true WHERE id IN ('00000000-0000-0000-0000-00000000ab02', '00000000-0000-0000-0000-00000000ab03');
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab01","role":"authenticated","aal":"aal2"}';
 CREATE TEMP TABLE s AS SELECT save_style('{"kind":"item","code":"SK","name":"City bike","variants":[
     {"sku":"SK-M","size":"M","price":1000,"opening_stock":10}]}') AS id;
 CREATE TEMP TABLE v AS SELECT id FROM product_variants WHERE sku = 'SK-M';
@@ -23,7 +24,7 @@ $$;
 GRANT EXECUTE ON FUNCTION pg_temp.sell(TEXT, JSONB) TO authenticated;
 
 -- Cashier without a shift
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab02","role":"authenticated","aal":"aal2"}';
 SELECT is(current_cash_session(), NULL, 'no shift open yet');
 SELECT throws_ok($$ SELECT pg_temp.sell('00000000-0000-0000-0000-0000000a0001', '[{"method":"cash"}]') $$,
                  'P0001', 'Open a cash shift before taking or refunding cash', 'cash needs an open shift');
@@ -51,18 +52,18 @@ SELECT is(
 );
 
 -- Another cashier cannot see this shift
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab03","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM cash_sessions), 0, 'cashiers see only their own shifts');
 
 -- Close
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab02","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT close_cash_session(6000) $$, NULL, NULL, 'a variance needs a note');
 SELECT is((close_cash_session(6000, 'Short 100, checked twice')->'session'->>'variance')::numeric, -100.00,
           'closed with the variance recorded');
 SELECT is(current_cash_session(), NULL, 'no shift open after closing');
 
 -- Manager sees all shifts
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ab01","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM cash_sessions), 1, 'back office sees every shift');
 
 SELECT * FROM finish();

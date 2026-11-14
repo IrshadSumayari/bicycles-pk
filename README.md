@@ -109,10 +109,16 @@ A modern, feature-rich Point of Sale (POS) system built with React, TypeScript, 
 
 6. **Create the first administrator**
 
-   While no staff account exists, the POS login page offers **"Create the administrator account"**.
-   That first account becomes the active administrator. After that the POS no longer offers sign-up:
-   staff are added by an administrator in *User Management* (role admin, manager or cashier).
+   No sign-up becomes an administrator, so a customer who signs up first gains nothing. Create
+   the first administrator yourself:
 
+   1. In Supabase Studio (local: http://127.0.0.1:55333), open **Authentication → Users → Add user**,
+      enter a staff email and a password of at least 12 characters, and tick **Auto Confirm User**.
+   2. In the **SQL Editor** run `SELECT app_private.bootstrap_admin('you@example.com');`.
+   3. Sign in to the POS. Administrators and managers set up an authenticator app on first sign-in
+      and enter its code every time after; cashiers use a password only.
+
+   Further staff are added by an administrator in *User Management* (role admin, manager or cashier).
    Public sign-ups stay enabled for the company website: they create **customer accounts**, which
    have no access to the POS or any staff data.
 
@@ -125,7 +131,7 @@ A modern, feature-rich Point of Sale (POS) system built with React, TypeScript, 
    ```
    
    Navigate to the application and:
-   1. **Create Admin User**: Register the first user
+   1. **Create Admin User**: Set up the first administrator (step 6)
    2. **Configure Store Settings**: Go to Settings → Store Information
    3. **Add Initial Products**: Go to Inventory → Add Product
    4. **Create User Accounts**: Go to User Management to add cashiers/managers

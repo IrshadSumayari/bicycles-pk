@@ -7,6 +7,7 @@ INSERT INTO auth.users (id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000fa03','ts-b@t.local','{"name":"Cashier B"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000fa04','ts-inactive@t.local','{"name":"Inactive"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000fa05','ts-manager@t.local','{"name":"Manager"}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('ts-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET active = true WHERE id IN
  ('00000000-0000-0000-0000-00000000fa02','00000000-0000-0000-0000-00000000fa03','00000000-0000-0000-0000-00000000fa04','00000000-0000-0000-0000-00000000fa05');
 UPDATE public.users SET role = 'cashier', active = false WHERE id = '00000000-0000-0000-0000-00000000fa04';
@@ -17,11 +18,11 @@ INSERT INTO public.customers(id,name,phone,credit_limit) VALUES
 CREATE TEMP TABLE ids(label TEXT PRIMARY KEY, id UUID);
 GRANT ALL ON ids TO authenticated;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated","aal":"aal2"}';
 SELECT FROM save_style('{"kind":"item","code":"SEARCH","name":"Search bike","taxable":true,
  "variants":[{"sku":"SEARCH-M","price":1000,"cost":400,"size":"M","opening_stock":30}]}');
 INSERT INTO ids SELECT 'variant', id FROM product_variants WHERE sku = 'SEARCH-M';
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa02","role":"authenticated","aal":"aal2"}';
 SELECT FROM open_cash_session(0);
 INSERT INTO ids SELECT 'sale-a', (post_sale(jsonb_build_object('request_id',gen_random_uuid(),
  'customer_id','00000000-0000-0000-0000-0000000fa0c1',
@@ -30,13 +31,13 @@ INSERT INTO ids SELECT 'sale-a', (post_sale(jsonb_build_object('request_id',gen_
 INSERT INTO ids SELECT 'draft', (post_sale(jsonb_build_object('request_id',gen_random_uuid(),'status','draft',
  'customer_id','00000000-0000-0000-0000-0000000fa0c1',
  'lines',jsonb_build_array(jsonb_build_object('variant_id',(SELECT id FROM ids WHERE label='variant'),'quantity',1))))->'sale'->>'id')::uuid;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa03","role":"authenticated","aal":"aal2"}';
 INSERT INTO ids SELECT 'sale-b', (post_sale(jsonb_build_object('request_id',gen_random_uuid(),
  'customer_id','00000000-0000-0000-0000-0000000fa0c1',
  'lines',jsonb_build_array(jsonb_build_object('variant_id',(SELECT id FROM ids WHERE label='variant'),'quantity',1)),
  'payments','[{"method":"credit"}]'::jsonb))->'sale'->>'id')::uuid;
 -- A manager handles the return, so it is hidden by returns' ordinary cashier RLS.
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated","aal":"aal2"}';
 SELECT FROM open_cash_session(0);
 SELECT FROM post_return(jsonb_build_object('request_id',gen_random_uuid(),'sale_id',(SELECT id FROM ids WHERE label='sale-a'),
  'reason','Wrong size','refund_method','cash','lines',jsonb_build_array(jsonb_build_object(
@@ -63,13 +64,13 @@ SELECT is((SELECT count(*)::int FROM search_sales('{"offset":99}')),0,'empty pag
 SELECT is((sale_detail((SELECT id FROM ids WHERE label='sale-a'))->'lines'->0->>'returned_quantity')::numeric,1::numeric,'detail includes returned quantity');
 SELECT is((SELECT count(*)::int FROM jsonb_array_elements(sale_detail((SELECT id FROM ids WHERE label='sale-a'))->'payments') p WHERE p->>'direction'='out'),1,'detail includes refund payment');
 SELECT is((sale_detail((SELECT id FROM ids WHERE label='sale-a'))->'returns'->0->>'refund_total')::numeric,1100::numeric,'detail includes return document');
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa02","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM search_sales()),2,'cashier sees own sale and draft only');
 SELECT is((SELECT id FROM search_sales('{"status":"draft"}')),(SELECT id FROM ids WHERE label='draft'),'own draft visible');
 SELECT is(sale_detail((SELECT id FROM ids WHERE label='sale-b')),NULL::jsonb,'another cashier sale detail refused');
 SELECT is((sale_detail((SELECT id FROM ids WHERE label='sale-a'))->'lines'->0->>'returned_quantity')::numeric,1::numeric,'own sale includes refund made by manager');
 SELECT ok(NOT (sale_detail((SELECT id FROM ids WHERE label='sale-a'))->'lines'->0 ? 'unit_cost'),'cashier detail does not expose cost');
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa04","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa04","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT * FROM search_sales()$$,'42501',NULL,'inactive staff cannot search sales');
 SELECT throws_ok($$SELECT sale_detail((SELECT id FROM ids WHERE label='sale-a'))$$,'42501',NULL,'inactive staff cannot get detail');
 RESET ROLE;
@@ -81,7 +82,7 @@ INSERT INTO public.branches(id,code,name) VALUES ('00000000-0000-0000-0000-00000
 INSERT INTO public.locations(id,branch_id,code,name,kind) VALUES
  ('00000000-0000-0000-0000-0000000fa0b2','00000000-0000-0000-0000-0000000fa0b1','FLOOR','Other floor','shop_floor');
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated","aal":"aal2"}';
 SELECT FROM save_style('{"kind":"item","code":"TS-OTHER","name":"Other branch bike",
  "location_id":"00000000-0000-0000-0000-0000000fa0b2","variants":[{"sku":"TS-OTHER","price":100,"opening_stock":10}]}');
 INSERT INTO ids SELECT 'other', (post_sale(jsonb_build_object('request_id',gen_random_uuid(),
@@ -89,13 +90,13 @@ INSERT INTO ids SELECT 'other', (post_sale(jsonb_build_object('request_id',gen_r
  'lines',jsonb_build_array(jsonb_build_object('variant_id',(SELECT id FROM product_variants WHERE sku='TS-OTHER'),'quantity',1)),
  'payments','[{"method":"card","card_last4":"4242"}]'::jsonb))->'sale'->>'id')::uuid;
 SELECT is((SELECT count(*)::int FROM search_sales()),4,'admin sees all branches');
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa05","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa05","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM search_sales()),3,'manager only sees member branch');
 SELECT is(sale_detail((SELECT id FROM ids WHERE label='other')),NULL::jsonb,'manager cannot read other branch detail');
 SELECT throws_ok($$ SELECT search_sales('{"status":"bad"}') $$,'22023',NULL,'invalid status refused');
 SELECT throws_ok($$ SELECT search_sales('{"method":"bad"}') $$,'22023',NULL,'invalid method refused');
 -- Fully refunded status is distinct from the has-any-return filter.
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000fa01","role":"authenticated","aal":"aal2"}';
 SELECT FROM post_return(jsonb_build_object('request_id',gen_random_uuid(),'sale_id',(SELECT id FROM ids WHERE label='sale-a'),
  'reason','Second item returned','refund_method','cash','lines',jsonb_build_array(jsonb_build_object(
  'sale_line_id',(SELECT id FROM sale_lines WHERE sale_id=(SELECT id FROM ids WHERE label='sale-a')),'quantity',1))));

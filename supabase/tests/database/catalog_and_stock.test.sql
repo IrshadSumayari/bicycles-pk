@@ -2,11 +2,12 @@
 BEGIN;
 SELECT plan(30);
 
--- Staff fixtures: admin (first user), manager, cashier
+-- Staff fixtures: admin (bootstrapped), manager, cashier
 INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-00000000aa01', 'admin@t.local',   '{"name":"Admin"}', '{}'),
     ('00000000-0000-0000-0000-00000000aa02', 'manager@t.local', '{"name":"Manager"}', '{"account_type":"staff"}'),
     ('00000000-0000-0000-0000-00000000aa03', 'cashier@t.local', '{"name":"Cashier"}', '{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET role = 'manager', active = true WHERE id = '00000000-0000-0000-0000-00000000aa02';
 UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-00000000aa03';
 
@@ -20,7 +21,7 @@ GRANT SELECT ON ids TO authenticated;
 -- Manager builds a style with two variants
 -- ---------------------------------------------------------------------
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000aa02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000aa02","role":"authenticated","aal":"aal2"}';
 
 SELECT lives_ok($$
     INSERT INTO product_styles (id, code, name, kind, unit, size_scheme_id, published, slug)
@@ -87,7 +88,7 @@ SELECT throws_ok($$
 $$, NULL, NULL, 'cannot reserve more than available');
 
 -- Cashier
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000aa03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000aa03","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM product_variants), 2, 'cashier can read variants');
 SELECT is((SELECT count(*)::int FROM variant_costs), 0, 'cashier cannot read cost prices');
 SELECT is((SELECT count(*)::int FROM stock_movements), 0, 'cashier cannot read the movement history');

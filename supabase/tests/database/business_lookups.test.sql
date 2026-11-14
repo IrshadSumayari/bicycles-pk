@@ -4,12 +4,13 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000ac01','lookup-admin@test.local','{"name":"Lookup admin"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000ac02','lookup-cashier@test.local','{"name":"Lookup cashier"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000ac03','lookup-customer@test.local','{}','{}');
+SELECT app_private.bootstrap_admin('lookup-admin@test.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET role='admin',active=true WHERE id='00000000-0000-0000-0000-00000000ac01';
 UPDATE public.users SET active=true WHERE id='00000000-0000-0000-0000-00000000ac02';
 CREATE TEMP TABLE lookup_test_ids(key TEXT PRIMARY KEY,id UUID);
 GRANT ALL ON lookup_test_ids TO authenticated;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000ac01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000ac01","role":"authenticated","aal":"aal2"}';
 
 INSERT INTO lookup_test_ids VALUES('category',save_business_lookup('{"kind":"category","name":"Lookup Bicycles","description":"Owner-managed category"}'));
 SELECT ok(EXISTS(SELECT 1 FROM categories WHERE id=(SELECT id FROM lookup_test_ids WHERE key='category')),'manager adds category');
@@ -49,10 +50,10 @@ SELECT throws_ok($$SELECT save_business_lookup('{"kind":"customer_tier","name":"
 SELECT throws_ok($$SELECT save_business_lookup('{"kind":"return_reason","name":"Other"}')$$,'P0001',NULL,'free-text reason fallback is not duplicate data');
 SELECT ok((SELECT count(*)>0 FROM lookup_events),'lookup changes have an audit trail');
 SELECT is(has_table_privilege('authenticated','public.categories','DELETE'),false,'direct deletion cannot bypass used-category check');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000ac02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000ac02","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT save_business_lookup('{"kind":"category","name":"Cashier category"}')$$,'42501',NULL,'cashier cannot edit lookups');
 SELECT lives_ok($$SELECT value FROM business_lookups WHERE active$$,'cashier can read configured choices');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000ac03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000ac03","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM business_lookups),0,'website customer cannot read staff lookup table');
 SELECT * FROM finish();
 ROLLBACK;

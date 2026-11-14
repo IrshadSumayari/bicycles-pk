@@ -3,10 +3,11 @@ SELECT plan(26);
 INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-0000000fe101','launch-admin@t.local','{"name":"Admin"}','{}'),
  ('00000000-0000-0000-0000-0000000fe102','launch-manager@t.local','{}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('launch-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET active=true;
 UPDATE public.users SET role='manager' WHERE id='00000000-0000-0000-0000-0000000fe102';
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000fe101","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000fe101","role":"authenticated","aal":"aal2"}';
 SELECT is((update_settings('{"online_max_pending_orders":5,"online_max_open_cod_orders":6}')->>'online_max_pending_orders')::int,5,'admin sets pending limit');
 SELECT is((SELECT online_max_open_cod_orders FROM app_settings),6,'admin sets COD limit');
 SELECT throws_ok($$SELECT update_settings('{"online_max_pending_orders":0}')$$,'P0001',NULL,'zero pending refused');
@@ -33,7 +34,7 @@ SELECT throws_ok($$SELECT save_style('{"code":"FRACTION-COMPARE","name":"Bad","v
 SELECT throws_ok($$SELECT save_style('{"code":"NAN-COMPARE","name":"Bad","variants":[{"sku":"NAN-COMPARE","price":1,"compare_at_price":"NaN"}]}')$$,'P0001',NULL,'nonfinite compare-at refused');
 SELECT throws_ok($$SELECT save_style('{"code":"INF-COMPARE","name":"Bad","variants":[{"sku":"INF-COMPARE","price":1,"compare_at_price":"Infinity"}]}')$$,'P0001',NULL,'infinite compare-at refused');
 SELECT throws_ok($$SELECT save_style('{"code":"HUGE-COMPARE","name":"Bad","variants":[{"sku":"HUGE-COMPARE","price":1,"compare_at_price":1000000000000}]}')$$,'P0001',NULL,'oversized compare-at refused');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000fe102","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000fe102","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT update_settings('{"online_max_pending_orders":4}')$$,'42501',NULL,'manager pending refused');
 SELECT throws_ok($$SELECT update_settings('{"online_max_open_cod_orders":4}')$$,'42501',NULL,'manager COD refused');
 SELECT lives_ok($$INSERT INTO customers(name,phone) VALUES ('Launch Customer','0300 1234567')$$,'staff can add a customer directly (phone trigger)');

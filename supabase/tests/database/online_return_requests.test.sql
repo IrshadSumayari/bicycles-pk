@@ -8,6 +8,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000009a04','orders-b@t.local','{"name":"Customer B"}','{}'),
  ('00000000-0000-0000-0000-000000009a05','orders-inactive@t.local','{"name":"Inactive"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-000000009a06','orders-manager@t.local','{"name":"Manager"}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('orders-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET active=true WHERE id IN ('00000000-0000-0000-0000-000000009a02','00000000-0000-0000-0000-000000009a05','00000000-0000-0000-0000-000000009a06');
 UPDATE users SET role='cashier',active=false WHERE id='00000000-0000-0000-0000-000000009a05';
 UPDATE users SET role='manager' WHERE id='00000000-0000-0000-0000-000000009a06';
@@ -50,7 +51,7 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA pg_temp TO authenticated,service_role,a
 
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 INSERT INTO work VALUES('a',create_online_order(pg_temp.order_payload('cod','00000000-0000-0000-0000-000000009ab1','delivery',2)));
 INSERT INTO work VALUES('pending',create_online_order(pg_temp.order_payload('cod')));
 CREATE FUNCTION pg_temp.payload() RETURNS JSONB LANGUAGE sql AS $$
@@ -100,21 +101,21 @@ SELECT prepare_return_photo('00000000-0000-0000-0000-00000000aa01','00000000-000
 SELECT prepare_return_photo('00000000-0000-0000-0000-00000000aa01','00000000-0000-0000-0000-00000000ac03');
 SELECT throws_ok($$SELECT prepare_return_photo('00000000-0000-0000-0000-00000000aa01','00000000-0000-0000-0000-00000000ac04')$$,'P0001',NULL,'three photo limit enforced');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a04","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a04","role":"authenticated","aal":"aal2"}';
 SELECT ok(pg_temp.refuse('SELECT create_return_request(pg_temp.payload())'),'other customer cannot create on this order');
 SELECT ok(pg_temp.refuse(format('SELECT my_return_request(%L)',(SELECT value->>'order_no' FROM work WHERE key='a'))),'other customer cannot read request');
 SELECT ok(pg_temp.refuse('SELECT prepare_return_photo(''00000000-0000-0000-0000-00000000aa01'',''00000000-0000-0000-0000-00000000ac04'')'),'other customer cannot reserve photos');
 SELECT is((SELECT count(*)::int FROM storage.objects WHERE bucket_id='return-evidence'),0,'other customer cannot read evidence');
 SELECT throws_ok($$INSERT INTO storage.objects(bucket_id,name) VALUES('return-evidence','00000000-0000-0000-0000-00000000aa01/00000000-0000-0000-0000-00000000ac02.webp')$$,'42501',NULL,'other customer cannot upload to reserved path');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated","aal":"aal2"}';
 SELECT ok(pg_temp.refuse('SELECT list_return_requests()'),'cashier cannot review');
 SELECT ok(pg_temp.refuse('SELECT staff_return_request(pg_temp.order_id(''a''))'),'cashier cannot read review details');
 SELECT is((SELECT count(*)::int FROM storage.objects WHERE bucket_id='return-evidence'),0,'cashier cannot read private evidence');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a05","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a05","role":"authenticated","aal":"aal2"}';
 SELECT ok(pg_temp.refuse('SELECT list_return_requests()'),'inactive staff refused');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a06","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a06","role":"authenticated","aal":"aal2"}';
 SELECT is(list_return_requests()->>'total_count','1','branch manager sees active request');
 SELECT is((SELECT count(*)::int FROM storage.objects WHERE bucket_id='return-evidence'),1,'branch manager sees private evidence');
 SELECT ok(NOT app_private.return_photo_access((SELECT value->>'storage_path' FROM work WHERE key='photo'),true),'staff cannot upload customer evidence');
@@ -133,18 +134,18 @@ SELECT ok(pg_temp.refuse('SELECT staff_return_request(pg_temp.order_id(''a''))')
 SELECT ok(pg_temp.refuse('SELECT review_return_request((SELECT value FROM work WHERE key=''review''))'),'branch membership checked even for retries');
 SELECT is((SELECT count(*)::int FROM storage.objects WHERE bucket_id='return-evidence'),0,'manager outside branch cannot read evidence');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 SELECT ok(NOT(my_return_request((SELECT value->>'order_no' FROM work WHERE key='a'))::text~'INTERNAL NOTE|staff_note'),'staff note never leaks to customer');
 INSERT INTO work VALUES('reply','{"id":"00000000-0000-0000-0000-00000000aa01","request_id":"00000000-0000-0000-0000-00000000ab01","version":2,"message":"The seam on the left side is torn."}');
 SELECT is(reply_return_request((SELECT value FROM work WHERE key='reply'))->>'status','submitted','customer reply returns to staff queue');
 SELECT is(reply_return_request((SELECT value FROM work WHERE key='reply'))->>'version','3','reply retry adds no duplicate event');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a01","role":"authenticated","aal":"aal2"}';
 SELECT is(review_return_request('{"id":"00000000-0000-0000-0000-00000000aa01","version":3,"status":"return_authorized","request_id":"00000000-0000-0000-0000-00000000ad02","message":"Please contact us to confirm the agreed parcel instructions."}')->>'status','return_authorized','admin provides instructions');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT prepare_return_photo('00000000-0000-0000-0000-00000000aa01','00000000-0000-0000-0000-00000000ac03')$$,'P0001',NULL,'photo upload locks after instructions');
 SELECT throws_ok($$INSERT INTO storage.objects(bucket_id,name) VALUES('return-evidence','00000000-0000-0000-0000-00000000aa01/00000000-0000-0000-0000-00000000ac03.webp')$$,'42501',NULL,'even reserved paths lock after review');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a01","role":"authenticated","aal":"aal2"}';
 SELECT is(review_return_request('{"id":"00000000-0000-0000-0000-00000000aa01","version":4,"status":"received","request_id":"00000000-0000-0000-0000-00000000ad03","message":"The parcel has arrived for inspection."}')->>'status','received','staff records receipt');
 SELECT is(review_return_request('{"id":"00000000-0000-0000-0000-00000000aa01","version":5,"status":"closed","request_id":"00000000-0000-0000-0000-00000000ad04","message":"Review completed; contact us for the agreed resolution."}')->>'status','closed','staff closes review');
 SELECT is(list_return_requests()->>'total_count','0','closed request leaves active queue');

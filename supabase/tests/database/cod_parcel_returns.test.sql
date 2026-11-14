@@ -4,6 +4,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-0000000cc001','parcel-admin@t.local','{}','{}'),
  ('00000000-0000-0000-0000-0000000cc002','parcel-customer@t.local','{}','{}'),
  ('00000000-0000-0000-0000-0000000cc003','parcel-cashier@t.local','{}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('parcel-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET active=true,role='cashier' WHERE id='00000000-0000-0000-0000-0000000cc003';
 UPDATE app_settings SET cod_enabled=true,delivery_fee=250,free_delivery_over=NULL,cod_max_total=NULL,tax_rate=0,online_max_open_cod_orders=20;
 INSERT INTO product_styles(id,code,name,kind,unit,published,slug,taxable) VALUES
@@ -19,14 +20,14 @@ CREATE FUNCTION pg_temp.payload(k TEXT,condition TEXT DEFAULT 'resaleable') RETU
  'lines',jsonb_build_array(jsonb_build_object('variant_id','00000000-0000-0000-0000-0000000ccb01','condition',condition))) $$;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA pg_temp TO authenticated;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000cc002","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000cc002","role":"authenticated","aal":"aal2"}';
 INSERT INTO work SELECT k,create_online_order(jsonb_build_object('request_id',gen_random_uuid(),'payment_method','cod','fulfilment','delivery',
  'contact_name','Test Customer','phone','03001234567','address',jsonb_build_object('line1','Test address','city','Islamabad'),
  'lines',jsonb_build_array(jsonb_build_object('variant_id','00000000-0000-0000-0000-0000000ccb01','quantity',2)))) FROM unnest(ARRAY['good','damaged','paid','not_shipped']) k;
 SELECT throws_ok($$SELECT receive_cod_parcel_return('{}')$$,'42501','Not authorized','customer denied before validation');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000cc003","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000cc003","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT receive_cod_parcel_return('{}')$$,'42501','Not authorized','cashier cannot receive courier returns');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000cc001","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000cc001","role":"authenticated","aal":"aal2"}';
 SELECT advance_online_order(jsonb_build_object('id',pg_temp.parcel(key),'request_id',gen_random_uuid(),'status','confirmed')) FROM work;
 SELECT advance_online_order(jsonb_build_object('id',pg_temp.parcel(key),'request_id',gen_random_uuid(),'status','packed')) FROM work;
 SELECT advance_online_order(jsonb_build_object('id',pg_temp.parcel(key),'request_id',gen_random_uuid(),'status','shipped','courier','Test courier','tracking_no','TEST-ONLY')) FROM work WHERE key<>'not_shipped';

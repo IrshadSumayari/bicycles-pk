@@ -205,7 +205,9 @@ replace `VERCEL_TOKEN`.
 - Database before code: apply migrations, then merge.
 - One environment at a time, with the Supabase tool logged in to its account.
 - Keep each environment's database password separate, in a password manager.
-- The first account created on an empty database becomes the administrator:
-  create yours before sharing any link.
+- No sign-up becomes an administrator. Make the first one yourself with
+  `app_private.bootstrap_admin` in the SQL Editor (DEPLOY.md §8).
+- Administrators and managers need an authenticator app code at every POS
+  sign-in; keep TOTP enabled in each project's Auth settings.
 - Don't shop on the website with a staff email; staff accounts can't place
   orders. Use a separate customer email.

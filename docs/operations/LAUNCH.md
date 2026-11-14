@@ -94,7 +94,7 @@ Follow [DEPLOY.md](./DEPLOY.md) sections 2–8 with the production names above. 
    - Shop production variables: the production `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`, plus `NEXT_PUBLIC_SITE_URL=https://bicycles.pk`.
    - **Do not set `SITE_ACCESS_KEY`** on production.
    - POS production variables: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
-4. **First admin:** create the administrator on the production POS first, before anyone else signs in, then the staff accounts.
+4. **First admin:** create the administrator in the production Supabase project with `app_private.bootstrap_admin` ([DEPLOY.md §8](./DEPLOY.md#8-first-login--immediately-before-sharing-links)), sign in to the POS and set up the authenticator app, then add the staff accounts. Confirm TOTP is enabled and the password minimum is 12 in the production Auth settings.
 5. **Store settings** from section 1: online orders, COD limit, delivery, bulky, assembly and the return window. Card and wallet stay **off**.
 6. **Backups:** confirm Pro daily backups and schedule the off-site export ([BACKUP_AND_RESTORE.md](./BACKUP_AND_RESTORE.md)).
 

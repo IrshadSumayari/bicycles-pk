@@ -8,6 +8,7 @@ SELECT is((SELECT count(*)::int FROM storage.buckets WHERE public AND id<>'produ
 INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-0000000fe201','surface-admin@t.local','{}','{}'),
  ('00000000-0000-0000-0000-0000000fe202','surface-customer@t.local','{}','{}');
+SELECT app_private.bootstrap_admin('surface-admin@t.local'); -- first administrator (no longer the first sign-up)
 CREATE FUNCTION pg_temp.staff_surface_violations() RETURNS text[] LANGUAGE plpgsql AS $$
 DECLARE f RECORD;args TEXT;failures TEXT[]:='{}';BEGIN
  FOR f IN SELECT p.* FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prokind='f' AND has_function_privilege('authenticated',p.oid,'EXECUTE')
@@ -19,7 +20,7 @@ DECLARE f RECORD;args TEXT;failures TEXT[]:='{}';BEGIN
  END LOOP;RETURN failures;END $$;
 GRANT EXECUTE ON FUNCTION pg_temp.staff_surface_violations() TO authenticated;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000fe202","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-0000000fe202","role":"authenticated","aal":"aal2"}';
 SELECT is(public.is_website_customer(),true,'fixture is a website customer without a staff role');
 SELECT is(pg_temp.staff_surface_violations(),ARRAY[]::text[],'website customer refused by every staff entry point');
 RESET ROLE;SET LOCAL "request.jwt.claims"='';SELECT * FROM finish();ROLLBACK;

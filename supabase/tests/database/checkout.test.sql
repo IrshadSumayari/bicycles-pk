@@ -7,6 +7,7 @@ INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-00000000bb02', 'manager@t.local', '{"name":"Manager"}', '{"account_type":"staff"}'),
     ('00000000-0000-0000-0000-00000000bb03', 'cashier@t.local', '{"name":"Cashier"}', '{"account_type":"staff"}'),
     ('00000000-0000-0000-0000-00000000bb04', 'inactive@t.local', '{"name":"Inactive"}', '{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET role = 'manager', active = true WHERE id = '00000000-0000-0000-0000-00000000bb02';
 UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-00000000bb03';
 UPDATE public.users SET role = 'cashier', active = false WHERE id = '00000000-0000-0000-0000-00000000bb04';
@@ -43,7 +44,7 @@ GRANT EXECUTE ON FUNCTION pg_temp.on_hand(UUID) TO authenticated;
 -- Cashier
 -- ---------------------------------------------------------------------
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bb03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bb03","role":"authenticated","aal":"aal2"}';
 SELECT FROM open_cash_session(0);
 
 -- Quote: tax only on the taxable bikes
@@ -163,7 +164,7 @@ SELECT lives_ok($$ DELETE FROM sales WHERE request_id = '00000000-0000-0000-0000
 SELECT is((SELECT count(*)::int FROM sales WHERE request_id = '00000000-0000-0000-0000-0000000f0008'), 0, 'draft deleted');
 
 -- Inactive staff cannot sell
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bb04","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bb04","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$
     SELECT quote_sale('{"lines":[{"variant_id":"00000000-0000-0000-0000-0000000d0001","quantity":1}]}')
 $$, '42501', NULL, 'inactive staff cannot use the till');
@@ -181,7 +182,7 @@ INSERT INTO discounts (name, type, value, free_gift_products, conditions, valid_
      now() - interval '1 day', now() + interval '1 day');
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bb02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bb02","role":"authenticated","aal":"aal2"}';
 SELECT FROM open_cash_session(0);
 
 SELECT is(

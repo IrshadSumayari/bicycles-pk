@@ -5,11 +5,12 @@ SELECT plan(25);
 INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-00000000bc01', 'admin@t.local',   '{"name":"Admin"}', '{}'),
     ('00000000-0000-0000-0000-00000000bc02', 'cashier@t.local', '{"name":"Cashier"}', '{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-00000000bc02';
 UPDATE public.app_settings SET tax_rate = 10, max_cashier_discount_percent = 20;
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bc01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bc01","role":"authenticated","aal":"aal2"}';
 SELECT FROM save_style('{"kind":"item","code":"SK","name":"City bike","variants":[
     {"sku":"SK-M","size":"M","price":1000,"opening_stock":10},
     {"sku":"SK-L","size":"L","price":1000,"opening_stock":10},
@@ -29,7 +30,7 @@ CREATE FUNCTION pg_temp.sale(req TEXT) RETURNS UUID LANGUAGE sql AS $$ SELECT id
 GRANT EXECUTE ON FUNCTION pg_temp.stock(UUID), pg_temp.line(TEXT, UUID), pg_temp.sale(TEXT) TO authenticated;
 
 -- Cashier sells 3 x M with a 10% discount (net 2700 + tax 270 = 2970) and 2 gift sets
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bc02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bc02","role":"authenticated","aal":"aal2"}';
 SELECT FROM open_cash_session(10000);
 SELECT FROM post_sale(jsonb_build_object('request_id', '00000000-0000-0000-0000-0000000b0001',
     'lines', jsonb_build_array(
@@ -81,7 +82,7 @@ SELECT is((post_return(jsonb_build_object('request_id', '00000000-0000-0000-0000
 SELECT is((SELECT sum(refund_amount) FROM return_lines), 2970.00, 'returns of the whole line equal what was paid');
 
 -- Manager returns the gift sets
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bc01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bc01","role":"authenticated","aal":"aal2"}';
 SELECT FROM open_cash_session(5000);
 SELECT lives_ok($$ SELECT post_return(jsonb_build_object('request_id', '00000000-0000-0000-0000-0000000b0107',
     'sale_id', pg_temp.sale('00000000-0000-0000-0000-0000000b0001'), 'reason', 'Shade mismatch', 'refund_method', 'cash',
@@ -91,7 +92,7 @@ SELECT is(pg_temp.stock((SELECT pack FROM ids)), 20.000000, 'gift sets restocked
 SELECT is((SELECT status FROM sales WHERE id = pg_temp.sale('00000000-0000-0000-0000-0000000b0001')), 'refunded', 'fully returned sale is marked refunded');
 
 -- Exchanges
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bc02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000bc02","role":"authenticated","aal":"aal2"}';
 SELECT FROM post_sale(jsonb_build_object('request_id', '00000000-0000-0000-0000-0000000b0002',
     'lines', jsonb_build_array(jsonb_build_object('variant_id', (SELECT m FROM ids), 'quantity', 1)),
     'payments', jsonb_build_array(jsonb_build_object('method', 'card', 'card_last4', '4242'))));

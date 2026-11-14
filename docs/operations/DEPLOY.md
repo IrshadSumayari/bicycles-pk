@@ -28,7 +28,8 @@ Replace `<domain>` with the domain you buy. All other angle-bracket names are pl
 5. Under **Authentication → Email Templates**, paste `website/emails/otp.html` into **Magic Link / OTP** and **Confirm signup**, retaining `{{ .Token }}`. Save and send a staging test after SMTP is ready. Keep other security templates functional. [Supabase email templates](https://supabase.com/docs/guides/auth/auth-email-templates).
 6. Under **Authentication → Email / SMTP Settings**, configure custom SMTP using the values from step 4 below. Return here after domain verification; do not expose customer sign-up using the default test mail service.
 7. Under **Edge Functions → Secrets**, set `SITE_URL` to this environment's website URL. Leave `PAYMENT_PROVIDER` **unset** at launch (remove an old `mock` value). Do not configure mock/provider secrets on hosted projects. The runtime rejects `mock` outside localhost even if it is accidentally selected. Supabase supplies its internal function keys; do not copy them into app settings.
-8. Keep the apps private/unshared until the immediate administrator bootstrap in step 8. Do not let a test website account become the first Auth account on an empty project.
+8. Under **Authentication → Sign In / Providers**, set the minimum password length to **12** and, if the plan offers it, turn on **leaked password protection**. Under **Authentication → Multi-Factor**, enable **TOTP (authenticator app)**: administrators and managers cannot use their role without it.
+9. Set up the first administrator as described in §8 before sharing any link.
 
 `supabase/config.toml` describes local development, not proof of hosted Auth, SMTP or secrets. Hosted settings above must be saved separately in **both** projects.
 
@@ -122,9 +123,18 @@ Wait until each provider says Valid/Active and each HTTPS URL opens without warn
 
 ## 8. FIRST LOGIN — immediately, before sharing links
 
-1. As soon as each environment is ready, open **its POS** privately. On the empty database choose **Create Account**, enter your administrator identity and a strong unique password. Confirm the email if requested, then sign in. The first Auth account becomes the administrator: do this before any customer sign-in or sharing a website link.
-2. Confirm the role is admin and the Online orders setting has card/wallet **off**. Create other staff through the admin interface, not public signup. Store recovery information privately. Repeat independently on production.
-3. If somebody else became first admin, stop and arrange an authorized recovery; do not continue with that account or reset a hosted database. This runbook never authorizes a hosted reset.
+No sign-up ever becomes an administrator on its own: the first administrator is made by you, the project owner, in Supabase. A customer who signs up first only gets a customer account.
+
+1. In that environment's Supabase project, open **Authentication → Users → Add user → Create new user**. Use a staff-only email (not one you shop with), a unique password of at least 12 characters, and tick **Auto Confirm User**.
+2. Open **SQL Editor** and run, with that email:
+   ```sql
+   SELECT app_private.bootstrap_admin('owner@bicycles.pk');
+   ```
+   It makes that account the active administrator. It is refused once an active administrator exists, so it cannot be used to take over a running shop.
+3. Open **its POS** and sign in. The POS asks you to set up an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password or similar): scan the QR code and enter the 6-digit code. Administrators and managers enter a code at every sign-in; their role does nothing in a session without one. Cashiers sign in with a password only.
+4. Confirm the role is admin and the Online orders setting has card/wallet **off**. Create other staff in **User Management**, not by public sign-up. Store recovery information privately. Repeat independently on production.
+
+**Lost authenticator:** in the SQL Editor, find the user's id under **Authentication → Users**, then run `DELETE FROM auth.mfa_factors WHERE user_id = '<user id>';`. At their next sign-in the POS asks them to set up a new authenticator. Only do this after confirming the request in person.
 
 ## 9. Staging rehearsal, then release
 

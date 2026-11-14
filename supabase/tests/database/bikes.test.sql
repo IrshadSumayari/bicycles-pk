@@ -5,6 +5,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000b001','bikes-admin@t.local','{"name":"Bike Admin"}','{}'),
  ('00000000-0000-0000-0000-00000000b002','bikes-manager@t.local','{"name":"Bike Manager"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000b003','bikes-customer@t.local','{"name":"Bike Customer"}','{}');
+SELECT app_private.bootstrap_admin('bikes-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET active=true,role='manager' WHERE id='00000000-0000-0000-0000-00000000b002';
 UPDATE app_settings SET tax_rate=0,delivery_fee=250,free_delivery_over=NULL,cod_enabled=true,cod_max_total=NULL,
  online_max_pending_orders=20,online_max_open_cod_orders=20,bulky_delivery_fee=1500,assembly_fee=NULL;
@@ -21,7 +22,7 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA pg_temp TO authenticated,anon;
 
 -- Managers save bikes with specifications; bulky follows the request.
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000b002","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000b002","role":"authenticated","aal":"aal2"}';
 INSERT INTO ids SELECT 'city',save_style('{"code":"BK-CITY","name":"City Seven","kind":"item","category":"City & Commuter","brand":"Urbano",
  "bulky":true,"specs":{"wheel_size":"28\"","brakes":" Disc ","gears":"7-speed","colour":""},
  "variants":[{"sku":"BK-CITY-M","size":"M","color":"Black","price":60000,"opening_stock":3}]}');
@@ -77,9 +78,9 @@ RESET ROLE;
 
 -- Only administrators set the bulky and assembly fees.
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000b002","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000b002","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT update_settings('{"assembly_fee":2000}')$$,'42501','Only administrators can change assembly_fee','managers cannot set assembly');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000b001","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000b001","role":"authenticated","aal":"aal2"}';
 SELECT is((update_settings('{"assembly_fee":2000}')->>'assembly_fee')::numeric,2000::numeric,'admin sets assembly fee');
 SELECT throws_ok($$SELECT update_settings('{"bulky_delivery_fee":-1}')$$,'P0001','Enter a non-negative amount with up to two decimals for bulky_delivery_fee','negative fee refused');
 SELECT is(update_settings('{"assembly_fee":null}')->'assembly_fee','null'::jsonb,'null turns assembly off');
@@ -95,7 +96,7 @@ RESET ROLE;
 
 -- The order records assembly.
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000b003","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000b003","role":"authenticated","aal":"aal2"}';
 INSERT INTO ids SELECT 'order',(create_online_order(pg_temp.cart('city','delivery',true)||jsonb_build_object('request_id',gen_random_uuid(),
  'payment_method','cod','contact_name','Bike Customer','phone','03001234567','address',jsonb_build_object('line1','1 Mall Road','city','Lahore')))->>'id')::uuid;
 RESET ROLE;

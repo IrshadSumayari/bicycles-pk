@@ -6,6 +6,7 @@ INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-0000000dc001', 'admin@dc.local',   '{"name":"Admin"}', '{}'),
     ('00000000-0000-0000-0000-0000000dc002', 'manager@dc.local', '{"name":"Manager"}', '{"account_type":"staff"}'),
     ('00000000-0000-0000-0000-0000000dc003', 'cashier@dc.local', '{"name":"Cashier"}', '{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@dc.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET role = 'manager', active = true WHERE id = '00000000-0000-0000-0000-0000000dc002';
 UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-0000000dc003';
 UPDATE public.app_settings SET tax_rate = 10;
@@ -28,19 +29,19 @@ SELECT is((SELECT count(*)::int FROM discount_codes), 0, 'no welcome code while 
 -- Settings
 -- ---------------------------------------------------------------------
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc003","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc003","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT save_discount_code_settings('{"welcome_enabled":true,"welcome_type":"percentage","welcome_value":15,"welcome_valid_days":30}') $$,
     '42501', NULL, 'cashier cannot change welcome settings');
 SELECT is((SELECT count(*)::int FROM discount_code_settings), 0, 'cashier cannot read settings');
 
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc002","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc002","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT save_discount_code_settings('{"welcome_enabled":true,"welcome_type":"percentage","welcome_value":150,"welcome_valid_days":30}') $$,
     'P0001', 'A percent discount cannot be more than 100', 'percent capped at 100');
 SELECT lives_ok($$ SELECT save_discount_code_settings('{"welcome_enabled":true,"welcome_type":"percentage","welcome_value":15,"welcome_valid_days":30}') $$,
     'manager switches on 15% welcome codes');
 
 -- A customer added at the till gets a personal one-time code
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc003","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc003","role":"authenticated","aal":"aal2"}';
 INSERT INTO customers (id, name, phone) VALUES ('00000000-0000-0000-0000-0000000dc302', 'Bilal', '03001230002');
 SELECT is((SELECT jsonb_build_object('n', jsonb_array_length(c), 'kind', c->0->'kind', 'value', c->0->'value',
                                      'uses', c->0->'max_uses', 'status', c->0->'status')
@@ -94,7 +95,7 @@ SELECT throws_ok(format($$ SELECT quote_sale('{"customer_id":"00000000-0000-0000
 -- ---------------------------------------------------------------------
 -- Changing the welcome offer affects only new codes
 -- ---------------------------------------------------------------------
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc001","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc001","role":"authenticated","aal":"aal2"}';
 SELECT lives_ok($$ SELECT save_discount_code_settings('{"welcome_enabled":true,"welcome_type":"fixed","welcome_value":250,"welcome_valid_days":7,"welcome_min_amount":1500}') $$,
     'admin changes the offer to 250 off over 1500');
 INSERT INTO customers (id, name, phone) VALUES ('00000000-0000-0000-0000-0000000dc303', 'Sana', '03001230003');
@@ -112,11 +113,11 @@ SELECT throws_ok($$ SELECT issue_customer_welcome_code('00000000-0000-0000-0000-
 -- ---------------------------------------------------------------------
 -- Codes managers create
 -- ---------------------------------------------------------------------
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc003","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc003","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT save_discount_code('{"code":"EID14","discount_type":"percentage","value":14}') $$,
     '42501', NULL, 'cashier cannot create codes');
 
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc002","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc002","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT save_discount_code('{"code":"eid14","discount_type":"percentage","value":14}')->>'code'), 'EID14',
     'manager creates EID14 for anyone, unlimited uses');
 SELECT throws_ok($$ SELECT save_discount_code('{"code":"EID14","discount_type":"fixed","value":100}') $$,
@@ -124,7 +125,7 @@ SELECT throws_ok($$ SELECT save_discount_code('{"code":"EID14","discount_type":"
 SELECT lives_ok($$ SELECT save_discount_code('{"code":"OLD10","discount_type":"percentage","value":10,
     "valid_from":"2026-01-01T00:00:00Z","expires_at":"2026-01-31T00:00:00Z"}') $$, 'expired code saved');
 
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc003","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc003","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT (q->>'promotion_discount')::numeric FROM quote_sale(
     '{"lines":[{"variant_id":"00000000-0000-0000-0000-0000000dc201","quantity":2}],"discount_code":"EID14"}') q),
     560.00, 'EID14 takes 14% off 4000');
@@ -134,7 +135,7 @@ SELECT is((SELECT (post_sale('{"request_id":"00000000-0000-0000-0000-0000000dc40
 SELECT throws_ok($$ SELECT quote_sale('{"lines":[{"variant_id":"00000000-0000-0000-0000-0000000dc201","quantity":1}],"discount_code":"OLD10"}') $$,
     'P0001', 'Discount code OLD10 expired on 31 Jan 2026', 'expired code refused');
 
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc002","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000dc002","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT used_count FROM discount_codes WHERE code = 'EID14'), 1, 'use counted');
 SELECT is((SELECT jsonb_agg(amount ORDER BY amount) FROM discount_code_redemptions), '[280.00, 300.00]'::jsonb,
     'redemptions recorded with the amount given');

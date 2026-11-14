@@ -93,8 +93,8 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
         
       } else {
         // Create new user (server side, admin only)
-        if (!formData.password || formData.password.length < 8) {
-          swalConfig.error('Password must be at least 8 characters long');
+        if (!formData.password || formData.password.length < 12) {
+          swalConfig.error('Password must be at least 12 characters long');
           return;
         }
 
@@ -218,9 +218,10 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
                     value={formData.password}
                     onChange={handleChange}
                     required={!user}
-                    minLength={8}
+                    minLength={12}
+                    autoComplete="new-password"
                     className="input pl-10"
-                    placeholder="Enter password (min 8 characters)"
+                    placeholder="Enter password (min 12 characters)"
                   />
                 </div>
               </div>
