@@ -1,8 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   combinations,
   filterQuery,
   formatPrice,
+  isProductionSite,
   jsonScript,
   parseFilters,
   productJsonLd,
@@ -154,5 +155,20 @@ describe("catalog helpers", () => {
       "https://shop.example/products/blue",
     );
     expect(whatsappLink("", "Shirt", "", "", "https://example.com")).toBeNull();
+  });
+});
+describe("isProductionSite", () => {
+  afterEach(() => vi.unstubAllEnvs());
+  it("is true only for the live shop", () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://bicycles.pk");
+    expect(isProductionSite()).toBe(true);
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://bicycles.pk/");
+    expect(isProductionSite()).toBe(true);
+  });
+  it("keeps staging, previews and local builds out of search", () => {
+    for (const url of ["https://staging.bicycles.pk", "https://bicycles-shop-staging.vercel.app", "http://localhost:3000", ""]) {
+      vi.stubEnv("NEXT_PUBLIC_SITE_URL", url);
+      expect(isProductionSite()).toBe(false);
+    }
   });
 });

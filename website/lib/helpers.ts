@@ -127,6 +127,12 @@ export function siteUrl(path = "/"): string {
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   ).toString();
 }
+// The live shop. Staging, previews and local builds stay out of search results
+// so they never compete with it.
+export const PRODUCTION_ORIGIN = "https://bicycles.pk";
+export function isProductionSite(): boolean {
+  return new URL(siteUrl()).origin === PRODUCTION_ORIGIN;
+}
 export function whatsappLink(
   number: string,
   title: string,

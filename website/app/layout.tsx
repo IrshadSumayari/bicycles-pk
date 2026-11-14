@@ -9,7 +9,7 @@ import { Footer } from "@/components/footer";
 import { StoreProvider } from "@/components/store-provider";
 import { catalog, safeCatalog } from "@/lib/catalog";
 import { buildNavigation } from "@/lib/navigation";
-import { siteUrl } from "@/lib/helpers";
+import { isProductionSite, siteUrl } from "@/lib/helpers";
 import "./globals.css";
 import "../styles/storefront.css";
 import "../styles/landing.css";
@@ -37,7 +37,9 @@ const montserrat = localFont({
   weight: "100 900",
 });
 export const metadata: Metadata = {
-  robots: { index: false, follow: false },
+  robots: isProductionSite()
+    ? { index: true, follow: true }
+    : { index: false, follow: false },
   metadataBase: new URL(siteUrl()),
   title: {
     default: `${brand.name} | Bicycles, Kids Bikes, Sports Bikes & Accessories in Pakistan`,
