@@ -8,10 +8,10 @@
     "subline": "Bicycles for every age and every road, delivered across Pakistan.",
     "cta": { "label": "Shop bicycles", "href": "/bicycles" },
     "image": "/hero/dusk-ride.svg",
-    "imageAlt": "Illustration of a bicycle on an open road at dusk",
+    "imageAlt": "Aerial view of three cyclists riding along an open road",
     "imagePosition": "70% 60%",
-    "video": "",
-    "poster": ""
+    "video": "https://videos.pexels.com/video-files/5790076/5790076-hd_1920_1080_30fps.mp4",
+    "poster": "https://images.pexels.com/videos/5790076/aerial-photography-asphalt-athletes-bicycle-5790076.jpeg?auto=compress&cs=tinysrgb&w=1920"
   },
   "usps": [
     { "icon": "shield", "title": "Warranty on every bike", "text": "Frame and parts covered" },
