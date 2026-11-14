@@ -5,10 +5,11 @@ SELECT plan(13);
 INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-00000000ff01', 'admin@t.local',   '{"name":"Admin"}', '{}'),
     ('00000000-0000-0000-0000-00000000ff02', 'cashier@t.local', '{"name":"Cashier"}', '{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-00000000ff02';
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ff01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ff01","role":"authenticated","aal":"aal2"}';
 
 CREATE TEMP TABLE s AS SELECT
     save_style('{"kind":"item","code":"SK","name":"City bike","variants":[
@@ -30,7 +31,7 @@ SELECT matches((SELECT count_no FROM stock_counts WHERE id = (SELECT id FROM c))
 SELECT throws_ok($$ SELECT start_stock_count() $$, NULL, NULL, 'only one open count per location');
 
 -- Cashier counts
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ff02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ff02","role":"authenticated","aal":"aal2"}';
 SELECT FROM open_cash_session(0);
 SELECT lives_ok($$ SELECT record_stock_count((SELECT id FROM c), (SELECT m FROM ids), 4) $$, 'cashier records a count');
 SELECT lives_ok($$ SELECT record_stock_count((SELECT id FROM c), (SELECT pack FROM ids), 19) $$,
@@ -47,7 +48,7 @@ SELECT lives_ok($$
 $$, 'a sale happens before approval');
 
 -- Manager approves
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ff01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ff01","role":"authenticated","aal":"aal2"}';
 SELECT is((approve_stock_count((SELECT id FROM c))->>'changed_lines')::int, 2, 'two differences posted');
 SELECT is(pg_temp.on_hand('SK-M'), 3.000000, 'count difference (-1) applied on top of the later sale (-1)');
 SELECT is(pg_temp.on_hand('SK-L'), 3.000000, 'items not counted are untouched');

@@ -7,6 +7,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000a101','guard-admin@t.local','{"name":"Admin"}','{}'),
  ('00000000-0000-0000-0000-00000000a102','guard-cashier@t.local','{"name":"Cashier"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000a103','guard-customer@t.local','{"name":"Customer"}','{}');
+SELECT app_private.bootstrap_admin('guard-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET active=true WHERE id='00000000-0000-0000-0000-00000000a102';
 UPDATE app_settings SET tax_rate=0,cod_enabled=true,cod_max_total=NULL,online_max_pending_orders=3,online_max_open_cod_orders=3;
 INSERT INTO product_styles(id,code,name,kind,unit,taxable,published,slug) VALUES
@@ -29,7 +30,7 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA pg_temp TO authenticated,service_role;
 
 -- 1. Orders waiting for payment are limited per account
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000a103","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000a103","role":"authenticated","aal":"aal2"}';
 INSERT INTO work VALUES('card1',pg_temp.place('card')),('card2',pg_temp.place('card')),('card3',pg_temp.place('card'));
 SELECT throws_ok($$SELECT pg_temp.place('card')$$,'P0001',
  'You already have 3 orders waiting for payment. Please complete or cancel one first.','fourth unpaid order refused');
@@ -50,7 +51,7 @@ SET LOCAL ROLE service_role;
 SET LOCAL "request.jwt.claims"='{"role":"service_role"}';
 SELECT is(mark_online_order_paid((SELECT value->>'order_no' FROM work WHERE key='card1'),'mock','guard-ref-1',100,'card','{}')->>'status','paid','card order paid online');
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000a102","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000a102","role":"authenticated","aal":"aal2"}';
 SELECT FROM open_cash_session(0);
 SELECT FROM pg_temp.advance('card1','confirmed');
 SELECT FROM pg_temp.advance('card1','packed');

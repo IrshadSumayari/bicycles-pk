@@ -1,16 +1,14 @@
 import { Input } from "@/components/ui/input";
 import React, { useState } from "react";
-import { Lock, User, Mail, Eye, EyeOff } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { PLATFORM_LOGO } from "@/lib/branding";
 import { useAuth } from "../../context/AuthContext";
 import { useApp } from "../../context/SupabaseAppContext";
-import { swalConfig } from "../../lib/sweetAlert";
 import { getErrorMessage } from "../../lib/errors";
 
 export function LoginPage() {
   const { state } = useApp();
-  const { signIn, signUp, confirmEmail, resendConfirmation, loading, needsBootstrap } = useAuth();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const { signIn, confirmEmail, resendConfirmation, loading, needsBootstrap } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   // Email waiting for its confirmation code; null shows the normal form
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -18,33 +16,14 @@ export function LoginPage() {
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
-    name: "",
-    username: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      if (isSignUp) {
-        if (!credentials.name.trim() || !credentials.username.trim()) {
-          // Show validation error toast with our styled config
-          swalConfig.warning(
-            "Missing Information: Name and username are required",
-          );
-          return;
-        }
-        const result = await signUp(
-          credentials.email,
-          credentials.password,
-          credentials.name,
-          credentials.username,
-        );
-        if (result === "confirm") setConfirming(credentials.email);
-      } else {
-        const result = await signIn(credentials.email, credentials.password);
-        if (result === "confirm") setConfirming(credentials.email);
-      }
+      const result = await signIn(credentials.email, credentials.password);
+      if (result === "confirm") setConfirming(credentials.email);
     } catch (error) {
       // Errors are now handled by the AuthContext with SweetAlert2 toasts
       console.debug(
@@ -73,15 +52,6 @@ export function LoginPage() {
     } catch (error) {
       console.debug("Resend error handled by AuthContext:", getErrorMessage(error));
     }
-  };
-
-  const resetForm = () => {
-    setCredentials({ email: "", password: "", name: "", username: "" });
-  };
-
-  const toggleMode = () => {
-    setIsSignUp(!isSignUp);
-    resetForm();
   };
 
   return (
@@ -120,9 +90,7 @@ export function LoginPage() {
             <p className="text-bodytext">
               {confirming
                 ? "Confirm your email"
-                : isSignUp
-                  ? "Create your account"
-                  : "Welcome back! Please sign in"}
+                : "Welcome back! Please sign in"}
             </p>
           </div>
 
@@ -167,7 +135,6 @@ export function LoginPage() {
                     onClick={() => {
                       setConfirming(null);
                       setCode("");
-                      setIsSignUp(false);
                     }}
                     className="text-bodytext font-medium"
                   >
@@ -177,54 +144,6 @@ export function LoginPage() {
               </form>
             ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
-              {isSignUp && (
-                <>
-                  <div>
-                    <label className="block text-sm font-semibold text-link mb-2">
-                      Full Name
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-bodytext h-4 w-4" />
-                      <Input
-                        type="text"
-                        value={credentials.name}
-                        onChange={(e) =>
-                          setCredentials((prev) => ({
-                            ...prev,
-                            name: e.target.value,
-                          }))
-                        }
-                        className="input pl-10 h-11"
-                        placeholder="Enter your full name"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-link mb-2">
-                      Username
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-bodytext h-4 w-4" />
-                      <Input
-                        type="text"
-                        value={credentials.username}
-                        onChange={(e) =>
-                          setCredentials((prev) => ({
-                            ...prev,
-                            username: e.target.value,
-                          }))
-                        }
-                        className="input pl-10 h-11"
-                        placeholder="Choose a username"
-                        required
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
               <div>
                 <label className="block text-sm font-semibold text-link mb-2">
                   Email
@@ -264,8 +183,8 @@ export function LoginPage() {
                     }
                     className="input pl-10 pr-12 h-11"
                     placeholder="Enter your password"
+                    autoComplete="current-password"
                     required
-                    minLength={6}
                   />
                   <button
                     type="button"
@@ -289,30 +208,22 @@ export function LoginPage() {
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    <span>
-                      {isSignUp ? "Creating Account..." : "Signing in..."}
-                    </span>
+                    <span>Signing in...</span>
                   </>
                 ) : (
-                  <span>{isSignUp ? "Create Account" : "Sign In"}</span>
+                  <span>Sign In</span>
                 )}
               </button>
             </form>
             )}
 
-            {/* Staff accounts are created by an administrator. Sign-up is only offered
-              to create the very first (administrator) account. */}
+            {/* Staff accounts are created by an administrator. The first administrator
+              is set up by the project owner in Supabase, never from this page. */}
             {confirming ? null : needsBootstrap ? (
-              <div className="mt-6 text-center">
-                <button
-                  onClick={toggleMode}
-                  className="text-sm text-primary hover:text-primary font-medium"
-                >
-                  {isSignUp
-                    ? "Already have an account? Sign in"
-                    : "First time setup? Create the administrator account"}
-                </button>
-              </div>
+              <p className="mt-6 text-center text-sm text-bodytext">
+                This store has no administrator yet. The project owner sets one up in
+                Supabase (see the deployment guide), then signs in here.
+              </p>
             ) : (
               <p className="mt-6 text-center text-sm text-bodytext">
                 Need an account? Ask your store administrator.

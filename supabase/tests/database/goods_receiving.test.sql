@@ -5,10 +5,11 @@ SELECT plan(15);
 INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-00000000ee01', 'admin@t.local',   '{"name":"Admin"}', '{}'),
     ('00000000-0000-0000-0000-00000000ee02', 'cashier@t.local', '{"name":"Cashier"}', '{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-00000000ee02';
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ee01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ee01","role":"authenticated","aal":"aal2"}';
 
 CREATE TEMP TABLE s AS SELECT
     save_style('{"kind":"item","code":"SK","name":"City bike","variants":[
@@ -59,7 +60,7 @@ SET LOCAL "request.jwt.claims" = '';
 SELECT throws_ok($$ UPDATE goods_receipts SET total_cost = 0 $$, '42501', NULL, 'receipts cannot be edited');
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ee02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000ee02","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT pg_temp.receipt('00000000-0000-0000-0000-00000000f103') $$, '42501', NULL,
                  'cashier cannot receive goods');
 

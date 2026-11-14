@@ -8,6 +8,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000009a04','orders-b@t.local','{"name":"Customer B"}','{}'),
  ('00000000-0000-0000-0000-000000009a05','orders-inactive@t.local','{"name":"Inactive"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-000000009a06','orders-manager@t.local','{"name":"Manager"}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('orders-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET active=true WHERE id IN ('00000000-0000-0000-0000-000000009a02','00000000-0000-0000-0000-000000009a05','00000000-0000-0000-0000-000000009a06');
 UPDATE users SET role='cashier',active=false WHERE id='00000000-0000-0000-0000-000000009a05';
 UPDATE users SET role='manager' WHERE id='00000000-0000-0000-0000-000000009a06';
@@ -63,7 +64,7 @@ SELECT ok(pg_temp.refuse('SELECT expire_online_orders()'),'anon cannot expire or
 SELECT ok(pg_temp.refuse('SELECT * FROM online_orders'),'anon has no table access');
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated","aal":"aal2"}';
 SELECT is((quote_online_order(pg_temp.cart('00000000-0000-0000-0000-000000009ab1',2))->>'tax')::numeric,
  (quote_sale('{"lines":[{"variant_id":"00000000-0000-0000-0000-000000009ab1","quantity":2}]}')->>'tax_amount')::numeric,'online tax matches POS tax');
 SELECT ok(pg_temp.refuse('SELECT create_online_order(pg_temp.order_payload())'),'staff cannot create website orders');
@@ -71,7 +72,7 @@ SELECT ok(pg_temp.refuse('SELECT expire_online_orders()'),'counter staff cannot 
 SELECT ok(pg_temp.refuse($$SELECT mark_online_order_paid('x','x','x',1,'card','{}')$$),'counter staff cannot fake payment notifications');
 SELECT ok(pg_temp.refuse($$SELECT close_online_reservations(gen_random_uuid(),'released')$$),'internal reservation helper is private');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT create_online_order(pg_temp.order_payload()||'{"phone":"bad"}')$$,'P0001','Enter your contact name and a valid phone number','contact validation');
 SELECT throws_ok($$SELECT create_online_order(pg_temp.order_payload('card','00000000-0000-0000-0000-000000009ab1','delivery')||'{"address":{}}')$$,'P0001','Enter the delivery address and city','delivery address required');
 INSERT INTO work VALUES('a',create_online_order(pg_temp.order_payload('card','00000000-0000-0000-0000-000000009ab1','delivery',2,'00000000-0000-0000-0000-000000009ac1')));
@@ -90,7 +91,7 @@ SELECT is((SELECT stock_level FROM public_catalog WHERE variant_id='00000000-000
 SELECT is(cancel_my_online_order((SELECT value->>'order_no' FROM work WHERE key='scarce'))->>'status','cancelled','customer cancels unpaid order');
 SELECT is((SELECT stock_level FROM public_catalog WHERE variant_id='00000000-0000-0000-0000-000000009ab2'),'low_stock','cancellation restores public band');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a04","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a04","role":"authenticated","aal":"aal2"}';
 SELECT is(my_online_orders(),'[]'::jsonb,'customer B sees no A orders');
 SELECT ok(pg_temp.refuse(format('SELECT my_online_order(%L)',(SELECT value->>'order_no' FROM work WHERE key='a'))),'foreign detail refused');
 SELECT ok(pg_temp.refuse(format('SELECT cancel_my_online_order(%L)',(SELECT value->>'order_no' FROM work WHERE key='a'))),'foreign cancellation refused');
@@ -98,7 +99,7 @@ SELECT ok(pg_temp.refuse($$SELECT create_online_order('{"request_id":"00000000-0
 SELECT ok(pg_temp.refuse('SELECT list_online_orders()'),'customer refused staff list');
 SELECT ok(pg_temp.refuse('SELECT online_order_detail(pg_temp.order_id(''a''))'),'customer refused staff detail');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT reserved FROM stock_balances b JOIN locations l ON l.id=b.location_id WHERE b.variant_id='00000000-0000-0000-0000-000000009ab1' AND l.code='STOCK'),2.000000,'most available single location reserved');
 SELECT is((SELECT sum(on_hand) FROM stock_balances WHERE variant_id='00000000-0000-0000-0000-000000009ab1'),100.000000,'reservation does not deduct physical stock');
 SELECT ok((SELECT customer_id IS NOT NULL FROM online_orders WHERE id=pg_temp.order_id('a')),'new contact creates shop customer for this order');
@@ -116,7 +117,7 @@ SELECT is(pg_temp.notify('a','ORDER-GOOD')->>'status','paid','duplicate notifica
 SELECT throws_ok($$SELECT pg_temp.notify('a','ORDER-GOOD','card',2)$$,'P0001','Payment reference already belongs to another notification','conflicting reuse of reference refused');
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM online_payments WHERE provider_ref='ORDER-GOOD'),1,'exactly one provider payment');
 SELECT is((SELECT status FROM online_orders WHERE id=pg_temp.order_id('a')),'placed','payment places order');
 SELECT ok((SELECT expires_at IS NULL FROM stock_reservations WHERE reference_id=pg_temp.order_id('a')),'paid reservation no longer expires');
@@ -146,7 +147,7 @@ SELECT is((SELECT count(*)::int FROM online_order_events WHERE order_id=pg_temp.
 RESET ROLE;
 UPDATE product_variants SET price=100.05 WHERE id='00000000-0000-0000-0000-000000009ab1';
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 INSERT INTO work VALUES('expire',create_online_order(pg_temp.order_payload()));
 INSERT INTO work VALUES('deadline',create_online_order(pg_temp.order_payload()));
 INSERT INTO work VALUES('wallet',create_online_order(pg_temp.order_payload('easypaisa')));
@@ -171,11 +172,11 @@ SELECT is(pg_temp.notify('wallet','ORDER-WALLET','wallet')->>'status','paid','wa
 SELECT is(pg_temp.notify('wallet_pack','ORDER-WALLET-PACK','wallet')->>'status','paid','second wallet payment accepted for packing');
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 SELECT is(cancel_my_online_order((SELECT value->>'order_no' FROM work WHERE key='wallet'))->>'status','cancelled','paid customer cancellation succeeds');
 SELECT is(my_online_order((SELECT value->>'order_no' FROM work WHERE key='wallet'))->>'payment_status','paid','cancelled captured payment remains paid until refund');
 SELECT ok(NOT (my_online_orders()::text ~ 'notes_staff|created_by|location_id|reservation_id|private_provider_payload|Private Cashier'),'paid customer response excludes private notes and provider data');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a02","role":"authenticated","aal":"aal2"}';
 SELECT ok((SELECT customer_id IS NULL AND notes_staff LIKE '%verify identity%' FROM online_orders WHERE id=pg_temp.order_id('cod')),'matching phone never claims an existing customer');
 SELECT is((SELECT status FROM online_orders WHERE id=pg_temp.order_id('expire')),'expired','late payment does not reopen expired order');
 SELECT is((SELECT status FROM stock_reservations WHERE reference_id=pg_temp.order_id('expire')),'expired','expiry marks reservation expired');
@@ -207,25 +208,25 @@ SELECT is(pg_temp.advance('pack','packed')->>'status','packed','pack order packs
 SELECT is((SELECT sum(on_hand) FROM stock_balances WHERE variant_id='00000000-0000-0000-0000-000000009ab4'),7.000000,'pack stock deducted once');
 SELECT is((SELECT sum(reserved) FROM stock_balances WHERE variant_id='00000000-0000-0000-0000-000000009ab4'),0.000000,'packing releases the hold');
 
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a06","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a06","role":"authenticated","aal":"aal2"}';
 SELECT is(record_online_refund(jsonb_build_object('request_id',gen_random_uuid(),'provider_ref','ORDER-WALLET'))->>'payment_status','refunded','manager records portal refund');
 SELECT is(record_online_refund(jsonb_build_object('request_id',gen_random_uuid(),'provider_ref','ORDER-WALLET'))->>'payment_status','refunded','refund naturally idempotent');
 SELECT throws_ok($$SELECT update_settings(jsonb_build_object('request_id',gen_random_uuid(),'delivery_fee',100))$$,'42501',NULL,'new online settings are admin only');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a01","role":"authenticated","aal":"aal2"}';
 SELECT lives_ok($$SELECT update_settings(jsonb_build_object('request_id',gen_random_uuid(),'online_hold_minutes',15,'delivery_fee',150,'free_delivery_over',100,'cod_max_total',100,'cod_enabled',true))$$,'admin updates all online settings');
 SELECT is((quote_online_order(pg_temp.cart('00000000-0000-0000-0000-000000009ab1',1,'delivery'))->>'delivery_fee')::numeric,0::numeric,'free delivery threshold applies to subtotal');
 SELECT is(quote_online_order(pg_temp.cart())->>'cod_allowed','false','COD maximum includes tax');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT create_online_order(pg_temp.order_payload('cod'))$$,'P0001','Cash on delivery is unavailable for this order','over-limit COD order refused');
 INSERT INTO work VALUES('short_hold',create_online_order(pg_temp.order_payload()));
 SELECT is((SELECT (value->>'expires_at')::timestamptz-now() FROM work WHERE key='short_hold'),interval '15 minutes','configured hold duration is used');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a01","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT update_settings(jsonb_build_object('request_id',gen_random_uuid(),'online_hold_minutes',0))$$,'P0001',NULL,'hold setting must be positive');
 SELECT throws_ok($$SELECT update_settings(jsonb_build_object('request_id',gen_random_uuid(),'delivery_fee',1.001))$$,'P0001',NULL,'delivery fee cannot silently round');
 SELECT lives_ok($$SELECT update_settings(jsonb_build_object('request_id',gen_random_uuid(),'free_delivery_over',NULL,'cod_max_total',NULL,'cod_enabled',false))$$,'nullable thresholds can be cleared');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a03","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT create_online_order(pg_temp.order_payload('cod'))$$,'P0001','Cash on delivery is unavailable for this order','disabled COD refused');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a05","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009a05","role":"authenticated","aal":"aal2"}';
 SELECT ok(pg_temp.refuse('SELECT list_online_orders()'),'inactive staff refused counter list');
 SELECT ok(pg_temp.refuse('SELECT online_order_detail(pg_temp.order_id(''a''))'),'inactive staff refused counter detail');
 SELECT is((SELECT count(*)::int FROM online_orders),0,'inactive staff cannot read contact tables');

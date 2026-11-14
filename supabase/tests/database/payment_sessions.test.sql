@@ -5,6 +5,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000009e01','payment-admin@t.local','{"name":"Admin"}','{}'),
  ('00000000-0000-0000-0000-000000009e02','payment-a@t.local','{"name":"Customer A"}','{}'),
  ('00000000-0000-0000-0000-000000009e03','payment-b@t.local','{"name":"Customer B"}','{}');
+SELECT app_private.bootstrap_admin('payment-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE app_settings SET tax_rate=0,cod_enabled=true,cod_max_total=NULL,online_max_pending_orders=20,online_max_open_cod_orders=20;
 INSERT INTO product_styles(id,code,name,kind,taxable,published,slug) VALUES
  ('00000000-0000-0000-0000-000000009ea1','PAYMENT-TUBE','Payment tube','item',false,true,'payment-tube');
@@ -25,7 +26,7 @@ CREATE FUNCTION pg_temp.notify(k TEXT,ref TEXT,status TEXT DEFAULT 'paid',amount
 $$;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA pg_temp TO authenticated,service_role;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009e02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009e02","role":"authenticated","aal":"aal2"}';
 INSERT INTO work VALUES('paid',pg_temp.create_order()),('expired',pg_temp.create_order()),('mismatch',pg_temp.create_order()),('failed',pg_temp.create_order()),('cancelled',pg_temp.create_order());
 SELECT throws_ok($$SELECT pg_temp.start('paid','SESSION-A')$$,'42501',NULL,'customer cannot initialize through service-only RPC');
 SELECT throws_ok($$SELECT pg_temp.notify('paid','SESSION-A')$$,'42501',NULL,'customer cannot confirm or refund payments');
@@ -53,7 +54,7 @@ SELECT pg_temp.start('cancelled','SESSION-CANCELLED');
 RESET ROLE;
 UPDATE online_orders SET expires_at=now()-interval '1 minute' WHERE id=(SELECT (value->>'id')::uuid FROM work WHERE key='expired');
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009e02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000009e02","role":"authenticated","aal":"aal2"}';
 SELECT cancel_my_online_order((SELECT value->>'order_no' FROM work WHERE key='cancelled'));
 SET LOCAL ROLE service_role;
 SET LOCAL "request.jwt.claims"='{"role":"service_role"}';

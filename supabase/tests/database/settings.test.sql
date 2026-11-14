@@ -4,11 +4,12 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000fc01','admin@t.local','{"name":"Admin"}','{}'),
  ('00000000-0000-0000-0000-00000000fc02','manager@t.local','{"name":"Manager"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000fc03','cashier@t.local','{"name":"Cashier"}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET active=true;
 UPDATE users SET role='manager' WHERE id='00000000-0000-0000-0000-00000000fc02';
 INSERT INTO customers(id,name,phone) VALUES('00000000-0000-0000-0000-00000000fcc1','Customer','03006661234');
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fc01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fc01","role":"authenticated","aal":"aal2"}';
 SELECT is((update_settings('{"tax_rate":17,"return_window_days":14,"request_id":"00000000-0000-0000-0000-0000000fc001"}')->>'tax_rate')::numeric,17::numeric,'admin updates tax');
 SELECT is((SELECT return_window_days FROM app_settings),14,'return window saved');
 SELECT is((SELECT count(*)::int FROM settings_history),1,'one history row');
@@ -25,11 +26,11 @@ SELECT throws_ok($$ SELECT update_settings(jsonb_build_object('receipt_header',r
 SELECT throws_ok($$ UPDATE app_settings SET tax_rate=0 $$,'42501',NULL,'admin direct update denied');
 SELECT is((SELECT count(*)::int FROM pg_policies WHERE schemaname='public' AND tablename='app_settings' AND cmd IN ('UPDATE','ALL')),0,'no direct update policy');
 SELECT lives_ok($$ SELECT update_settings('{"cash_variance_alert":0}') $$,'admin alert through RPC');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fc02","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fc02","role":"authenticated","aal":"aal2"}';
 SELECT lives_ok($$ SELECT update_settings('{"receipt_header":"Welcome","receipt_footer":"Thank you"}') $$,'manager receipt text');
 SELECT throws_ok($$ SELECT update_settings('{"tax_rate":1}') $$,'42501',NULL,'manager tax denied');
 SELECT throws_ok($$ SELECT update_settings('{"cash_variance_alert":1}') $$,'42501',NULL,'manager variance denied');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fc03","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000fc03","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$ SELECT update_settings('{"receipt_header":"No"}') $$,'42501',NULL,'cashier settings denied');
 SELECT is((SELECT count(*)::int FROM settings_history),0,'cashier history RLS');
 RESET ROLE;

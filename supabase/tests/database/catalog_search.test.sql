@@ -4,6 +4,7 @@ INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-000000507001','catalog-admin@t.local','{"name":"Admin"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-000000507002','catalog-cashier@t.local','{"name":"Cashier"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-000000507003','catalog-inactive@t.local','{"name":"Inactive staff"}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('catalog-admin@t.local'); -- first administrator (no longer the first sign-up)
 UPDATE users SET role='admin',active=true WHERE id='00000000-0000-0000-0000-000000507001';
 UPDATE users SET role='cashier',active=true WHERE id='00000000-0000-0000-0000-000000507002';
 UPDATE users SET role='cashier',active=false WHERE id='00000000-0000-0000-0000-000000507003';
@@ -30,7 +31,7 @@ UPDATE product_variants SET created_at='2026-03-01' WHERE sku='CS-B';
 UPDATE product_styles SET updated_at='2026-04-01' WHERE code='CS-A';
 SET LOCAL session_replication_role = origin;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507001","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507001","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT sku FROM search_variants('{"q":"cs-bar"}') LIMIT 1),'CS-A','Exact barcode precedes a partial name');
 SELECT is((SELECT sku FROM search_variants('{"q":"cs-b"}') LIMIT 1),'CS-B','Exact SKU precedes partial name');
 SELECT is((SELECT count(*)::int FROM search_variants('{"q":"Zulu catalog"}')),1,'Partial name finds active variant');
@@ -58,14 +59,14 @@ SELECT is((SELECT on_hand FROM variant_by_code('CS-A')),9::numeric,'On hand is d
 SELECT is((SELECT count(*)::int FROM variant_by_code('cs-bar')),1,'Barcode lookup returns one case-insensitive match');
 SELECT is((SELECT count(*)::int FROM variant_by_code('CS-UNKNOWN')),0,'Unknown code returns no rows');
 SELECT ok(NOT EXISTS(SELECT 1 FROM jsonb_object_keys((SELECT to_jsonb(r) FROM variant_by_code('CS-A')r)) key WHERE key ILIKE '%cost%'),'No cost column returned');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507003","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507003","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT * FROM search_variants('{}')$$,'42501',NULL,'Inactive staff cannot search');
 SELECT throws_ok($$SELECT * FROM variant_by_code('CS-A')$$,'42501',NULL,'Inactive staff cannot scan');
 SET LOCAL ROLE anon;
 SELECT throws_ok($$SELECT * FROM search_variants('{}')$$,'42501',NULL,'Anon cannot search');
 SELECT throws_ok($$SELECT * FROM variant_by_code('CS-A')$$,'42501',NULL,'Anon cannot scan');
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507002","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507002","role":"authenticated","aal":"aal2"}';
 SELECT lives_ok($$SELECT * FROM search_variants('{"q":"CS-A"}')$$,'Cashier can search');
 SELECT ok(NOT EXISTS(SELECT 1 FROM jsonb_object_keys((SELECT to_jsonb(r) FROM variant_by_code('CS-A')r)) key WHERE key ILIKE '%cost%'),'Cashier response has no cost');
 SELECT is((SELECT count(*)::int FROM search_variants('{"category":"Catalog test category","limit":0}')),1,'Limit has a minimum of one');
@@ -75,15 +76,15 @@ RESET ROLE;
 SET LOCAL "request.jwt.claims"='';
 INSERT INTO product_variants(style_id,sku,size,price) SELECT '00000000-0000-0000-0000-000000507011','CS-CAP-'||n,'CAP-'||n,100 FROM generate_series(1,201)n;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507002","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507002","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM search_variants('{"q":"CS-CAP-","limit":999}')),200,'Limit is capped at 200');
 SELECT is((SELECT max(total_count) FROM search_variants('{"q":"CS-CAP-","limit":999}')),201::bigint,'Capped page retains full total');
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507003","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507003","role":"authenticated","aal":"aal2"}';
 SELECT throws_ok($$SELECT * FROM search_variants('{"limit":"bad","location_id":"bad"}')$$,'42501',NULL,'Check role before parsing filters');
 RESET ROLE;
 UPDATE product_styles SET active=false WHERE id='00000000-0000-0000-0000-000000507011';
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507002","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-000000507002","role":"authenticated","aal":"aal2"}';
 SELECT is((SELECT count(*)::int FROM variant_by_code('CS-A')),0,'Barcode lookup excludes an inactive style');
 SELECT * FROM finish();
 ROLLBACK;

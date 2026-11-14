@@ -13,11 +13,14 @@ interface AuthContextType {
   loading: boolean
   // false when the signed-in account is a website customer, not staff
   isStaffAccount: boolean
-  // true until the first (admin) staff account has been created
+  // true until the project owner has set up the first administrator
   needsBootstrap: boolean
+  // Administrators and managers must verify with an authenticator app:
+  // 'enroll' = no authenticator yet, 'verify' = enter a code, 'ok' = verified or not required
+  mfaStep: MfaStep
+  refreshMfa: () => Promise<void>
   // 'confirm' means the account exists but its email code has not been entered yet
   signIn: (email: string, password: string) => Promise<AuthResult>
-  signUp: (email: string, password: string, name: string, username: string) => Promise<AuthResult>
   confirmEmail: (email: string, code: string) => Promise<void>
   resendConfirmation: (email: string) => Promise<void>
   signOut: () => Promise<void>
@@ -25,6 +28,19 @@ interface AuthContextType {
 }
 
 export type AuthResult = 'signed_in' | 'confirm'
+export type MfaStep = 'ok' | 'enroll' | 'verify'
+
+// Must match current_app_role() in the database: these roles only take effect
+// in a session verified with an authenticator code (AAL2).
+const MFA_ROLES = ['admin', 'manager']
+
+async function mfaStepFor(role: string | undefined): Promise<MfaStep> {
+  if (!role || !MFA_ROLES.includes(role)) return 'ok'
+  const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+  if (error) throw error
+  if (data.currentLevel === 'aal2') return 'ok'
+  return data.nextLevel === 'aal2' ? 'verify' : 'enroll'
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -46,7 +62,7 @@ function getAuthErrorMessage(errorMessage: string): string {
     return 'An account with this email already exists. Please sign in instead.'
   }
   if (errorMessage.includes('Password should be at least')) {
-    return 'Password must be at least 6 characters long.'
+    return 'Password must be at least 12 characters long.'
   }
   if (errorMessage.includes('Invalid email')) {
     return 'Please enter a valid email address.'
@@ -68,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [isStaffAccount, setIsStaffAccount] = useState(true)
   const [needsBootstrap, setNeedsBootstrap] = useState(false)
+  const [mfaStep, setMfaStep] = useState<MfaStep>('ok')
 
   useEffect(() => {
     supabase.rpc('needs_bootstrap').then(({ data }) => setNeedsBootstrap(data === true))
@@ -94,6 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setProfile(null)
         setIsStaffAccount(true)
+        setMfaStep('ok')
         setLoading(false)
       }
     })
@@ -126,6 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setIsStaffAccount(!!data)
+      setMfaStep(data?.active ? await mfaStepFor(data.role) : 'ok')
       if (!data) {
         setProfile(null)
       } else {
@@ -176,65 +195,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function signUp(email: string, password: string, name: string, username: string): Promise<AuthResult> {
-    setLoading(true)
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name,
-            username,
-          }
-        }
-      })
-      if (error) throw error
-
-      // With email confirmation on there is no session yet: the account is
-      // activated by entering the code from the confirmation email.
-      if (!data.session) {
-        setLoading(false)
-        swalConfig.info(`We emailed a 6-digit code to ${email}. Enter it to activate your account.`)
-        return 'confirm'
-      }
-
-      // The profile row is created by a database trigger. New accounts stay
-      // inactive until an administrator activates them in User Management.
-      // (The very first account becomes the active administrator.)
-      let active = false
-      if (data.session && data.user) {
-        const { data: newProfile } = await supabase
-          .from('users')
-          .select('active')
-          .eq('id', data.user.id)
-          .single()
-        active = newProfile?.active ?? false
-        if (!active) await supabase.auth.signOut()
-      }
-
-      setLoading(false)
-      setNeedsBootstrap(false)
-
-      swalConfig.success(active
-        ? 'Account created! You are the store administrator.'
-        : 'Account created! An administrator must activate it before you can sign in.');
-      return 'signed_in'
-    } catch (error) {
-      setLoading(false)
-
-      // Show error toast with our styled config
-      swalConfig.error(`Sign Up Failed: ${getAuthErrorMessage(getErrorMessage(error))}`);
-      throw error
-    }
-  }
-
   async function confirmEmail(email: string, code: string) {
     setLoading(true)
     try {
       const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'signup' })
       if (error) throw error
-      setNeedsBootstrap(false)
       swalConfig.success('Email confirmed! You are now signed in.');
     } catch (error) {
       setLoading(false)
@@ -271,6 +236,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function refreshMfa() {
+    setMfaStep(await mfaStepFor(profile?.role))
+  }
+
   async function updateProfile(updates: Partial<User>) {
     if (!user) throw new Error('No user logged in')
     
@@ -285,8 +254,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     isStaffAccount,
     needsBootstrap,
+    mfaStep,
+    refreshMfa,
     signIn,
-    signUp,
     confirmEmail,
     resendConfirmation,
     signOut,

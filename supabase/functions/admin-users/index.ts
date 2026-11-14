@@ -15,6 +15,18 @@ const corsHeaders = {
 
 const ROLES = ['admin', 'manager', 'cashier'];
 
+// Assurance level of the caller's session. The token was already validated by
+// auth.getUser() below, so reading its claims here is safe.
+function sessionLevel(authorization: string): string {
+  try {
+    const payload = authorization.replace(/^Bearer\s+/i, '').split('.')[1] ?? '';
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    return String(JSON.parse(atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '='))).aal ?? '');
+  } catch {
+    return '';
+  }
+}
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -31,11 +43,16 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
   // Identify the caller from their own JWT
+  const authorization = req.headers.get('Authorization') ?? '';
   const caller = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+    global: { headers: { Authorization: authorization } },
   });
   const { data: { user: callerUser } } = await caller.auth.getUser();
   if (!callerUser) return json({ error: 'Not signed in' }, 401);
+  // Matches current_app_role(): an administrator's role needs an authenticator-verified session.
+  if (sessionLevel(authorization) !== 'aal2') {
+    return json({ error: 'Confirm your sign-in with your authenticator app first' }, 403);
+  }
 
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { autoRefreshToken: false, persistSession: false },
@@ -68,7 +85,7 @@ Deno.serve(async (req) => {
       const avatar = body.avatar ? String(body.avatar) : null;
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Invalid email address' }, 400);
-      if (password.length < 8) return json({ error: 'Password must be at least 8 characters long' }, 400);
+      if (password.length < 12) return json({ error: 'Password must be at least 12 characters long' }, 400);
       if (!name || !username) return json({ error: 'Name and username are required' }, 400);
       if (!ROLES.includes(role)) return json({ error: 'Invalid role' }, 400);
       if (avatar && !/^https:\/\//i.test(avatar)) return json({ error: 'Avatar must be an https URL' }, 400);

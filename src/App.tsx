@@ -10,6 +10,7 @@ const Dashboard = lazy(() => import("./components/dashboard/Dashboard"));
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { AppProvider, useApp } from "./context/SupabaseAppContext";
 import { LoginPage } from "./components/auth/LoginPage";
+import { MfaGate } from "./components/auth/MfaGate";
 import { Header } from "./components/layout/Header";
 import { POSTerminal } from "./components/pos/POSTerminal";
 const TransactionsManager = lazy(() =>
@@ -56,7 +57,7 @@ const OnlineOrders = lazy(() =>
 const CommissionManager = lazy(() => import('./components/commissions/CommissionManager').then(m => ({ default: m.CommissionManager })));
 
 function AppContent() {
-  const { user, profile, loading, signOut, isStaffAccount } = useAuth();
+  const { user, profile, loading, signOut, isStaffAccount, mfaStep } = useAuth();
   const { state } = useApp();
   const [currentView, setCurrentView] = useState<string>("");
   // Bumped on every bell pick so picking the same order again still reopens it.
@@ -126,6 +127,11 @@ function AppContent() {
         </div>
       </div>
     );
+  }
+
+  // Administrators and managers confirm the sign-in with an authenticator code
+  if (user && profile && mfaStep !== "ok") {
+    return <MfaGate />;
   }
 
   // Show login page if no user is authenticated

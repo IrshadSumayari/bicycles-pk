@@ -5,6 +5,7 @@ SELECT plan(7);
 INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-00000005c001', 'admin@sp.local',   '{"name":"Admin"}', '{}'),
     ('00000000-0000-0000-0000-00000005c003', 'cashier@sp.local', '{"name":"Cashier"}', '{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('admin@sp.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET active = true WHERE id = '00000000-0000-0000-0000-00000005c003';
 UPDATE public.app_settings SET tax_rate = 0;
 UPDATE public.discounts SET active = false;
@@ -22,7 +23,7 @@ INSERT INTO discounts (id, name, type, value, valid_from, valid_to, active) VALU
     ('00000000-0000-0000-0000-00000005c302', 'Flat 100', 'fixed', 100, now() - interval '1 day', now() + interval '1 day', true);
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000005c003","role":"authenticated"}';
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000005c003","role":"authenticated","aal":"aal2"}';
 
 SELECT is((SELECT q->'total' FROM quote_sale(
         '{"lines":[{"variant_id":"00000000-0000-0000-0000-00000005c201","quantity":1}]}') q),

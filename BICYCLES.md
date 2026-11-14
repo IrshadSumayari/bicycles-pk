@@ -144,3 +144,29 @@ npm run web:dev            # website on http://localhost:3000
 - Homepage video: a free Pexels clip streamed from `videos.pexels.com` (allowed in the website CSP
   in `website/lib/security.ts`). Before launch, put the shop's own video in `website/public/hero/`,
   point `website/content/home.json` at it and remove the Pexels hosts from the CSP.
+
+## Staff account security (14 November 2026)
+
+Fixes for review findings S1 and S2. Migration `20261114000000_staff_account_security.sql`.
+
+- **No automatic administrator.** The first sign-up on an empty database used to become the
+  administrator, so a website customer could take the shop if they signed up first. Now every
+  sign-up without staff app metadata is a customer. The owner creates the first administrator in
+  Supabase (Authentication → Users → Add user), then runs
+  `SELECT app_private.bootstrap_admin('email')` in the SQL Editor. It is refused once an active
+  administrator exists. The POS login page no longer offers sign-up and shows setup instructions
+  instead.
+- **Authenticator app for administrators and managers.** `current_app_role()` ignores the admin
+  and manager roles unless the session is verified with an authenticator code (JWT `aal` =
+  `aal2`), so every role check and row level security policy requires it. Cashiers keep
+  password-only sign-in. The POS shows a set-up screen (QR code and key) on first sign-in and a
+  code screen after that (`src/components/auth/MfaGate.tsx`). `admin-users` also requires `aal2`.
+- **Passwords:** minimum 12 characters in `config.toml`, the user form and `admin-users`.
+- **Tests:** database tests bootstrap their admin explicitly and use `aal2` sessions;
+  `security.test.sql` checks password-only admin sessions get no rights and cashiers are
+  unaffected; `accounts_and_branches.test.sql` checks the first sign-up is a customer.
+- **Runbooks:** DEPLOY §2 and §8, LAUNCH, STAGING_REHEARSAL, RELEASE_GUIDE and README describe the
+  new setup, the hosted Auth settings (TOTP on, minimum 12) and resetting a lost authenticator.
+
+Not run yet: database tests, unit tests, lint, type-check, builds, or a browser check of the new
+screens. Hosted Auth settings must be changed by hand in each Supabase project.

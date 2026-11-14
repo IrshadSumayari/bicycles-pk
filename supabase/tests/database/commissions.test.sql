@@ -4,11 +4,12 @@ SELECT plan(14);
 INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data) VALUES
  ('00000000-0000-0000-0000-00000000cf01','commission-admin@test.local','{"name":"Commission test admin"}','{"account_type":"staff"}'),
  ('00000000-0000-0000-0000-00000000cf02','commission-seller@test.local','{"name":"Commission test seller"}','{"account_type":"staff"}');
+SELECT app_private.bootstrap_admin('commission-admin@test.local'); -- first administrator (no longer the first sign-up)
 UPDATE public.users SET role='admin',active=true WHERE id='00000000-0000-0000-0000-00000000cf01';
 UPDATE public.users SET role='cashier',active=true WHERE id='00000000-0000-0000-0000-00000000cf02';
 UPDATE public.app_settings SET tax_rate=10;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000cf01","role":"authenticated"}';
+SET LOCAL "request.jwt.claims"='{"sub":"00000000-0000-0000-0000-00000000cf01","role":"authenticated","aal":"aal2"}';
 SELECT FROM save_style('{"kind":"item","code":"COMM-TEST","name":"Commission test bike","variants":[{"sku":"COMM-TEST-M","price":1000,"opening_stock":20}]}');
 CREATE TEMP TABLE comm_ids AS SELECT id variant FROM public.product_variants WHERE sku='COMM-TEST-M';
 GRANT SELECT ON comm_ids TO authenticated;
