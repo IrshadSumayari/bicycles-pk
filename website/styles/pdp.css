@@ -1,0 +1,566 @@
+/* Product page: gallery left, sticky purchase panel right, then add-ons,
+   overview and grouped specifications. */
+.lv-pdp {
+  padding: 16px clamp(16px, 3vw, 48px) 0;
+}
+.lv-pdp-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(340px, 1fr);
+  gap: clamp(24px, 3vw, 56px);
+  align-items: start;
+}
+.lv-pdp-stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #f2f2f2;
+}
+.dark .lv-pdp-stage,
+.dark .lv-pdp-thumbs button,
+.dark .lv-pdp-model-photo,
+.dark .lv-pdp-addon-photo {
+  background: #1c1f27;
+}
+.lv-pdp-stage img {
+  object-fit: contain;
+}
+.lv-pdp-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--store-muted);
+}
+.lv-pdp-zoom {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  cursor: zoom-in;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+.lv-pdp-arrows {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+  font-size: 0.85rem;
+}
+.lv-pdp-arrows button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.lv-pdp-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.lv-pdp-thumbs button {
+  flex: none;
+  width: 96px;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: #f2f2f2;
+  cursor: pointer;
+}
+.lv-pdp-thumbs button.active {
+  border-color: var(--ink);
+}
+.lv-pdp-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.lv-pdp-panel {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.lv-pdp-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--store-muted);
+  font-size: 0.85rem;
+}
+.lv-pdp-crumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+.lv-pdp-crumbs a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.lv-pdp-panel h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.lv-pdp-subtitle {
+  margin: -10px 0 0;
+  color: var(--store-muted);
+}
+.lv-pdp-label,
+.lv-pdp-option legend {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: var(--store-muted);
+}
+.lv-pdp-option legend strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.lv-pdp-option {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.lv-pdp-models > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+.lv-pdp-model {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+.lv-pdp-model:hover {
+  border-color: var(--ink);
+}
+.lv-pdp-model[aria-current="page"] {
+  border: 2px solid var(--ink);
+  padding: 7px;
+}
+.lv-pdp-model strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 600;
+}
+.lv-pdp-model span:last-child {
+  color: var(--store-muted);
+}
+.lv-pdp-model-photo {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #f2f2f2;
+  color: var(--store-muted);
+}
+.lv-pdp-model-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.lv-pdp-price {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.lv-pdp-price del {
+  color: var(--store-muted);
+  font-size: 1rem;
+  font-weight: 400;
+}
+.lv-pdp-stock p {
+  margin: 0;
+}
+.lv-pdp-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.lv-pdp-swatches button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px var(--paper, #fff);
+  cursor: pointer;
+}
+.lv-pdp-swatches button.selected {
+  box-shadow:
+    0 0 0 3px var(--paper, #fff),
+    0 0 0 5px var(--ink);
+}
+.lv-pdp-swatches button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.lv-pdp-sizes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 8px;
+}
+.lv-pdp-sizes button {
+  min-height: 46px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 500;
+  cursor: pointer;
+}
+.lv-pdp-sizes button:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+.lv-pdp-sizes button.selected {
+  border: 2px solid var(--ink);
+}
+.lv-pdp-sizes button:disabled {
+  color: var(--store-muted);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+.lv-pdp-size-links {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+.lv-pdp-size-links :is(a, button),
+.lv-pdp-secondary :is(a, button) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.lv-pdp-delivery {
+  display: grid;
+  gap: 10px;
+}
+.lv-pdp-delivery > div {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.lv-pdp-delivery > div p {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  font-size: 0.9rem;
+}
+.lv-pdp-delivery > div span {
+  color: var(--store-muted);
+}
+.lv-pdp-buy {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+}
+.lv-pdp-buy .quantity {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.lv-pdp-buy .quantity input {
+  width: 44px;
+  height: 48px;
+  border: 0;
+  text-align: center;
+  background: transparent;
+}
+.lv-pdp-add {
+  min-height: 52px;
+  border: 0;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dark .lv-pdp-add {
+  background: #f5f5f5;
+  color: #111;
+}
+.lv-pdp-add:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.lv-pdp-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  font-size: 0.9rem;
+}
+.lv-pdp-secondary button:disabled {
+  opacity: 0.5;
+}
+.lv-pdp-secondary span {
+  color: var(--store-muted);
+}
+
+.lv-pdp-addons {
+  margin-top: 64px;
+}
+.lv-pdp-addons h2,
+.lv-pdp-overview h2 {
+  margin: 0 0 20px;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.lv-pdp-addons > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.lv-pdp-addon {
+  display: grid;
+  grid-template-columns: 112px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.lv-pdp-addon-photo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #f2f2f2;
+  color: var(--store-muted);
+}
+.lv-pdp-addon-photo img {
+  object-fit: contain;
+}
+.lv-pdp-addon h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.lv-pdp-addon h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.lv-pdp-addon p {
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+.lv-pdp-addon-swatches {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+.lv-pdp-addon-swatches span {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+}
+.lv-pdp-addon-add {
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.lv-pdp-addon-add:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--paper, #fff);
+}
+.lv-pdp-addon-add:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lv-pdp-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 96px);
+  margin: 72px 0 24px;
+  padding-top: 48px;
+  border-top: 1px solid var(--line);
+}
+.lv-pdp-overview-copy h2 {
+  margin-top: 8px;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.05;
+}
+.lv-pdp-tagline {
+  margin: -8px 0 20px;
+  font-size: 1.1rem;
+  color: var(--store-muted);
+}
+.lv-pdp-specs details {
+  border-bottom: 1px solid var(--line);
+}
+.lv-pdp-specs details:first-of-type {
+  border-top: 1px solid var(--line);
+}
+.lv-pdp-specs summary {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 0;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.lv-pdp-specs summary::-webkit-details-marker {
+  display: none;
+}
+.lv-pdp-specs summary::after {
+  content: "+";
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.lv-pdp-specs details[open] summary::after {
+  content: "\2013";
+}
+.lv-pdp-specs dl {
+  margin: 0 0 18px;
+}
+.lv-pdp-specs dl > div {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.6fr) 1fr;
+  gap: 16px;
+  padding: 8px 0;
+  font-size: 0.95rem;
+}
+.lv-pdp-specs dt {
+  color: var(--store-muted);
+}
+.lv-pdp-specs dd {
+  margin: 0;
+}
+.lv-pdp-specs details > p {
+  margin: 0 0 18px;
+}
+
+.lv-zoom-dialog {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #fff;
+}
+.lv-zoom-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+.lv-zoom-dialog form {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+}
+.lv-zoom-dialog form button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+}
+.lv-zoom-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.lv-zoom-stage img {
+  object-fit: contain;
+}
+
+@media (max-width: 1000px) {
+  .lv-pdp-addons > div {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .lv-pdp {
+    padding: 0 0 88px;
+  }
+  .lv-pdp-top,
+  .lv-pdp-overview {
+    grid-template-columns: 1fr;
+  }
+  .lv-pdp-stage {
+    border-radius: 0;
+  }
+  .lv-pdp-thumbs,
+  .lv-pdp-panel,
+  .lv-pdp-addons,
+  .lv-pdp-overview {
+    padding-inline: 16px;
+  }
+  .lv-pdp-panel {
+    position: static;
+  }
+  .lv-pdp-overview {
+    margin-top: 48px;
+    padding-top: 32px;
+  }
+}

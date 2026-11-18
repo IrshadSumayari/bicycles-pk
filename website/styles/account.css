@@ -1,0 +1,383 @@
+.lv-account-intro {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--store-muted);
+  margin: 16px 0 28px;
+}
+.lv-orders-page h1,
+.lv-order-heading h1 {
+  font:
+    400 38px/1.2 Georgia,
+    serif;
+  color: var(--lv-plum);
+  letter-spacing: -1px;
+  overflow-wrap: anywhere;
+}
+.lv-order-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+}
+.lv-order-cards li {
+  min-width: 0;
+}
+.lv-order-cards a {
+  display: grid;
+  gap: 24px;
+  height: 100%;
+  padding: 25px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--lv-plum);
+  transition: border-color 0.2s;
+}
+.lv-order-cards a:hover {
+  border-color: var(--lv-plum);
+}
+.lv-order-card-top,
+.lv-order-card-bottom {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 15px;
+}
+.lv-order-card-top strong {
+  font-size: 16px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.lv-order-card-top svg {
+  flex-shrink: 0;
+}
+.lv-order-card-bottom > div {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+.lv-order-status {
+  width: fit-content;
+  background: var(--lv-soft);
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  font-size: 11px;
+}
+.lv-order-payment {
+  color: var(--store-muted);
+  font-size: 11px;
+}
+.lv-order-card-bottom b {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+.lv-order-view {
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.lv-account-empty {
+  border: 1px solid var(--line);
+  background: var(--lv-soft);
+  padding: 50px 25px;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+}
+.lv-account-empty h2 {
+  font:
+    400 28px/1.25 Georgia,
+    serif;
+  color: var(--lv-plum);
+}
+.lv-account-empty p {
+  font-size: 13px;
+  color: var(--store-muted);
+  max-width: 380px;
+  line-height: 1.8;
+}
+.lv-order-detail {
+  max-width: 900px;
+  margin-inline: auto;
+}
+.lv-order-heading {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 25px;
+}
+.lv-order-heading .lv-eyebrow {
+  margin-bottom: 12px;
+}
+.lv-order-status-line {
+  padding: 16px 20px;
+  background: var(--lv-soft);
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.lv-order-panel {
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 28px;
+  min-width: 0;
+}
+.lv-order-panel h2 {
+  font:
+    400 25px/1.25 Georgia,
+    serif;
+  color: var(--lv-plum);
+  margin-bottom: 20px;
+}
+.lv-order-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lv-order-items li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+}
+.lv-order-items li:last-child {
+  padding-bottom: 0;
+}
+.lv-order-items strong {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.lv-order-items li > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.lv-order-items p {
+  color: var(--store-muted);
+  font-size: 12px;
+  margin: 8px 0;
+}
+.lv-order-items small {
+  color: var(--store-muted);
+  font-size: 10px;
+}
+.lv-order-item-amount {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  text-align: right;
+}
+.lv-order-item-amount span {
+  font-size: 12px;
+  color: var(--store-muted);
+}
+.lv-order-item-amount b {
+  font-size: 13px;
+  font-weight: 500;
+}
+.lv-order-totals dl {
+  font-size: 14px;
+}
+.lv-order-delivery p {
+  font-size: 13px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+  margin-top: 10px;
+}
+.lv-order-timeline li {
+  position: relative;
+  padding-left: 5px;
+}
+.lv-order-timeline li::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lv-rose);
+  position: absolute;
+  left: -24px;
+  top: 8px;
+}
+.lv-order-timeline p {
+  font-size: 13px;
+  line-height: 1.8;
+}
+.lv-order-timeline time {
+  display: block;
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 5px;
+}
+.lv-profile fieldset {
+  padding: 20px;
+  background: var(--lv-soft);
+  border: 1px solid var(--line);
+}
+.lv-profile legend {
+  padding-inline: 6px;
+  font-size: 14px;
+}
+.lv-profile fieldset label {
+  min-height: 44px;
+  align-items: center;
+  font-size: 13px;
+}
+.lv-profile input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: var(--lv-plum);
+}
+.lv-profile .muted {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.lv-profile [role="status"]:empty {
+  display: none;
+}
+.lv-profile [role="status"]:not(:empty) {
+  padding: 16px;
+  background: var(--lv-soft);
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.lv-verification-code {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.35em;
+}
+@media (max-width: 760px) {
+  .account-shell {
+    padding: 24px 20px 40px;
+  }
+  .account-content {
+    overflow: visible;
+    min-width: 0;
+  }
+  .lv-account-nav {
+    gap: 24px;
+    font-size: 12px;
+    margin-bottom: 28px;
+  }
+  .lv-order-cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .lv-order-cards a {
+    padding: 22px 18px;
+    gap: 22px;
+  }
+  .lv-order-card-bottom {
+    flex-wrap: wrap;
+  }
+  .lv-orders-page h1,
+  .lv-order-heading h1 {
+    font-size: 32px;
+  }
+  .lv-order-panel {
+    padding: 22px 18px;
+  }
+  .lv-order-items li {
+    gap: 12px;
+  }
+  .lv-order-items strong {
+    font-size: 13px;
+  }
+  .lv-order-items small {
+    display: block;
+    overflow-wrap: anywhere;
+  }
+  .lv-order-detail > button,
+  .lv-order-detail > a {
+    min-height: 48px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+  .lv-order-detail > [role="status"],
+  .lv-order-detail > [role="alert"] {
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+  }
+  .lv-profile > button,
+  .lv-profile form > button {
+    width: 100%;
+    min-height: 48px;
+    font-size: 13px;
+  }
+  .account-content > .lv-profile {
+    padding: 24px 18px;
+  }
+  .lv-profile input:not([type="checkbox"]) {
+    font-size: 16px;
+    min-height: 48px;
+    margin-top: 8px;
+  }
+  .lv-profile form > label {
+    font-size: 13px;
+  }
+  .lv-signin-editorial {
+    min-height: 170px;
+    max-height: 190px;
+  }
+  .lv-signin-editorial > div {
+    padding: 12px 16px;
+    inset-inline: 16px;
+    bottom: 16px;
+  }
+  .lv-signin-editorial h2 {
+    font-size: 24px;
+  }
+  .lv-signin .account-panel {
+    padding: 26px 20px;
+    gap: 18px;
+  }
+  .account-panel > p,
+  .account-panel label {
+    font-size: 12px;
+  }
+  .account-panel h1 {
+    font-size: 30px;
+  }
+  .account-panel input {
+    min-height: 48px;
+  }
+  .account-panel button {
+    min-height: 48px;
+    font-size: 13px;
+  }
+  .account-panel .lv-link {
+    font-size: 12px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .account-panel .lv-change-email {
+    margin-left: 0;
+    width: 100%;
+  }
+  .lv-verification-code {
+    font-size: 22px;
+  }
+}
+
+.lv-tracking-panel { display: grid; gap: 1rem; }
+.lv-tracking-steps { list-style: none; display: grid; gap: .8rem; margin: 0; padding: 0; }
+.lv-tracking-steps li { display: flex; gap: .8rem; align-items: flex-start; border-left: 2px solid var(--border); padding: .65rem .8rem; }
+.lv-tracking-steps li[data-state=current] { border-color: var(--lv-rose); background: var(--lv-soft); }
+.lv-tracking-steps li[data-state=complete] > span { color: var(--lv-rose); }
+.lv-tracking-steps small { display: block; }
+.lv-tracking-notice { padding: 1rem; background: var(--lv-soft); overflow-wrap: anywhere; }
+.lv-tracking-shipment { display: grid; gap: .8rem; min-width: 0; }
+.lv-tracking-shipment code { display: block; overflow-wrap: anywhere; font-size: 1rem; user-select: all; }
+.lv-tracking-refresh { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+.lv-track-lookup { display: grid; gap: 1.25rem; max-width: 38rem; }
+.lv-track-lookup label { display: grid; gap: .5rem; }
+.lv-track-lookup .field { width: 100%; }
+
+.lv-tracking-action { color: var(--ink); background: var(--card); border: 1px solid var(--line); }
+.lv-tracking-action:hover { color: var(--ink); background: var(--lv-soft); }

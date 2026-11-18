@@ -1,0 +1,69 @@
+.pos-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 270px;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 18px;
+  transition: width 150ms;
+}
+.pos-sidebar.mini {
+  width: 80px;
+  padding-inline: 12px;
+}
+.pos-sidebar.mini .nav-label,
+.pos-sidebar.mini .nav-caption,
+.pos-sidebar.mini .sidebar-profile {
+  display: none;
+}
+.pos-sidebar.mini .nav-link {
+  justify-content: center;
+  padding-inline: 0;
+}
+.pos-sidebar.mini .store-name {
+  display: none;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 5px;
+  border-radius: 12px;
+  text-align: left;
+  color: var(--link);
+  transition: background 150ms;
+}
+.nav-link:hover {
+  background: var(--lightprimary);
+  color: var(--primary);
+}
+.nav-link.active {
+  background: var(--primary);
+  color: #fff;
+}
+.nav-caption {
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 25px 15px 12px;
+  color: var(--bodytext);
+}
+@media (max-width: 1023px) {
+  .pos-sidebar {
+    display: none;
+  }
+  .mobile-navigation .pos-sidebar {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 20px;
+  }
+}

@@ -1,0 +1,511 @@
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--border, currentcolor);
+  }
+}
+
+@utility card {
+  @apply bg-card rounded-tw border border-border shadow-xs;
+}
+
+@utility card-hover {
+  @apply transition-all duration-150 hover:shadow-md hover:border-border;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center font-semibold rounded-md transition-all duration-150 focus:outline-hidden focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+@utility btn-primary {
+  @apply bg-primary text-white hover:bg-primaryemphasis focus:ring-lightprimary shadow-xs hover:shadow-md;
+}
+
+@utility btn-secondary {
+  @apply bg-card text-link border border-border hover:bg-lighthover hover:text-primary focus:ring-lightprimary;
+}
+
+@utility btn-success {
+  @apply bg-success text-white hover:bg-successemphasis focus:ring-lightsuccess shadow-xs hover:shadow-md;
+}
+
+@utility btn-danger {
+  @apply bg-error text-white hover:bg-erroremphasis focus:ring-lighterror shadow-xs hover:shadow-md;
+}
+
+@utility btn-sm {
+  @apply px-3 py-2 text-sm;
+}
+
+@utility btn-md {
+  @apply px-4 py-2.5 text-sm;
+}
+
+@utility btn-lg {
+  @apply px-6 py-3 text-base;
+}
+
+@utility input {
+  @apply w-full px-4 py-3 border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-150 bg-card;
+}
+
+@utility input-sm {
+  @apply px-3 py-2 text-sm;
+}
+
+@utility select {
+  @apply w-full px-4 py-3 border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-150 bg-card;
+}
+
+@utility textarea {
+  @apply w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-150 bg-card resize-none;
+}
+
+@utility modal-overlay {
+  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4;
+  margin-top: 0 !important;
+  backdrop-filter: blur(4px);
+}
+
+@utility modal {
+  @apply bg-card rounded-xl shadow-2xl w-full overflow-hidden;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+@utility modal-header {
+  @apply px-6 py-4 border-b border-border flex items-center justify-between flex-shrink-0;
+}
+
+@utility modal-body {
+  @apply p-6 overflow-y-auto flex-1;
+  min-height: 0;
+  min-width: 0;
+  overscroll-behavior: contain;
+}
+
+@utility modal-footer {
+  @apply px-6 py-4 border-t border-border flex flex-wrap justify-end gap-3 flex-shrink-0;
+}
+
+@utility table {
+  @apply min-w-full divide-y divide-border;
+}
+
+@utility table-header {
+  @apply bg-lightgray;
+}
+
+@utility table-header-cell {
+  @apply px-4 py-3.5 text-left text-xs font-semibold text-bodytext uppercase tracking-wider;
+}
+
+@utility table-row {
+  @apply hover:bg-lightgray transition-colors;
+}
+
+@utility table-cell {
+  @apply px-4 py-3.5 whitespace-nowrap text-sm text-link;
+}
+
+@utility badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+}
+
+@utility badge-success {
+  @apply bg-lightsuccess text-success;
+}
+
+@utility badge-warning {
+  @apply bg-lightwarning text-warning;
+}
+
+@utility badge-danger {
+  @apply bg-lighterror text-error;
+}
+
+@utility badge-info {
+  @apply bg-lightprimary text-primary;
+}
+
+@utility badge-purple {
+  @apply bg-lightprimary text-primary;
+}
+
+@utility sidebar {
+  @apply bg-card border-r border-border flex flex-col;
+}
+
+@utility nav-item {
+  @apply flex items-center space-x-3 px-4 py-3 text-link hover:bg-lightgray hover:text-link transition-colors rounded-xl mx-2;
+}
+
+@utility nav-item-active {
+  @apply bg-lightprimary text-primary font-medium;
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@utility animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@utility animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+@utility touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+@utility touch-friendly {
+  @media (hover: none) and (pointer: coarse) {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Manrope Variable", Manrope, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Focus styles for accessibility */
+.focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Loading states */
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Responsive grid utilities */
+.grid-responsive {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.grid-responsive-sm {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.grid-responsive-lg {
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 640px) {
+  .mobile-stack {
+    flex-direction: column;
+  }
+
+  .mobile-full {
+    width: 100%;
+  }
+
+  .mobile-hidden {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .tablet-show {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .desktop-show {
+    display: block;
+  }
+}
+
+/* SweetAlert2 Custom Styling */
+.swal2-popup.swal2-toast {
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.swal2-popup {
+  font-family: "Manrope Variable", Manrope, sans-serif;
+}
+
+.swal2-title {
+  font-weight: 600 !important;
+  letter-spacing: -0.025em;
+}
+
+.swal2-html-container {
+  line-height: 1.5 !important;
+}
+
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel {
+  border: none !important;
+  outline: none !important;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.swal2-styled.swal2-confirm:hover,
+.swal2-styled.swal2-cancel:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.swal2-input {
+  border: 1px solid var(--border) !important;
+  border-radius: 0.75rem !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.875rem !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.swal2-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  outline: none !important;
+}
+
+.swal2-timer-progress-bar {
+  height: 3px !important;
+}
+
+@keyframes swal2-show {
+  0% {
+    transform: scale(0.7) translateY(20px);
+    opacity: 0;
+  }
+  45% {
+    transform: scale(1.05) translateY(-5px);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.95) translateY(2px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.swal2-show {
+  animation: swal2-show 0.3s ease-out !important;
+}
+
+/* Custom scrollbar styles for WebKit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border);
+}
+@utility btn {
+  min-height: 40px;
+  gap: 0.5rem;
+  border-radius: 9px;
+  font-weight: 600;
+}
+@utility card {
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  background: var(--card);
+  border-color: var(--border);
+}
+@utility input {
+  background: var(--card);
+  border-color: var(--border);
+  border-radius: 9px;
+}
+@utility select {
+  background: var(--card);
+  border-color: var(--border);
+  border-radius: 9px;
+}
+@utility textarea {
+  background: var(--card);
+  border-color: var(--border);
+  border-radius: 9px;
+}
+@utility table-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Reserve the header, tabs and action area before sizing the scrolling body.
+   Forms nested inside a shell must propagate its height constraint. */
+.modal > form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.modal > :not(.modal-body):not(form) {
+  flex-shrink: 0;
+}
+.modal .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+.modal-header {
+  gap: 0.75rem;
+}
+.modal-header > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.modal-header > button {
+  flex-shrink: 0;
+}
+@media (max-width: 639px) {
+  .modal-header, .modal-body, .modal-footer {
+    padding-inline: 1rem;
+  }
+}

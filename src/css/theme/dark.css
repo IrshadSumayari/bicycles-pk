@@ -1,0 +1,71 @@
+.dark {
+  --background: #1c2536;
+  --foreground: #e5edf6;
+  --card: var(--color-darkgray);
+  --card-foreground: var(--color-white);
+  --popover: var(--color-dark);
+  --popover-foreground: var(--color-white);
+  --primary-foreground: var(--color-white);
+  --secondary-foreground: var(--color-white);
+  --muted: #2a3851;
+  --muted-foreground: var(--color-muted-foreground);
+  --accent: var(--color-lightprimary);
+  --accent-foreground: var(--color-primary);
+  --destructive: var(--color-error);
+  --border: #333f55;
+  --input: var(--color-darkborder);
+  --ring: var(--color-lightprimary);
+  --chart-1: var(--color-primary);
+  --chart-2: var(--color-secondary);
+  --chart-3: var(--color-success);
+  --chart-4: var(--color-warning);
+  --chart-5: var(--color-error);
+  --sidebar: var(--darkgray);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: var(--lightprimary);
+  --sidebar-accent-foreground: var(--primary);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--lightprimary);
+
+  /* custom color variable */
+  --info: #46caeb;
+  --success: #2ea95c;
+  --warning: #f8c20a;
+  --error: #ff6692;
+  --white: #fff;
+  --dark: #1f2a3d;
+  --darkinfo: #223662;
+  --lightgray: #1c2536;
+  --bgmuted: #eff4fa;
+  --darkgray: #1a2537;
+  --bodytext: #98a4ae;
+  --lightmuted: #98a4ae;
+  --link: #e5edf6;
+  --sky: #0a2540;
+  --light-emphasis: #2a3851;
+  --muted-foreground: #98a4ae;
+  --destructive-foreground: var(--color-white);
+
+  /* ----------- generate emphasis and lighter color of primary and secondary -------------- */
+
+  /* Lighter/opacity-like versions */
+  --lightprimary: color-mix(in oklab, var(--primary) 12%, transparent);
+  --lightsecondary: color-mix(in oklab, var(--secondary) 12%, transparent);
+  --lightsuccess: color-mix(in oklab, var(--success) 12%, transparent);
+  --lightinfo: color-mix(in oklab, var(--info) 12%, transparent);
+  --lightwarning: color-mix(in oklab, var(--warning) 12%, transparent);
+  --lighterror: color-mix(in oklab, var(--error) 12%, transparent);
+
+  /* Darker versions (emphasis) */
+  --primary-emphasis: color-mix(in oklab, var(--primary) 80%, black);
+  --secondary-emphasis: color-mix(in oklab, var(--secondary) 80%, black);
+  --success-emphasis: color-mix(in oklab, var(--success) 80%, black);
+  --info-emphasis: color-mix(in oklab, var(--info) 80%, black);
+  --warning-emphasis: color-mix(in oklab, var(--warning) 80%, black);
+  --error-emphasis: color-mix(in oklab, var(--error) 80%, black);
+}
+.dark ::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

@@ -1,0 +1,34 @@
+.pos-header {
+  height: 70px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.header-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--link);
+}
+.header-action:hover {
+  background: var(--lightprimary);
+  color: var(--primary);
+}
+@media (max-width: 640px) {
+  .pos-header {
+    padding-inline: 12px;
+    gap: 4px;
+  }
+  .pos-header .connection-label {
+    display: none;
+  }
+}

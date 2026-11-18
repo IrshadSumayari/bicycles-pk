@@ -1,0 +1,14 @@
+{
+  "name": "storefront-load-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node run.mjs"
+  },
+  "dependencies": {
+    "autocannon": "8.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

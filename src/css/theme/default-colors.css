@@ -1,0 +1,51 @@
+:root {
+  --primary: #635bff;
+  --secondary: #16cdc7;
+  --color-primary-rgb: 99, 91, 255;
+  --color-secondary-rgb: 20, 233, 226;
+  --color-warning-rgb: 248, 194, 10;
+  --color-error-rgb: 255, 102, 146;
+  --color-success-rgb: 46, 169, 92;
+}
+
+[data-color-theme="BLUE_THEME"] {
+  --primary: #635bff;
+  --secondary: #16cdc7;
+  --color-primary-rgb: 99, 91, 255;
+  --color-secondary-rgb: 20, 233, 226;
+}
+
+[data-color-theme="AQUA_THEME"] {
+  --primary: #0074ba;
+  --secondary: #47d7bc;
+  --color-primary-rgb: 0, 116, 186;
+  --color-secondary-rgb: 71, 215, 188;
+}
+
+[data-color-theme="PURPLE_THEME"] {
+  --primary: #763ebd;
+  --secondary: #49beff;
+  --color-primary-rgb: 118, 62, 189;
+  --color-secondary-rgb: 149, 207, 213;
+}
+
+[data-color-theme="GREEN_THEME"] {
+  --primary: #0a7ea4;
+  --secondary: #ccda4e;
+  --color-primary-rgb: 10, 126, 164;
+  --color-secondary-rgb: 204, 218, 78;
+}
+
+[data-color-theme="CYAN_THEME"] {
+  --primary: #01c0c8;
+  --secondary: #fb9678;
+  --color-primary-rgb: 1, 192, 200;
+  --color-secondary-rgb: 251, 150, 120;
+}
+
+[data-color-theme="ORANGE_THEME"] {
+  --primary: #fa896b;
+  --secondary: #0074ba;
+  --color-primary-rgb: 250, 137, 107;
+  --color-secondary-rgb: 0, 116, 186;
+}
