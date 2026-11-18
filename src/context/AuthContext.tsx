@@ -30,8 +30,9 @@ interface AuthContextType {
 export type AuthResult = 'signed_in' | 'confirm'
 export type MfaStep = 'ok' | 'enroll' | 'verify'
 
-// Must match current_app_role() in the database: these roles only take effect
-// in a session verified with an authenticator code (AAL2).
+// Must match current_app_role() in the database: the authenticator app is
+// optional, but an administrator or manager who has set one up must enter its
+// code (AAL2) before their role takes effect. Nobody is made to set one up.
 const MFA_ROLES = ['admin', 'manager']
 
 async function mfaStepFor(role: string | undefined): Promise<MfaStep> {
@@ -39,7 +40,7 @@ async function mfaStepFor(role: string | undefined): Promise<MfaStep> {
   const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
   if (error) throw error
   if (data.currentLevel === 'aal2') return 'ok'
-  return data.nextLevel === 'aal2' ? 'verify' : 'enroll'
+  return data.nextLevel === 'aal2' ? 'verify' : 'ok'
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)

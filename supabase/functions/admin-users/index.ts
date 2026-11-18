@@ -49,14 +49,22 @@ Deno.serve(async (req) => {
   });
   const { data: { user: callerUser } } = await caller.auth.getUser();
   if (!callerUser) return json({ error: 'Not signed in' }, 401);
-  // Matches current_app_role(): an administrator's role needs an authenticator-verified session.
-  if (sessionLevel(authorization) !== 'aal2') {
-    return json({ error: 'Confirm your sign-in with your authenticator app first' }, 403);
-  }
 
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
+
+  // Matches current_app_role(): the authenticator app is optional, but an
+  // administrator who has set one up must have entered its code this session.
+  if (sessionLevel(authorization) !== 'aal2') {
+    const { data: factors, error: factorsError } = await admin.auth.admin.mfa.listFactors({
+      userId: callerUser.id,
+    });
+    if (factorsError) return json({ error: 'Could not check your sign-in' }, 500);
+    if (factors.factors.some((f) => f.status === 'verified')) {
+      return json({ error: 'Confirm your sign-in with your authenticator app first' }, 403);
+    }
+  }
 
   const { data: callerProfile } = await admin
     .from('users')

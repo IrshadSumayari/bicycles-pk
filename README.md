@@ -115,8 +115,8 @@ A modern, feature-rich Point of Sale (POS) system built with React, TypeScript, 
    1. In Supabase Studio (local: http://127.0.0.1:55333), open **Authentication → Users → Add user**,
       enter a staff email and a password of at least 12 characters, and tick **Auto Confirm User**.
    2. In the **SQL Editor** run `SELECT app_private.bootstrap_admin('you@example.com');`.
-   3. Sign in to the POS. Administrators and managers set up an authenticator app on first sign-in
-      and enter its code every time after; cashiers use a password only.
+   3. Sign in to the POS with the email and password. The authenticator app is optional; anyone who
+      has set one up enters its code at every sign-in.
 
    Further staff are added by an administrator in *User Management* (role admin, manager or cashier).
    Public sign-ups stay enabled for the company website: they create **customer accounts**, which
