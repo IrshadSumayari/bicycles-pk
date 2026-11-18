@@ -207,7 +207,8 @@ replace `VERCEL_TOKEN`.
 - Keep each environment's database password separate, in a password manager.
 - No sign-up becomes an administrator. Make the first one yourself with
   `app_private.bootstrap_admin` in the SQL Editor (DEPLOY.md §8).
-- Administrators and managers need an authenticator app code at every POS
-  sign-in; keep TOTP enabled in each project's Auth settings.
+- The authenticator app is optional. Once an administrator or manager sets one
+  up, they need its code at every POS sign-in; keep TOTP enabled in each
+  project's Auth settings.
 - Don't shop on the website with a staff email; staff accounts can't place
   orders. Use a separate customer email.

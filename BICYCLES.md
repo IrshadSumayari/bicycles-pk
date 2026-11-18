@@ -170,3 +170,12 @@ Fixes for review findings S1 and S2. Migration `20261114000000_staff_account_sec
 
 Not run yet: database tests, unit tests, lint, type-check, builds, or a browser check of the new
 screens. Hosted Auth settings must be changed by hand in each Supabase project.
+
+## Optional authenticator (18 November 2026)
+
+At the owner's request the authenticator app is no longer required. Migration
+`20261118000000_optional_authenticator.sql` changes `current_app_role()`: staff without a verified
+TOTP factor get their role with a password-only session. An administrator or manager who has set up
+an authenticator still needs its code (`aal2`), and the POS asks for it at sign-in. The POS no longer
+forces the set-up screen, and `admin-users` only requires `aal2` from callers who have a factor.
+`security.test.sql` covers both cases. Not run yet: database tests, unit tests, lint, type-check.

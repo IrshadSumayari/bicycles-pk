@@ -1,6 +1,6 @@
 -- Roles and row level security for staff accounts.
 BEGIN;
-SELECT plan(21);
+SELECT plan(22);
 
 INSERT INTO auth.users (id, email, raw_user_meta_data, raw_app_meta_data) VALUES
     ('00000000-0000-0000-0000-00000000000a', 'admin@test.local',   '{"name":"Admin","username":"admin"}', '{}'),
@@ -49,8 +49,9 @@ SELECT is((SELECT count(*)::int FROM app_settings), 1, 'cashier can read setting
 SELECT throws_ok($$ UPDATE app_settings SET store_name = 'Hacked' $$,'42501',NULL,'direct settings writes are revoked');
 SELECT isnt((SELECT store_name FROM app_settings), 'Hacked', 'cashier cannot change settings');
 
--- Administrators and managers need an authenticator-verified (aal2) session
--- before their role takes effect; cashiers do not (review finding S2).
+-- The authenticator app is optional. Staff without one sign in with a password
+-- only; once an administrator or manager sets one up, their role needs an
+-- authenticator-verified (aal2) session. Cashiers never need a code.
 RESET ROLE;
 SET LOCAL "request.jwt.claims" = '';
 SET LOCAL ROLE authenticated;
@@ -58,7 +59,16 @@ SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000000c",
 SELECT is((SELECT count(*)::int FROM product_styles), 1, 'a cashier needs no authenticator code');
 
 SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated","aal":"aal1"}';
-SELECT ok(NOT public.has_app_role(ARRAY['admin']), 'a password-only admin session has no admin rights');
+SELECT ok(public.has_app_role(ARRAY['admin']), 'an admin without an authenticator works with a password only');
+
+RESET ROLE;
+SET LOCAL "request.jwt.claims" = '';
+INSERT INTO auth.mfa_factors (id, user_id, friendly_name, factor_type, status, created_at, updated_at)
+VALUES (gen_random_uuid(), '00000000-0000-0000-0000-00000000000a', 'test', 'totp', 'verified', now(), now());
+SET LOCAL ROLE authenticated;
+
+SET LOCAL "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated","aal":"aal1"}';
+SELECT ok(NOT public.has_app_role(ARRAY['admin']), 'an admin with an authenticator has no admin rights without the code');
 SELECT is((SELECT count(*)::int FROM product_styles), 0, 'a password-only admin session cannot read the catalog');
 SELECT is((SELECT count(*)::int FROM public.users), 1, 'a password-only admin session still reads its own profile');
 SELECT lives_ok(
