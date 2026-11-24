@@ -38,7 +38,7 @@ Tick these in order. Keep every value in your password manager. Never paste it i
    - `SITE_ACCESS_KEY` set to a private passphrase, marked Sensitive. This keeps staging closed to the public; the whole site asks for the key first.
 4. **Vercel POS:** create `bicycles-pos-staging` with the repository root as Root Directory and Node 22, and disconnect Git. Add the Production variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (staging).
 5. **Domains:** add `staging.bicycles.pk` to the shop project and `platform-staging.bicycles.pk` to the POS project. Add the CNAME records Vercel shows ([DEPLOY.md §7](./DEPLOY.md#7-dns-records-and-https)). The apex `bicycles.pk` stays on the coming-soon page.
-6. **First deploy:** merge any PR into `dev`, or in GitHub go to **Actions** and for each of *Deploy Supabase*, *Deploy shop* and *Deploy POS* choose **Run workflow** with the `dev` branch selected. Every push to `dev` deploys to `staging`. Check each job's summary says it deployed rather than skipped.
+6. **First deploy:** in GitHub, go to **Actions → CI** and re-run the latest `dev` run, or merge any PR into `dev`. When CI passes, *Deploy Supabase*, *Deploy shop* and *Deploy POS* run for `staging`. Check each job's summary says it deployed rather than skipped.
 7. **First login, before sharing any link:** create the administrator in the staging Supabase project with `app_private.bootstrap_admin`, then sign in to the staging POS ([DEPLOY.md §8](./DEPLOY.md#8-first-login--immediately-before-sharing-links)).
 
 ## 3. Store settings

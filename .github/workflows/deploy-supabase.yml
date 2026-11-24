@@ -1,35 +1,25 @@
 name: Deploy Supabase
-# main deploys to production automatically after CI passes. dev deploys to
-# staging on every push to dev (CI no longer runs for dev), or by hand.
+# dev deploys to the staging environment, main to production.
 on:
   workflow_run:
     workflows: [CI]
     types: [completed]
-    branches: [main]
-  # Staging: every push to dev, or Actions > this workflow > "Run workflow" on dev.
-  push:
-    branches: [dev]
-  workflow_dispatch:
+    branches: [dev, main]
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: supabase-${{ github.event.workflow_run.head_branch || github.ref_name }}
+  group: supabase-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: false
 jobs:
   deploy:
-    # Production: after a successful CI run for a push to main.
-    # Staging: on a push to dev, or when run by hand on dev.
     if: >-
-      (contains(fromJSON('["push","workflow_dispatch"]'), github.event_name) &&
-      github.ref_name == 'dev') ||
-      (github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
-      github.event.workflow_run.head_branch == 'main')
+      contains(fromJSON('["dev","main"]'), github.event.workflow_run.head_branch)
     runs-on: ubuntu-latest
-    environment: ${{ (github.event.workflow_run.head_branch || github.ref_name) == 'main' && 'production' || 'staging' }}
+    environment: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
@@ -42,26 +32,21 @@ jobs:
             echo "::notice::Supabase secrets are not set for this environment; database not deployed."
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "## Database deployment skipped" >> "$GITHUB_STEP_SUMMARY"
-            echo "No database migrations or functions were deployed. Configure SUPABASE_ACCESS_TOKEN, SUPABASE_PROJECT_REF and SUPABASE_DB_PASSWORD in the selected GitHub environment, then rerun CI for main, or rerun this workflow on dev." >> "$GITHUB_STEP_SUMMARY"
+            echo "No database migrations or functions were deployed. Configure SUPABASE_ACCESS_TOKEN, SUPABASE_PROJECT_REF and SUPABASE_DB_PASSWORD in the selected GitHub environment, then rerun CI for the current branch head." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/checkout@v4
         if: steps.secrets.outputs.ready == 'true'
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
           persist-credentials: false
-      # Staging runs skip CI, so check for injected loader code here,
-      # before npm ci runs anything with the Supabase secrets in scope.
-      - name: Refuse injected loader code
-        if: steps.secrets.outputs.ready == 'true'
-        run: bash .github/malware-guard.sh
       - name: Refuse an obsolete CI result
         if: steps.secrets.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
-          CHECKED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          CHECKED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           current=$(gh api "repos/$GITHUB_REPOSITORY/commits/$BRANCH" --jq .sha)
           test "$current" = "$CHECKED_SHA"
