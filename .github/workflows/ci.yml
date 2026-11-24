@@ -4,6 +4,7 @@ on:
   push:
     branches: [main, dev]
   pull_request:
+    branches: [main, dev]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -12,6 +13,7 @@ concurrency:
 jobs:
   malware-guard:
     name: Malware guard
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
     runs-on: ubuntu-latest
     # Runs before anything installs or executes project code, so injected
     # loader files fail CI and the deploy workflows never start.
@@ -24,6 +26,7 @@ jobs:
   website:
     name: Website catalog
     needs: malware-guard
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -49,6 +52,7 @@ jobs:
   web:
     name: Lint, type-check, unit tests, build
     needs: malware-guard
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     # Placeholders only: unit tests import modules that create the Supabase client.
     env:
@@ -71,6 +75,7 @@ jobs:
   database:
     name: Database migrations and tests
     needs: malware-guard
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -92,6 +97,7 @@ jobs:
   e2e:
     name: End-to-end smoke tests
     needs: malware-guard
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
