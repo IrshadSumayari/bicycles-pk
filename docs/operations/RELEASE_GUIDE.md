@@ -18,7 +18,7 @@ references, addresses, which account owns what) in the git-ignored file
 | Database (Supabase) | staging project | production project |
 
 - **CI:** to save GitHub Actions minutes, CI runs only for production: pushes to main, pull requests into main, and by hand (**Actions → CI → Run workflow**). Pushes to dev and pull requests into dev get no automatic CI, and Markdown or `docs/` changes alone never start it. CI runs application, database and browser smoke checks. The smoke job uses Chromium Headless Shell, with a ten-minute install limit and twenty-minute job limit. Browser setup failure still fails CI; these limits do not bypass tests.
-- **Hosted deployment:** after successful push CI on main, Deploy Supabase, Deploy shop and Deploy POS run for production. Staging never deploys automatically: open **Actions**, pick each deploy workflow, choose **Run workflow** with the `dev` branch selected. The button appears only once these workflows are on main, the default branch. They deploy only when the selected GitHub environment has all required secrets. A green run that reports a skipped deployment is not proof that either service was released. Read its job summary.
+- **Hosted deployment:** after successful push CI on main, Deploy Supabase, Deploy shop and Deploy POS run for production. Staging deploys on every push to dev, without waiting for CI. To redeploy staging by hand, open **Actions**, pick a deploy workflow and choose **Run workflow** with the `dev` branch selected; that button appears only once the workflows are on main, the default branch. They deploy only when the selected GitHub environment has all required secrets. A green run that reports a skipped deployment is not proof that either service was released. Read its job summary.
 - **Database:** the configured Deploy Supabase workflow applies migrations and deploys its named functions. The manual commands below are a fallback when automation is not configured. Keep hosted apps protected until the matching schema and app releases are verified; independent hosting jobs do not guarantee migration-first ordering.
 - **Current readiness (27 October 2026):** the staging GitHub environment exists but its secret listing is empty, and there is no local Vercel project link. The merged parcel-return update passed all GitHub CI checks, including browser smoke tests. No hosted parcel-return rollout was verified. Real inventory and customer checkout rehearsal are separately deferred.
 
@@ -64,7 +64,7 @@ staging database password (see "Pushing with the database password").
 npx supabase functions deploy --project-ref <staging-ref>
 ```
 
-**1d. Merge the pull request into `dev`.** No CI or deployment runs automatically for dev. Run the checks locally, then run *Deploy Supabase*, *Deploy shop* and *Deploy POS* by hand on `dev` (**Actions → workflow → Run workflow**). Confirm the deployed commit and schema before exposing the staging apps. With missing secrets, the workflows skip deployment.
+**1d. Merge the pull request into `dev`.** No CI runs for dev, so run the checks locally first. The merge push deploys *Deploy Supabase*, *Deploy shop* and *Deploy POS* to staging automatically; wait for those runs. Confirm the deployed commit and schema before exposing the staging apps. With missing secrets, the workflows skip deployment.
 
 ## Step 2: Test on staging
 

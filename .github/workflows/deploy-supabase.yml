@@ -1,12 +1,14 @@
 name: Deploy Supabase
 # main deploys to production automatically after CI passes. dev deploys to
-# staging only when run by hand (Run workflow on the dev branch).
+# staging on every push to dev (CI no longer runs for dev), or by hand.
 on:
   workflow_run:
     workflows: [CI]
     types: [completed]
     branches: [main]
-  # Staging: Actions tab > this workflow > "Run workflow" on the dev branch.
+  # Staging: every push to dev, or Actions > this workflow > "Run workflow" on dev.
+  push:
+    branches: [dev]
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,9 +19,10 @@ concurrency:
 jobs:
   deploy:
     # Production: after a successful CI run for a push to main.
-    # Staging: only when run by hand on dev.
+    # Staging: on a push to dev, or when run by hand on dev.
     if: >-
-      (github.event_name == 'workflow_dispatch' && github.ref_name == 'dev') ||
+      (contains(fromJSON('["push","workflow_dispatch"]'), github.event_name) &&
+      github.ref_name == 'dev') ||
       (github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
@@ -39,7 +42,7 @@ jobs:
             echo "::notice::Supabase secrets are not set for this environment; database not deployed."
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "## Database deployment skipped" >> "$GITHUB_STEP_SUMMARY"
-            echo "No database migrations or functions were deployed. Configure SUPABASE_ACCESS_TOKEN, SUPABASE_PROJECT_REF and SUPABASE_DB_PASSWORD in the selected GitHub environment, then rerun CI for main or run this workflow by hand on dev." >> "$GITHUB_STEP_SUMMARY"
+            echo "No database migrations or functions were deployed. Configure SUPABASE_ACCESS_TOKEN, SUPABASE_PROJECT_REF and SUPABASE_DB_PASSWORD in the selected GitHub environment, then rerun CI for main, or rerun this workflow on dev." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
@@ -48,7 +51,7 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           persist-credentials: false
-      # Manual staging runs skip CI, so check for injected loader code here,
+      # Staging runs skip CI, so check for injected loader code here,
       # before npm ci runs anything with the Supabase secrets in scope.
       - name: Refuse injected loader code
         if: steps.secrets.outputs.ready == 'true'
