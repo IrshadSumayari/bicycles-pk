@@ -1,9 +1,15 @@
 name: CI
 
+# Runs only for production (main) to save Actions minutes: pushes to main,
+# pull requests into main, and by hand. dev and feature branches get no CI.
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
+    paths-ignore: ['**/*.md', 'docs/**']
   pull_request:
+    branches: [main]
+    paths-ignore: ['**/*.md', 'docs/**']
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
